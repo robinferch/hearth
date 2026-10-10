@@ -1,0 +1,117 @@
+{
+  "results": [
+    {
+      "id": "li_book2",
+      "ino": "1",
+      "oldLibraryItemId": null,
+      "libraryId": "lib_books",
+      "folderId": "fol_1",
+      "path": "/audiobooks/a",
+      "relPath": "a",
+      "isFile": false,
+      "addedAt": 1650621073750,
+      "updatedAt": 1650621110769,
+      "isMissing": false,
+      "isInvalid": false,
+      "mediaType": "book",
+      "media": {
+        "id": "book_2",
+        "metadata": {
+          "title": "The Way of Kings",
+          "titleIgnorePrefix": "Way of Kings, The",
+          "subtitle": "Book One of the Stormlight Archive",
+          "authorName": "Brandon Sanderson",
+          "authorNameLF": "Sanderson, Brandon",
+          "narratorName": "Michael Kramer, Kate Reading",
+          "seriesName": "The Stormlight Archive #1, Cosmere #3.5",
+          "genres": ["Fantasy", "Epic"],
+          "publishedYear": "2010",
+          "publishedDate": null,
+          "publisher": "Macmillan Audio",
+          "description": "Roshar is a world of stone and storms.",
+          "isbn": "9781427209290",
+          "asin": null,
+          "language": "English",
+          "explicit": false,
+          "abridged": false
+        },
+        "coverPath": "/audiobooks/a/cover.jpg",
+        "tags": [],
+        "numTracks": 3,
+        "numAudioFiles": 3,
+        "numChapters": 60,
+        "duration": "164532.5",
+        "size": 1500000000,
+        "ebookFormat": null
+      },
+      "numFiles": 4,
+      "size": 1500000000
+    },
+    {
+      "id": "li_book3",
+      "ino": "2",
+      "libraryId": "lib_books",
+      "addedAt": 1650621073750,
+      "mediaType": "book",
+      "media": {
+        "id": "book_3",
+        "metadata": {
+          "title": "Leviathan Wakes",
+          "authorName": "James S. A. Corey",
+          "narratorName": "Jefferson Mays",
+          "seriesName": "The Expanse #1",
+          "genres": [],
+          "explicit": "0"
+        },
+        "tags": [],
+        "numTracks": 1,
+        "numAudioFiles": 1,
+        "duration": 74000,
+        "size": 500000000
+      },
+      "numFiles": 1,
+      "size": 500000000,
+      "collapsedSeries": {
+        "id": "ser_expanse",
+        "name": "The Expanse",
+        "nameIgnorePrefix": "Expanse",
+        "numBooks": 9,
+        "libraryItemIds": ["li_book3", "li_book4", "li_book5"],
+        "seriesSequenceList": "1-9"
+      }
+    },
+    {
+      "id": "li_ebook",
+      "ino": "3",
+      "libraryId": "lib_books",
+      "addedAt": 1650621073750,
+      "mediaType": "book",
+      "media": {
+        "id": "book_4",
+        "metadata": { "title": "An Ebook Only", "authorName": "Someone", "genres": [] },
+        "tags": [],
+        "numTracks": 0,
+        "numAudioFiles": 0,
+        "numChapters": 0,
+        "duration": 0,
+        "size": 1000,
+        "ebookFormat": "epub"
+      },
+      "numFiles": 1,
+      "size": 1000
+    },
+    {
+      "id": "li_broken"
+    }
+  ],
+  "total": 42,
+  "limit": 4,
+  "page": 0,
+  "sortBy": "media.metadata.title",
+  "sortDesc": false,
+  "filterBy": null,
+  "mediaType": "book",
+  "minified": false,
+  "collapseseries": true,
+  "include": ""
+}

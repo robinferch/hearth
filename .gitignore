@@ -8,3 +8,4 @@ build/
 Configuration/Local.xcconfig
 *.ipa
 *.dSYM.zip
+.claude/

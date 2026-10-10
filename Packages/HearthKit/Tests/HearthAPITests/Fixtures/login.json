@@ -1,0 +1,19 @@
+{
+  "user": {
+    "id": "usr_1",
+    "username": "robin",
+    "type": "user",
+    "token": "legacy-token",
+    "accessToken": "access-1",
+    "refreshToken": "refresh-1",
+    "mediaProgress": [],
+    "bookmarks": [],
+    "isActive": true,
+    "isLocked": false,
+    "permissions": {}
+  },
+  "userDefaultLibraryId": "lib_books",
+  "serverSettings": { "version": "2.26.0" },
+  "ereaderDevices": [],
+  "Source": "docker"
+}

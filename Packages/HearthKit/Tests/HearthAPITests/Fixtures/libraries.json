@@ -1,0 +1,7 @@
+{
+  "libraries": [
+    { "id": "lib_pods", "name": "Podcasts", "folders": [], "displayOrder": 2, "icon": "podcast", "mediaType": "podcast", "provider": "itunes", "settings": {}, "lastScan": null, "createdAt": 1600000000000, "lastUpdate": 1600000000000 },
+    { "id": "lib_music", "name": "Music", "folders": [], "displayOrder": 0, "icon": "music", "mediaType": "music" },
+    { "id": "lib_books", "name": "Audiobooks", "folders": [], "displayOrder": 1, "icon": "audiobookshelf", "mediaType": "book", "provider": "google" }
+  ]
+}

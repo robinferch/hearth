@@ -1,18 +1,30 @@
 // CONTRACT FILE – public surface of HearthPlayback.
-// The bodies here are TEMPORARY STUBS. The HearthPlayback implementer replaces them (and may split
-// the type into multiple files/extensions), but must keep these public names and signatures source
-// compatible. Adding members or default parameters is fine.
+// Implementations live in the `AudioPlayer+*.swift` extensions; this file holds the state and the
+// public entry points. Public names/signatures are stable (adding members/default parameters is fine).
 
+import AVFoundation
 import Foundation
 import HearthData
 import HearthModel
 import Observation
+import os
 
 public enum PlaybackError: Error, Sendable {
     case notPlayable
     case downloadInProgress
     case noPlaybackItem
     case startFailed(String)
+}
+
+extension PlaybackError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .notPlayable: String(localized: "This item can't be played.")
+        case .downloadInProgress: String(localized: "This item is currently downloading.")
+        case .noPlaybackItem: String(localized: "Nothing is playing.")
+        case .startFailed(let reason): String(localized: "Playback couldn't be started: \(reason)")
+        }
+    }
 }
 
 /// The single, app-wide audio player.
@@ -65,83 +77,238 @@ public final class AudioPlayer {
     /// Set when a new item started (UI may auto-open the full player).
     public internal(set) var startedItemAt: Date?
 
+    // MARK: Additional state (Hearth additions)
+
+    /// Last playback failure (start failed, stream broke). Cleared on the next successful start.
+    public internal(set) var lastError: PlaybackError?
+    /// When the sleep timer last expired (Live Activity "paused" state, play-to-extend window).
+    public internal(set) var sleepTimerExpiredAt: Date?
+    /// Running total while skip taps are being combined (badge), `nil` when idle.
+    public internal(set) var pendingSkipTotal: TimeInterval?
+    /// Whether the current item is played from local files.
+    public internal(set) var isPlayingLocalFiles = false
+
+    /// Whether an item is loaded (playing or paused).
+    public var isActive: Bool { currentItem != nil }
+    /// Remaining real time of the item at the current rate.
+    public var remainingTime: TimeInterval { max(0, duration - currentTime) / max(playbackRate, 0.01) }
+    /// Remaining real time of the current chapter at the current rate.
+    public var chapterRemainingTime: TimeInterval? {
+        guard let currentChapter else { return nil }
+        return max(0, currentChapter.end - currentTime) / max(playbackRate, 0.01)
+    }
+    /// Bookmarks are supported for audiobooks only.
+    public var canCreateBookmark: Bool {
+        if case .audiobook = currentItem { true } else { false }
+    }
+
+    // MARK: Internal engine state
+
+    @ObservationIgnored let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "dev.hearth", category: "AudioPlayer")
+    @ObservationIgnored var didSetup = false
+    @ObservationIgnored var player: AVQueuePlayer?
+    @ObservationIgnored var timeObserver: Any?
+    @ObservationIgnored var keyValueObservations: [NSKeyValueObservation] = []
+    @ObservationIgnored var notificationTokens: [any NSObjectProtocol] = []
+
+    /// Identifies the active playback run; async work from stale runs is discarded.
+    @ObservationIgnored var runID = UUID()
+    @ObservationIgnored var timeline = PlaybackTimeline.empty
+    @ObservationIgnored var loadedTracks: [LoadedTrack] = []
+    @ObservationIgnored var streamingHeaders: [String: String] = [:]
+    @ObservationIgnored var reporter: SessionReporter?
+    @ObservationIgnored var busyCount = 0 {
+        didSet { isBusy = busyCount > 0 }
+    }
+    /// The user wants audio to play (as opposed to the player's actual state).
+    @ObservationIgnored var intendsToPlay = false
+    @ObservationIgnored var lastPauseDate: Date?
+    @ObservationIgnored var resumeAfterInterruption = false
+    /// Last automatic stream recovery (rebuild with fresh headers); one retry per minute.
+    @ObservationIgnored var lastStreamRecovery: Date?
+    @ObservationIgnored var upNextGenerationDisabled = false
+    /// Run whose finish flow is in progress (guards against double handling).
+    @ObservationIgnored var finishingRunID: UUID?
+    @ObservationIgnored var queueRestored = false
+
+    @ObservationIgnored var sleepTimerTask: Task<Void, Never>?
+    @ObservationIgnored var chapterSleepTask: Task<Void, Never>?
+    @ObservationIgnored var sleepTimerPausedAt: Date?
+    @ObservationIgnored var lastExpiredSleepTimer: SleepTimerState?
+    @ObservationIgnored var isFading = false
+
+    @ObservationIgnored var skipCombiner = SkipTapCombiner()
+    @ObservationIgnored var skipCombinerTask: Task<Void, Never>?
+
+    @ObservationIgnored var lastSnapshotUpdate = Date.distantPast
+    @ObservationIgnored var snapshotCoverFile: String?
+    @ObservationIgnored var nowPlayingInfo: [String: Any] = [:]
+    @ObservationIgnored var artworkItemID: ItemIdentifier?
+    @ObservationIgnored var artworkTask: Task<Void, Never>?
+    @ObservationIgnored var nowPlayingArtwork: AnyObject?
+
     // MARK: Lifecycle
 
     /// Configures audio session, remote commands and restores the queue. Call once at launch.
-    public func setup() {}
+    public func setup() {
+        performSetup()
+    }
 
     // MARK: Starting playback
 
     /// Starts an item. If it is already the current item, toggles play/pause instead.
-    public func play(_ id: ItemIdentifier, origin: PlaybackOrigin = .none, at time: TimeInterval? = nil) async throws {}
+    public func play(_ id: ItemIdentifier, origin: PlaybackOrigin = .none, at time: TimeInterval? = nil) async throws {
+        if isCurrent(id) {
+            if let time {
+                await seek(to: time)
+                lastPauseDate = nil
+                resume()
+            } else {
+                togglePlayPause()
+            }
+            return
+        }
+        try await startPlayback(id, origin: origin, at: time, resetUpNext: true)
+    }
 
     /// Starts the first eligible item of a series, podcast or collection.
-    public func play(grouping id: ItemIdentifier) async throws {}
+    public func play(grouping id: ItemIdentifier) async throws {
+        let item: AnyPlayableItem
+        do {
+            item = try await HearthData.shared.items.firstPlayable(in: id)
+        } catch {
+            throw PlaybackError.noPlaybackItem
+        }
+        let origin: PlaybackOrigin = switch id.kind {
+        case .series: .series(id)
+        case .podcast: .podcast(id)
+        case .collection, .playlist: .collection(id)
+        default: .none
+        }
+        try await play(item.id, origin: origin)
+    }
 
     /// Resumes the last played item.
-    public func resumeLastPlayed() async throws {}
+    public func resumeLastPlayed() async throws {
+        guard let lastPlayedItemID else { throw PlaybackError.noPlaybackItem }
+        if isCurrent(lastPlayedItemID) {
+            resume()
+            return
+        }
+        try await startPlayback(lastPlayedItemID, origin: PlaybackPersistence.lastPlayedOrigin ?? .none, at: nil, resetUpNext: true)
+    }
 
     // MARK: Transport
 
-    public func resume() {}
-    public func pause() {}
-    public func togglePlayPause() {}
-    public func stop() async {}
+    public func resume() { performResume() }
+    public func pause() { performPause() }
+    public func togglePlayPause() {
+        if isPlaying || (intendsToPlay && isBuffering) {
+            pause()
+        } else {
+            resume()
+        }
+    }
+    public func stop() async { await performStop() }
 
     /// Absolute seek.
-    public func seek(to time: TimeInterval) async {}
+    public func seek(to time: TimeInterval) async { await seekInternal(to: time) }
     /// Seek relative to the active chapter start (scrubber).
-    public func seek(toDisplayedTime time: TimeInterval) async {}
-    public func skipForward(_ seconds: TimeInterval? = nil) async {}
-    public func skipBackward(_ seconds: TimeInterval? = nil) async {}
-    public func nextChapter() async {}
+    public func seek(toDisplayedTime time: TimeInterval) async {
+        await seekInternal(to: absoluteTime(forDisplayedTime: time))
+    }
+    public func skipForward(_ seconds: TimeInterval? = nil) async {
+        await seekInternal(to: currentTime + (seconds ?? TimeInterval(AppSettings.shared.skipForwardInterval)))
+    }
+    public func skipBackward(_ seconds: TimeInterval? = nil) async {
+        await seekInternal(to: max(0, currentTime - (seconds ?? TimeInterval(AppSettings.shared.skipBackwardInterval))))
+    }
+    public func nextChapter() async { await performNextChapter() }
     /// Goes to the start of the chapter, or the previous chapter when within the first 3 s.
-    public func previousChapter() async {}
-    public func seek(toChapter chapter: Chapter) async {}
+    public func previousChapter() async { await performPreviousChapter() }
+    public func seek(toChapter chapter: Chapter) async { await seekInternal(to: chapter.start) }
 
-    public func setPlaybackRate(_ rate: Double) {}
+    public func setPlaybackRate(_ rate: Double) { applyPlaybackRate(rate, save: true) }
     /// Next preset (wraps).
-    public func cyclePlaybackRate() {}
+    public func cyclePlaybackRate() {
+        setPlaybackRate(PlaybackRateMath.next(after: playbackRate, presets: AppSettings.shared.playbackRatePresets))
+    }
 
     // MARK: Queue
 
-    public func playNext(_ id: ItemIdentifier) async throws {}
-    public func addToQueue(_ id: ItemIdentifier) async throws {}
-    public func addToQueue(_ ids: [ItemIdentifier]) async {}
-    public func moveQueueItems(from source: IndexSet, to destination: Int) {}
-    public func removeFromQueue(at offsets: IndexSet) {}
-    public func removeFromUpNext(at offsets: IndexSet) {}
-    public func clearQueue() {}
-    public func clearUpNext() {}
-    public func promoteUpNextItem(at index: Int) {}
-    public func jumpToQueueItem(at index: Int) async {}
-    public func jumpToUpNextItem(at index: Int) async {}
+    public func playNext(_ id: ItemIdentifier) async throws { try await enqueue(id, atFront: true) }
+    public func addToQueue(_ id: ItemIdentifier) async throws { try await enqueue(id, atFront: false) }
+    public func addToQueue(_ ids: [ItemIdentifier]) async { await enqueue(ids) }
+    public func moveQueueItems(from source: IndexSet, to destination: Int) {
+        queue = QueueLogic.moved(queue, from: source, to: destination)
+        queueDidChange()
+    }
+    public func removeFromQueue(at offsets: IndexSet) {
+        queue = QueueLogic.removed(queue, at: offsets)
+        queueDidChange()
+    }
+    public func removeFromUpNext(at offsets: IndexSet) {
+        upNext = QueueLogic.removed(upNext, at: offsets)
+        if upNext.isEmpty {
+            upNextGenerationDisabled = true
+            upNextSource = nil
+        }
+        queueDidChange()
+    }
+    public func clearQueue() {
+        queue = []
+        queueDidChange()
+    }
+    public func clearUpNext() {
+        upNext = []
+        upNextSource = nil
+        upNextGenerationDisabled = true
+        queueDidChange()
+    }
+    public func promoteUpNextItem(at index: Int) {
+        guard upNext.indices.contains(index) else { return }
+        let item = upNext.remove(at: index)
+        queue = QueueLogic.appending(item, to: queue)
+        queueDidChange()
+    }
+    public func jumpToQueueItem(at index: Int) async { await performJumpToQueueItem(at: index) }
+    public func jumpToUpNextItem(at index: Int) async { await performJumpToUpNextItem(at: index) }
     /// Skips to the next queue/up next item.
-    public func advance() async {}
+    public func advance() async { await performAdvance() }
 
     // MARK: Sleep timer
 
-    public func setSleepTimer(_ preset: SleepTimerPreset) {}
+    public func setSleepTimer(_ preset: SleepTimerPreset) { applySleepTimer(SleepTimerMath.state(for: preset, now: .now)) }
     /// Sleep at the end of the given chapter.
-    public func setSleepTimer(endOf chapter: Chapter) {}
-    public func extendSleepTimer() {}
+    public func setSleepTimer(endOf chapter: Chapter) { performSetSleepTimer(endOf: chapter) }
+    public func extendSleepTimer() { performExtendSleepTimer() }
     /// ±1 minute or ±1 chapter; cancels when going below the minimum.
-    public func adjustSleepTimer(by delta: Int) {}
-    public func cancelSleepTimer() {}
+    public func adjustSleepTimer(by delta: Int) { performAdjustSleepTimer(by: delta) }
+    public func cancelSleepTimer() { performCancelSleepTimer() }
+    /// Call from a `motionEnded(.motionShake)` handler; extends the timer when `shakeExtendsSleepTimer` is on.
+    public func handleShake() { performHandleShake() }
 
     // MARK: Bookmarks
 
     /// Creates a bookmark at the current position. `nil` note = quick bookmark (formatted date).
     @discardableResult
     public func createBookmark(note: String? = nil) async throws -> Bookmark {
-        throw PlaybackError.noPlaybackItem
+        try await performCreateBookmark(note: note)
     }
 
     // MARK: Item state hooks
 
     /// Marks the current item finished (seeks to end → normal finish flow), or forwards to ProgressStore.
-    public func setFinished(_ id: ItemIdentifier, finished: Bool) async throws {}
+    public func setFinished(_ id: ItemIdentifier, finished: Bool) async throws {
+        try await performSetFinished(id, finished: finished)
+    }
 
     /// Whether `id` is the current item.
     public func isCurrent(_ id: ItemIdentifier) -> Bool { currentItem?.id == id }
+}
+
+/// A player item enqueued in the `AVQueuePlayer` and the timeline track it plays.
+struct LoadedTrack {
+    let item: AVPlayerItem
+    let position: Int
 }

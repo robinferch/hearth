@@ -1,0 +1,171 @@
+{
+  "id": "li_book1",
+  "ino": "649644248522215260",
+  "oldLibraryItemId": null,
+  "libraryId": "lib_books",
+  "folderId": "fol_1",
+  "path": "/audiobooks/Terry Goodkind/Sword of Truth/Wizards First Rule",
+  "relPath": "Terry Goodkind/Sword of Truth/Wizards First Rule",
+  "isFile": false,
+  "mtimeMs": 1650621074299,
+  "ctimeMs": 1650621074299,
+  "birthtimeMs": 0,
+  "addedAt": 1650621073750,
+  "updatedAt": 1650621110769,
+  "lastScan": 1651830827825,
+  "scanVersion": "2.0.21",
+  "isMissing": false,
+  "isInvalid": false,
+  "mediaType": "book",
+  "media": {
+    "id": "book_1",
+    "libraryItemId": "li_book1",
+    "metadata": {
+      "title": "Wizards First Rule",
+      "titleIgnorePrefix": "Wizards First Rule",
+      "subtitle": null,
+      "authors": [{ "id": "aut_goodkind", "name": "Terry Goodkind" }],
+      "narrators": ["Sam Tsoutsouvas"],
+      "series": [{ "id": "ser_sot", "name": "Sword of Truth", "sequence": "1" }],
+      "genres": ["Fantasy"],
+      "publishedYear": "2008",
+      "publishedDate": null,
+      "publisher": "Brilliance Audio",
+      "description": "<p>The masterpiece that started Terry Goodkind's <b>New York Times</b> bestselling epic.</p>",
+      "isbn": null,
+      "asin": "B002V0QK4C",
+      "language": "English",
+      "explicit": false,
+      "abridged": false,
+      "authorName": "Terry Goodkind",
+      "authorNameLF": "Goodkind, Terry",
+      "narratorName": "Sam Tsoutsouvas",
+      "seriesName": "Sword of Truth #1",
+      "descriptionPlain": "The masterpiece that started Terry Goodkind's New York Times bestselling epic."
+    },
+    "coverPath": "/audiobooks/Terry Goodkind/Sword of Truth/Wizards First Rule/cover.jpg",
+    "tags": ["Favorite"],
+    "audioFiles": [
+      {
+        "index": 1,
+        "ino": "649644248522215261",
+        "metadata": { "filename": "Part 01.mp3", "ext": ".mp3", "path": "/audiobooks/x/Part 01.mp3", "relPath": "Part 01.mp3", "size": 48037888, "mtimeMs": 1632223180278 },
+        "addedAt": 1650621074131,
+        "updatedAt": 1651830828023,
+        "trackNumFromMeta": 1,
+        "discNumFromMeta": null,
+        "trackNumFromFilename": 1,
+        "discNumFromFilename": null,
+        "manuallyVerified": false,
+        "exclude": false,
+        "error": null,
+        "format": "MP2/3 (MPEG audio layer 2/3)",
+        "duration": 6004.6675,
+        "bitRate": 64000,
+        "language": null,
+        "codec": "mp3",
+        "timeBase": "1/14112000",
+        "channels": 2,
+        "channelLayout": "stereo",
+        "chapters": [],
+        "embeddedCoverArt": null,
+        "metaTags": {},
+        "mimeType": "audio/mpeg"
+      },
+      {
+        "index": 2,
+        "ino": "649644248522215262",
+        "metadata": { "filename": "Part 02.mp3", "ext": ".mp3", "size": 47335424 },
+        "exclude": false,
+        "duration": 5918.24,
+        "mimeType": "audio/mpeg"
+      },
+      {
+        "index": 3,
+        "ino": "649644248522215299",
+        "metadata": { "filename": "Bonus.mp3", "ext": ".mp3", "size": 1000 },
+        "exclude": true,
+        "duration": 12.5,
+        "mimeType": "audio/mpeg"
+      }
+    ],
+    "chapters": [
+      { "id": 0, "start": 0, "end": 6004.6675, "title": "Wizards First Rule 01" },
+      { "id": 1, "start": 6004.6675, "end": 11922.9075, "title": "Wizards First Rule 02" }
+    ],
+    "ebookFile": null,
+    "numTracks": 2,
+    "numAudioFiles": 3,
+    "numChapters": 2,
+    "duration": 11922.9075,
+    "size": 95373312,
+    "tracks": [
+      {
+        "index": 1,
+        "ino": "649644248522215261",
+        "startOffset": 0,
+        "duration": 6004.6675,
+        "title": "Part 01.mp3",
+        "contentUrl": "/api/items/li_book1/file/649644248522215261",
+        "mimeType": "audio/mpeg",
+        "codec": "mp3",
+        "metadata": { "filename": "Part 01.mp3", "ext": ".mp3", "size": 48037888 }
+      },
+      {
+        "index": 2,
+        "ino": "649644248522215262",
+        "startOffset": 6004.6675,
+        "duration": 5918.24,
+        "title": "Part 02.mp3",
+        "contentUrl": "/api/items/li_book1/file/649644248522215262",
+        "mimeType": "audio/mpeg",
+        "codec": "mp3",
+        "metadata": { "filename": "Part 02.mp3", "ext": ".mp3", "size": 47335424 }
+      }
+    ]
+  },
+  "libraryFiles": [
+    {
+      "ino": "649644248522215261",
+      "metadata": { "filename": "Part 01.mp3", "ext": ".mp3", "size": 48037888 },
+      "isSupplementary": null,
+      "addedAt": 1650621074131,
+      "updatedAt": 1650621074131,
+      "fileType": "audio"
+    },
+    {
+      "ino": "649644248522215300",
+      "metadata": { "filename": "Map of the Midlands.pdf", "ext": ".pdf", "size": 2048000 },
+      "isSupplementary": true,
+      "addedAt": 1650621074131,
+      "updatedAt": 1650621074131,
+      "fileType": "ebook"
+    },
+    {
+      "ino": "649644248522215301",
+      "metadata": { "filename": "cover.jpg", "ext": ".jpg", "size": 204800 },
+      "isSupplementary": null,
+      "fileType": "image"
+    }
+  ],
+  "numFiles": 5,
+  "size": 97626112,
+  "userMediaProgress": {
+    "id": "mp_book1",
+    "userId": "usr_1",
+    "libraryItemId": "li_book1",
+    "episodeId": null,
+    "mediaItemId": "book_1",
+    "mediaItemType": "book",
+    "duration": 11922.9075,
+    "progress": 0.25,
+    "currentTime": 2980.72,
+    "isFinished": false,
+    "hideFromContinueListening": false,
+    "ebookLocation": null,
+    "ebookProgress": null,
+    "lastUpdate": 1700000000000,
+    "startedAt": 1690000000000,
+    "finishedAt": null
+  }
+}
