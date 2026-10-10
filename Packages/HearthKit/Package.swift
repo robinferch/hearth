@@ -32,5 +32,6 @@ let package = Package(
         .testTarget(name: "HearthModelTests", dependencies: ["HearthModel"]),
         .testTarget(name: "HearthAPITests", dependencies: ["HearthAPI"], resources: [.copy("Fixtures")]),
         .testTarget(name: "HearthDataTests", dependencies: ["HearthData"]),
+        .testTarget(name: "HearthPlaybackTests", dependencies: ["HearthPlayback"]),
     ]
 )
