@@ -1,0 +1,24 @@
+{
+  "id": "aut_goodkind",
+  "asin": null,
+  "name": "Terry Goodkind",
+  "description": "Terry Goodkind was an American writer.",
+  "imagePath": "/metadata/authors/aut_goodkind.jpg",
+  "libraryId": "lib_books",
+  "addedAt": 1650621073750,
+  "updatedAt": 1650621073750,
+  "libraryItems": [
+    { "id": "li_book1", "libraryId": "lib_books", "mediaType": "book", "media": { "metadata": { "title": "Wizards First Rule", "authorName": "Terry Goodkind", "seriesName": "Sword of Truth #1" }, "tags": [], "numTracks": 2, "duration": 11922.9 } },
+    { "id": "li_book6", "libraryId": "lib_books", "mediaType": "book", "media": { "metadata": { "title": "Stone of Tears", "authorName": "Terry Goodkind", "seriesName": "Sword of Truth #2" }, "tags": [], "numTracks": 4, "duration": 40000 } }
+  ],
+  "series": [
+    {
+      "id": "ser_sot",
+      "name": "Sword of Truth",
+      "items": [
+        { "id": "li_book1", "libraryId": "lib_books", "mediaType": "book", "media": { "metadata": { "title": "Wizards First Rule", "series": { "id": "ser_sot", "name": "Sword of Truth", "nameIgnorePrefix": "Sword of Truth", "sequence": "1" } }, "tags": [], "numTracks": 2, "duration": 11922.9 } },
+        { "id": "li_book6", "libraryId": "lib_books", "mediaType": "book", "media": { "metadata": { "title": "Stone of Tears", "series": { "id": "ser_sot", "name": "Sword of Truth", "sequence": "2" } }, "tags": [], "numTracks": 4, "duration": 40000 } }
+      ]
+    }
+  ]
+}

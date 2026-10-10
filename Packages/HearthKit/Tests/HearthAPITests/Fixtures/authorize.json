@@ -1,0 +1,78 @@
+{
+  "user": {
+    "id": "usr_1",
+    "username": "robin",
+    "email": null,
+    "type": "user",
+    "token": "legacy-token",
+    "isOldToken": false,
+    "mediaProgress": [
+      {
+        "id": "mp_book1",
+        "userId": "usr_1",
+        "libraryItemId": "li_book1",
+        "episodeId": null,
+        "mediaItemId": "book_1",
+        "mediaItemType": "book",
+        "duration": 11922.9075,
+        "progress": 0.25,
+        "currentTime": 2980.72,
+        "isFinished": false,
+        "hideFromContinueListening": false,
+        "ebookLocation": null,
+        "ebookProgress": null,
+        "lastUpdate": 1700000000000,
+        "startedAt": 1690000000000,
+        "finishedAt": null
+      },
+      {
+        "id": "mp_ep1",
+        "userId": "usr_1",
+        "libraryItemId": "li_pod1",
+        "episodeId": "ep_1",
+        "mediaItemId": "ep_1",
+        "mediaItemType": "podcastEpisode",
+        "duration": 11220.5,
+        "progress": 0.98,
+        "currentTime": 11000,
+        "isFinished": true,
+        "hideFromContinueListening": true,
+        "lastUpdate": 1700000100000,
+        "startedAt": 1690000100000,
+        "finishedAt": 1700000100000
+      },
+      {
+        "id": "mp_gone",
+        "userId": "usr_1",
+        "libraryItemId": "li_deleted",
+        "episodeId": null,
+        "mediaItemId": "book_x",
+        "mediaItemType": "book",
+        "duration": 100,
+        "progress": 0.5,
+        "currentTime": 50,
+        "isFinished": false,
+        "hideFromContinueListening": false,
+        "lastUpdate": 1700000000000,
+        "startedAt": 1690000000000,
+        "finishedAt": null
+      }
+    ],
+    "seriesHideFromContinueListening": [],
+    "bookmarks": [
+      { "libraryItemId": "li_book1", "title": "Great quote", "time": 1234.9, "createdAt": 1700000200000 }
+    ],
+    "isActive": true,
+    "isLocked": false,
+    "lastSeen": 1700000300000,
+    "createdAt": 1600000000000,
+    "permissions": { "download": true, "update": false },
+    "librariesAccessible": [],
+    "itemTagsSelected": [],
+    "hasOpenIDLink": false
+  },
+  "userDefaultLibraryId": "lib_books",
+  "serverSettings": {},
+  "ereaderDevices": [],
+  "Source": "docker"
+}
