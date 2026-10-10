@@ -1,0 +1,90 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "certificate.error.importFailed" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The certificate couldn't be imported." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Das Zertifikat konnte nicht importiert werden." } }
+      }
+    },
+    "certificate.error.noIdentity" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The file doesn't contain a certificate with a private key." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Die Datei enthält kein Zertifikat mit privatem Schlüssel." } }
+      }
+    },
+    "certificate.error.passphrase" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The password for the certificate is incorrect." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Das Passwort für das Zertifikat ist falsch." } }
+      }
+    },
+    "connection.status.loading" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Connecting…" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Verbinden…" } }
+      }
+    },
+    "connection.status.offline" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Offline" } }
+      }
+    },
+    "connection.status.online" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Online" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Online" } }
+      }
+    },
+    "connection.status.unauthorized" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sign in again" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erneut anmelden" } }
+      }
+    },
+    "download.error.cellular" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Downloads over cellular are turned off." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Downloads über Mobilfunk sind deaktiviert." } }
+      }
+    },
+    "download.error.downloading" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This item is still downloading." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dieser Titel wird noch geladen." } }
+      }
+    },
+    "download.error.notDownloadable" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This item can't be downloaded." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dieser Titel kann nicht geladen werden." } }
+      }
+    },
+    "download.error.playing" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This item is currently playing." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dieser Titel wird gerade abgespielt." } }
+      }
+    },
+    "offline.reason.noNetwork" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No internet connection." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Internetverbindung." } }
+      }
+    },
+    "offline.reason.unreachable" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "None of your servers can be reached." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keiner deiner Server ist erreichbar." } }
+      }
+    },
+    "offline.reason.user" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offline mode is turned on." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Der Offline-Modus ist aktiviert." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
