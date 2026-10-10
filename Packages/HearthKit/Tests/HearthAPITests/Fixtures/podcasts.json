@@ -1,0 +1,45 @@
+{
+  "results": [
+    {
+      "id": "li_pod1",
+      "ino": "100",
+      "libraryId": "lib_pods",
+      "addedAt": 1660000000000,
+      "updatedAt": 1660000000000,
+      "mediaType": "podcast",
+      "media": {
+        "id": "pod_1",
+        "metadata": {
+          "title": "Dan Carlin's Hardcore History",
+          "author": "Dan Carlin",
+          "genres": ["History"],
+          "feedUrl": "https://feeds.example.com/hardcorehistory",
+          "explicit": true,
+          "language": "en",
+          "type": "episodic"
+        },
+        "tags": [],
+        "numEpisodes": 12,
+        "size": 300000000
+      },
+      "numFiles": 13,
+      "size": 300000000,
+      "numEpisodesIncomplete": 5
+    },
+    {
+      "id": "li_pod2",
+      "libraryId": "lib_pods",
+      "mediaType": "podcast",
+      "media": {
+        "metadata": { "title": "Second Podcast", "author": null, "genres": [], "type": null },
+        "tags": [],
+        "numEpisodes": 3
+      }
+    }
+  ],
+  "total": 2,
+  "limit": 50,
+  "page": 0,
+  "mediaType": "podcast",
+  "include": "numepisodesincomplete"
+}

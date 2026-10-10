@@ -1,0 +1,53 @@
+{
+  "book": [
+    {
+      "libraryItem": {
+        "id": "li_book1",
+        "libraryId": "lib_books",
+        "mediaType": "book",
+        "media": {
+          "metadata": {
+            "title": "Wizards First Rule",
+            "authors": [{ "id": "aut_goodkind", "name": "Terry Goodkind" }],
+            "narrators": ["Sam Tsoutsouvas"],
+            "series": [{ "id": "ser_sot", "name": "Sword of Truth", "sequence": "1" }],
+            "genres": []
+          },
+          "tags": [],
+          "audioFiles": [],
+          "chapters": [],
+          "tracks": [{ "index": 1, "startOffset": 0, "duration": 100, "contentUrl": "/api/items/li_book1/file/1" }],
+          "duration": 100
+        },
+        "libraryFiles": []
+      },
+      "matchKey": "title",
+      "matchText": "Wizards First Rule"
+    }
+  ],
+  "narrators": [{ "name": "Sam Tsoutsouvas", "numBooks": 1 }],
+  "tags": [{ "name": "Favorite", "numItems": 1 }],
+  "genres": [{ "name": "Fantasy", "numItems": 3 }],
+  "series": [
+    {
+      "series": { "id": "ser_sot", "name": "Sword of Truth", "nameIgnorePrefix": "Sword of Truth", "description": null, "addedAt": 1650621073750, "libraryId": "lib_books" },
+      "books": [
+        { "id": "li_book1", "libraryId": "lib_books", "mediaType": "book", "media": { "metadata": { "title": "Wizards First Rule" }, "tags": [], "audioFiles": [{ "ino": "1", "duration": 100 }] } }
+      ]
+    }
+  ],
+  "authors": [
+    { "id": "aut_goodkind", "name": "Terry Goodkind", "libraryId": "lib_books", "imagePath": null, "addedAt": 1650621073750, "numBooks": 2 }
+  ],
+  "episodes": [
+    {
+      "libraryItem": {
+        "id": "li_pod1",
+        "libraryId": "lib_pods",
+        "mediaType": "podcast",
+        "media": { "metadata": { "title": "Dan Carlin's Hardcore History", "author": "Dan Carlin" }, "tags": [], "numEpisodes": 2, "episodes": [] },
+        "recentEpisode": { "libraryItemId": "li_pod1", "id": "ep_1", "title": "Show 68", "duration": 11220.5, "publishedAt": 1383080400000 }
+      }
+    }
+  ]
+}

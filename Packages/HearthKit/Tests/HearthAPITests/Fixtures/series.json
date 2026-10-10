@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "id": "ser_expanse",
+      "name": "The Expanse",
+      "nameIgnorePrefix": "Expanse",
+      "description": "<p>Humanity has colonized the solar system.</p>",
+      "addedAt": 1650621073750,
+      "updatedAt": 1650621073750,
+      "libraryId": "lib_books",
+      "totalDuration": 150000,
+      "books": [
+        { "id": "li_book3", "libraryId": "lib_books", "mediaType": "book", "media": { "metadata": { "title": "Leviathan Wakes", "authorName": "James S. A. Corey", "seriesName": "The Expanse #1" }, "tags": [], "numTracks": 1, "duration": 74000 } },
+        { "id": "li_book4", "libraryId": "lib_books", "mediaType": "book", "media": { "metadata": { "title": "Caliban's War", "authorName": "James S. A. Corey", "seriesName": "The Expanse #2" }, "tags": [], "numTracks": 1, "duration": 76000 } }
+      ]
+    }
+  ],
+  "total": 17,
+  "limit": 1,
+  "page": 0,
+  "sortBy": "name",
+  "sortDesc": false,
+  "minified": false,
+  "include": ""
+}

@@ -1,0 +1,16 @@
+{
+  "libraryItems": [
+    {
+      "id": "li_book1",
+      "libraryId": "lib_books",
+      "mediaType": "book",
+      "media": { "metadata": { "title": "Wizards First Rule" }, "tags": [], "numTracks": 2, "duration": 11922.9 }
+    },
+    {
+      "id": "li_pod1",
+      "libraryId": "lib_pods",
+      "mediaType": "podcast",
+      "media": { "metadata": { "title": "Dan Carlin's Hardcore History" }, "tags": [], "numEpisodes": 2, "episodes": [] }
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "total": 23,
+  "numPages": 12,
+  "page": 1,
+  "itemsPerPage": 2,
+  "sessions": [
+    {
+      "id": "ses_1",
+      "userId": "usr_1",
+      "libraryId": "lib_books",
+      "libraryItemId": "li_book1",
+      "bookId": "book_1",
+      "episodeId": null,
+      "mediaType": "book",
+      "mediaMetadata": { "title": "Wizards First Rule" },
+      "chapters": [],
+      "displayTitle": "Wizards First Rule",
+      "displayAuthor": "Terry Goodkind",
+      "duration": 11922.9,
+      "playMethod": 0,
+      "mediaPlayer": "AVPlayer",
+      "deviceInfo": { "clientName": "Hearth", "model": "iPhone17,1", "osName": "iOS" },
+      "date": "2024-05-01",
+      "dayOfWeek": "Wednesday",
+      "timeListening": 600,
+      "startTime": 100,
+      "currentTime": 700,
+      "startedAt": 1714550400000,
+      "updatedAt": 1714551000000
+    },
+    {
+      "id": "ses_2",
+      "userId": "usr_1",
+      "libraryId": "lib_pods",
+      "libraryItemId": "li_pod1",
+      "episodeId": "ep_1",
+      "mediaType": "podcast",
+      "mediaMetadata": { "title": "Dan Carlin's Hardcore History" },
+      "displayTitle": null,
+      "deviceInfo": { "deviceName": "Robin's iPad" },
+      "timeListening": "120",
+      "startTime": 0,
+      "currentTime": 120,
+      "startedAt": 1714460400000,
+      "updatedAt": 1714460520000
+    }
+  ]
+}
