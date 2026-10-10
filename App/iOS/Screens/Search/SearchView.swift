@@ -36,7 +36,7 @@ struct SearchView: View {
 
         content
             .navigationTitle("Search")
-            .searchable(text: $navigator.searchText, isPresented: $navigator.isSearchPresented, prompt: Text(scope == .library ? "Search \(library?.name ?? String(localized: "Library"))" : String(localized: "Search Everywhere")))
+            .searchable(text: $navigator.searchText, isPresented: $navigator.isSearchPresented, prompt: searchPrompt(library: library))
             .searchScopes($scope, activation: .onSearchPresentation) {
                 Text("This Library").tag(SearchScopeOption.library)
                 Text("Everywhere").tag(SearchScopeOption.everywhere)
@@ -62,6 +62,13 @@ struct SearchView: View {
                     }
                 }
             }
+    }
+
+    private func searchPrompt(library: Library?) -> Text {
+        if scope == .library, let name = library?.name {
+            return Text("Search \(name)")
+        }
+        return Text("Search Everywhere")
     }
 
     @ViewBuilder

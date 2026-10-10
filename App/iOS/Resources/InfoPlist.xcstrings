@@ -1,0 +1,96 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "comment": "Bundle display name",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth"
+          }
+        }
+      }
+    },
+    "CFBundleName": {
+      "comment": "Bundle name",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth"
+          }
+        }
+      }
+    },
+    "NSLocalNetworkUsageDescription": {
+      "comment": "Privacy - Local Network Usage Description",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth connects to audiobookshelf servers on your local network."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth verbindet sich mit audiobookshelf-Servern in deinem lokalen Netzwerk."
+          }
+        }
+      }
+    },
+    "NSSiriUsageDescription": {
+      "comment": "Privacy - Siri Usage Description",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Play and control audiobooks and podcasts from your library with Siri."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spiele Hörbücher und Podcasts aus deiner Bibliothek mit Siri ab und steuere sie."
+          }
+        }
+      }
+    },
+    "Search": {
+      "comment": "Home screen quick action title",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suchen"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

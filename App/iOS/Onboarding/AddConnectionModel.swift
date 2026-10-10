@@ -4,7 +4,6 @@ import HearthData
 import HearthModel
 import Observation
 import OSLog
-import Security
 
 /// State machine of the add-connection / re-authorization flow.
 @MainActor
@@ -82,6 +81,10 @@ final class AddConnectionModel {
         }
         hostInput = host.absoluteString
         errorMessage = nil
+        if clientCertificateData != nil, !validateClientCertificate() {
+            return
+        }
+        ClientIdentityStore.setProvisional(clientCertificateData, passphrase: clientCertificatePassphrase, host: host)
         phase = .verifying
         do {
             let status = try await ServerAuthenticator.status(host: host, headers: validHeaders, pinnedCertificateSHA256: pinnedCertificate)
@@ -136,13 +139,8 @@ final class AddConnectionModel {
     /// Checks that the passphrase unlocks the .p12 file.
     func validateClientCertificate() -> Bool {
         guard let data = clientCertificateData else { return true }
-        var items: CFArray?
-        let options = [kSecImportExportPassphrase as String: clientCertificatePassphrase] as CFDictionary
-        let status = SecPKCS12Import(data as CFData, options, &items)
-        guard status == errSecSuccess else {
-            clientCertificateError = status == errSecAuthFailed
-                ? String(localized: "The passphrase is incorrect.")
-                : String(localized: "The certificate could not be read.")
+        guard ClientIdentityStore.decode(data, passphrase: clientCertificatePassphrase) != nil else {
+            clientCertificateError = String(localized: "The certificate could not be opened. Check the passphrase.")
             return false
         }
         clientCertificateError = nil
@@ -216,10 +214,8 @@ final class AddConnectionModel {
         } else {
             await connections.add(connection, tokens: result.tokens)
         }
-        // TODO(HearthData): persist the imported client identity for `connection.id` once ConnectionStore
-        // exposes an API for it (e.g. `setClientCertificate(_ p12: Data, passphrase: String, for: ConnectionID)`).
         if clientCertificateData != nil {
-            Self.logger.notice("Client certificate imported but not persisted: HearthData has no client certificate API yet")
+            ClientIdentityStore.save(clientCertificateData, passphrase: clientCertificatePassphrase, for: connection.id)
         }
     }
 

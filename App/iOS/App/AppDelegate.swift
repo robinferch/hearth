@@ -13,6 +13,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
 
+    func applicationWillTerminate(_ application: UIApplication) {
+        AudioPlayer.shared.appWillTerminate()
+    }
+
     /// Background download session events (`<bundle>.downloads`).
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         nonisolated(unsafe) let completion = completionHandler
@@ -58,6 +62,7 @@ final class AppLifecycle {
     func launch() {
         guard !didLaunch else { return }
         didLaunch = true
+        ClientIdentityStore.install()
         AudioPlayer.shared.setup()
         Task {
             await HearthData.shared.bootstrap()
@@ -83,6 +88,7 @@ final class AppLifecycle {
                 await startLiveUpdates()
             }
         case .background:
+            AudioPlayer.shared.appDidEnterBackground()
             BackgroundTaskScheduler.scheduleAll()
             QuickActions.update()
             Task { await stopLiveUpdates() }

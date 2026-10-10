@@ -82,9 +82,8 @@ struct RootView: View {
             }
             #endif
             .onReceive(NotificationCenter.default.publisher(for: .deviceDidShake)) { _ in
-                // TODO(playback): forward to `AudioPlayer.shared.handleShake()` once HearthPlayback provides it
-                // (extends the sleep timer when `AppSettings.shakeExtendsSleepTimer` is on).
-                Self.logger.debug("Shake detected")
+                // Extends the sleep timer when `AppSettings.shakeExtendsSleepTimer` is on.
+                AudioPlayer.shared.handleShake()
             }
     }
 

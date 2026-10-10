@@ -1,0 +1,4166 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        }
+      }
+    },
+    "%lld audiobooks": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld audiobook"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld audiobooks"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Hörbuch"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Hörbücher"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld authors": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld author"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld authors"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Autor:in"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Autor:innen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld bookmarks": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld bookmark"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld bookmarks"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Lesezeichen"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Lesezeichen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld chapters": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld chapter"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld chapters"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Kapitel"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Kapitel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld days": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld day"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld days"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Tag"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Tage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld h": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Std."
+          }
+        }
+      }
+    },
+    "%lld min": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Min."
+          }
+        }
+      }
+    },
+    "%lld min left to reach your goal of %lld min.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch %1$lld Min. bis zu deinem Ziel von %2$lld Min."
+          }
+        }
+      }
+    },
+    "%lld narrators": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld narrator"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld narrators"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Sprecher:in"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Sprecher:innen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld of %lld min": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld von %2$lld Min."
+          }
+        }
+      }
+    },
+    "%lld of %lld minutes listened today": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute %1$lld von %2$lld Minuten gehört"
+          }
+        }
+      }
+    },
+    "%lld offline": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld offline"
+          }
+        }
+      }
+    },
+    "%lld podcasts": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld podcast"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld podcasts"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Podcast"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Podcasts"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld series": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld series"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld series"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Reihe"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Reihen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld servers": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld server"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld servers"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Server"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Server"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld."
+          }
+        }
+      }
+    },
+    "30 Days": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30 Tage"
+          }
+        }
+      }
+    },
+    "3h 12m left": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "noch 3 Std. 12 Min."
+          }
+        }
+      }
+    },
+    "7 Days": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "7 Tage"
+          }
+        }
+      }
+    },
+    "A free, open-source audiobookshelf client.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein freier Open-Source-Client für audiobookshelf."
+          }
+        }
+      }
+    },
+    "About": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über"
+          }
+        }
+      }
+    },
+    "About Hearth": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über Hearth"
+          }
+        }
+      }
+    },
+    "Account": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Konto"
+          }
+        }
+      }
+    },
+    "Acknowledgements": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Danksagungen"
+          }
+        }
+      }
+    },
+    "Add": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinzufügen"
+          }
+        }
+      }
+    },
+    "Add %@ to the allowed redirect URIs in your audiobookshelf authentication settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge %@ in den Authentifizierungseinstellungen von audiobookshelf zu den erlaubten Weiterleitungs-URIs hinzu."
+          }
+        }
+      }
+    },
+    "Add audiobooks to this library on your server.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge dieser Bibliothek auf deinem Server Hörbücher hinzu."
+          }
+        }
+      }
+    },
+    "Add Bookmark…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lesezeichen hinzufügen …"
+          }
+        }
+      }
+    },
+    "Add Header": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Header hinzufügen"
+          }
+        }
+      }
+    },
+    "Add Library": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bibliothek hinzufügen"
+          }
+        }
+      }
+    },
+    "Add podcasts to this library on your server.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge dieser Bibliothek auf deinem Server Podcasts hinzu."
+          }
+        }
+      }
+    },
+    "Add Preset": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voreinstellung hinzufügen"
+          }
+        }
+      }
+    },
+    "Add Server": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server hinzufügen"
+          }
+        }
+      }
+    },
+    "Add to…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinzufügen zu …"
+          }
+        }
+      }
+    },
+    "Added": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinzugefügt"
+          }
+        }
+      }
+    },
+    "Adds a tab with all libraries that don't have their own tab.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fügt einen Tab mit allen Bibliotheken ohne eigenen Tab hinzu."
+          }
+        }
+      }
+    },
+    "All": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle"
+          }
+        }
+      }
+    },
+    "All Audiobooks": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Hörbücher"
+          }
+        }
+      }
+    },
+    "All Episodes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Folgen"
+          }
+        }
+      }
+    },
+    "Appearance": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Darstellung"
+          }
+        }
+      }
+    },
+    "Ascending": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufsteigend"
+          }
+        }
+      }
+    },
+    "Audiobooks": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hörbücher"
+          }
+        }
+      }
+    },
+    "Audiobooks & Podcasts": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hörbücher & Podcasts"
+          }
+        }
+      }
+    },
+    "Author": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autor:in"
+          }
+        }
+      }
+    },
+    "Author (Last, First)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autor:in (Nachname, Vorname)"
+          }
+        }
+      }
+    },
+    "Authors": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autor:innen"
+          }
+        }
+      }
+    },
+    "Auto-Download Listen Now": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„Jetzt hören“ automatisch laden"
+          }
+        }
+      }
+    },
+    "Automatic Downloads": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatische Downloads"
+          }
+        }
+      }
+    },
+    "Automatically continues with the next book of a series or the next episode of a podcast.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setzt automatisch mit dem nächsten Buch einer Reihe oder der nächsten Folge eines Podcasts fort."
+          }
+        }
+      }
+    },
+    "Automatically downloaded": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatisch geladen"
+          }
+        }
+      }
+    },
+    "Bookmarks": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lesezeichen"
+          }
+        }
+      }
+    },
+    "Bookmarks you create while listening appear here.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lesezeichen, die du beim Hören erstellst, erscheinen hier."
+          }
+        }
+      }
+    },
+    "Books": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bücher"
+          }
+        }
+      }
+    },
+    "Browse your libraries, series, authors and collections from all your servers.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stöbere in Bibliotheken, Reihen, Autor:innen und Sammlungen all deiner Server."
+          }
+        }
+      }
+    },
+    "Build": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Build"
+          }
+        }
+      }
+    },
+    "Cache": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cache"
+          }
+        }
+      }
+    },
+    "Can't Reach Server": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server nicht erreichbar"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Cancel Download & Play": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download abbrechen & abspielen"
+          }
+        }
+      }
+    },
+    "CarPlay": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CarPlay"
+          }
+        }
+      }
+    },
+    "CarPlay shows up to 5 tabs.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CarPlay zeigt bis zu 5 Tabs."
+          }
+        }
+      }
+    },
+    "Changes to the speed are remembered for each book and episode.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Änderungen der Geschwindigkeit werden für jedes Buch und jede Folge gespeichert."
+          }
+        }
+      }
+    },
+    "Chapter Progress": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapitelfortschritt"
+          }
+        }
+      }
+    },
+    "Chapter progress shows the position within the current chapter in the player and on the Lock Screen.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Kapitelfortschritt zeigt im Player und auf dem Sperrbildschirm die Position im aktuellen Kapitel."
+          }
+        }
+      }
+    },
+    "Chapters, bookmarks, sleep timer, speed control and a queue that plays what's next.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapitel, Lesezeichen, Schlaftimer, Geschwindigkeit und eine Warteschlange, die weiß, was als Nächstes kommt."
+          }
+        }
+      }
+    },
+    "Choose which tabs appear in the tab bar on iPhone.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle, welche Tabs auf dem iPhone in der Tableiste erscheinen."
+          }
+        }
+      }
+    },
+    "Clear": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Löschen"
+          }
+        }
+      }
+    },
+    "Clear Cache": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cache leeren"
+          }
+        }
+      }
+    },
+    "Close player": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player schließen"
+          }
+        }
+      }
+    },
+    "Collections": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sammlungen"
+          }
+        }
+      }
+    },
+    "Color Scheme": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erscheinungsbild"
+          }
+        }
+      }
+    },
+    "Connected": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbunden"
+          }
+        }
+      }
+    },
+    "Connecting…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbinden …"
+          }
+        }
+      }
+    },
+    "Connections": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbindungen"
+          }
+        }
+      }
+    },
+    "Continue": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiter"
+          }
+        }
+      }
+    },
+    "Continue Listening": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiterhören"
+          }
+        }
+      }
+    },
+    "Continue Reading": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weiterlesen"
+          }
+        }
+      }
+    },
+    "Continue Series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reihen fortsetzen"
+          }
+        }
+      }
+    },
+    "Create": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstellen"
+          }
+        }
+      }
+    },
+    "Custom Headers": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eigene Header"
+          }
+        }
+      }
+    },
+    "Customize": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anpassen"
+          }
+        }
+      }
+    },
+    "Customize Tabs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tabs anpassen"
+          }
+        }
+      }
+    },
+    "Daily Average": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagesdurchschnitt"
+          }
+        }
+      }
+    },
+    "Daily Goal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagesziel"
+          }
+        }
+      }
+    },
+    "Daily goal reached. Well done!": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagesziel erreicht. Gut gemacht!"
+          }
+        }
+      }
+    },
+    "Daily Goal: %lld min": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagesziel: %lld Min."
+          }
+        }
+      }
+    },
+    "Daily Goals": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagesziele"
+          }
+        }
+      }
+    },
+    "Day": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag"
+          }
+        }
+      }
+    },
+    "Decrease Goal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziel verringern"
+          }
+        }
+      }
+    },
+    "Default Episode Order": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standardreihenfolge der Folgen"
+          }
+        }
+      }
+    },
+    "Default Speed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standardgeschwindigkeit"
+          }
+        }
+      }
+    },
+    "Descending": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Absteigend"
+          }
+        }
+      }
+    },
+    "Device": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gerät"
+          }
+        }
+      }
+    },
+    "Diagnostics": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnose"
+          }
+        }
+      }
+    },
+    "Direction": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Richtung"
+          }
+        }
+      }
+    },
+    "Discover": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entdecken"
+          }
+        }
+      }
+    },
+    "Display": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anzeige"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fertig"
+          }
+        }
+      }
+    },
+    "Download": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laden"
+          }
+        }
+      }
+    },
+    "Download audiobooks and episodes to listen offline.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lade Hörbücher und Folgen, um offline zu hören."
+          }
+        }
+      }
+    },
+    "Download failed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download fehlgeschlagen"
+          }
+        }
+      }
+    },
+    "Download for offline listening. Your progress syncs when you're back online.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lade Titel zum Offline-Hören. Dein Fortschritt wird synchronisiert, sobald du wieder online bist."
+          }
+        }
+      }
+    },
+    "Download over Cellular": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über Mobilfunk laden"
+          }
+        }
+      }
+    },
+    "Download playing item?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wiedergegebenen Titel laden?"
+          }
+        }
+      }
+    },
+    "Downloaded": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geladen"
+          }
+        }
+      }
+    },
+    "Downloaded audiobooks and episodes appear here. Go online to browse your libraries.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geladene Hörbücher und Folgen erscheinen hier. Geh online, um deine Bibliotheken zu durchsuchen."
+          }
+        }
+      }
+    },
+    "Downloaded audiobooks and episodes are deleted from this device. Your progress is kept.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geladene Hörbücher und Folgen werden von diesem Gerät gelöscht. Dein Fortschritt bleibt erhalten."
+          }
+        }
+      }
+    },
+    "Downloaded audiobooks of this library appear here.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geladene Hörbücher dieser Bibliothek erscheinen hier."
+          }
+        }
+      }
+    },
+    "Downloads": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloads"
+          }
+        }
+      }
+    },
+    "Downloads over cellular are turned off in Settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloads über Mobilfunk sind in den Einstellungen deaktiviert."
+          }
+        }
+      }
+    },
+    "Duration": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dauer"
+          }
+        }
+      }
+    },
+    "Enter a valid server address, for example https://abs.example.com.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gib eine gültige Serveradresse ein, zum Beispiel https://abs.example.com."
+          }
+        }
+      }
+    },
+    "Episode Count": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anzahl Folgen"
+          }
+        }
+      }
+    },
+    "Episode Number": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folgennummer"
+          }
+        }
+      }
+    },
+    "Episode: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folge: %@"
+          }
+        }
+      }
+    },
+    "Episodes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folgen"
+          }
+        }
+      }
+    },
+    "Everywhere": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Überall"
+          }
+        }
+      }
+    },
+    "Export Again": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut exportieren"
+          }
+        }
+      }
+    },
+    "Export Logs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protokolle exportieren"
+          }
+        }
+      }
+    },
+    "Extend by": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängern um"
+          }
+        }
+      }
+    },
+    "Extend by Previous Duration": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um vorherige Dauer verlängern"
+          }
+        }
+      }
+    },
+    "Extend Chapter Timer by": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kapiteltimer verlängern um"
+          }
+        }
+      }
+    },
+    "Extending": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängern"
+          }
+        }
+      }
+    },
+    "Fade Out": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausblenden"
+          }
+        }
+      }
+    },
+    "Fade out lowers the volume during the last 10 seconds. Play to extend restarts the timer when you resume within 10 seconds after it ended.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausblenden senkt die Lautstärke in den letzten 10 Sekunden. „Abspielen zum Verlängern“ startet den Timer neu, wenn du innerhalb von 10 Sekunden nach dem Ablauf fortsetzt."
+          }
+        }
+      }
+    },
+    "Filter": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter"
+          }
+        }
+      }
+    },
+    "Find audiobooks, podcasts, episodes, series, authors and narrators.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finde Hörbücher, Podcasts, Folgen, Reihen, Autor:innen und Sprecher:innen."
+          }
+        }
+      }
+    },
+    "Finished": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beendet"
+          }
+        }
+      }
+    },
+    "Finished books and episodes are removed from your device automatically.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beendete Bücher und Folgen werden automatisch von deinem Gerät entfernt."
+          }
+        }
+      }
+    },
+    "First Last": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorname Nachname"
+          }
+        }
+      }
+    },
+    "Generate Up Next": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„Als Nächstes“ erzeugen"
+          }
+        }
+      }
+    },
+    "Genres": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genres"
+          }
+        }
+      }
+    },
+    "Go": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gehe zu"
+          }
+        }
+      }
+    },
+    "Go Offline": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline gehen"
+          }
+        }
+      }
+    },
+    "Go Online": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Online gehen"
+          }
+        }
+      }
+    },
+    "Goal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziel"
+          }
+        }
+      }
+    },
+    "Goal: %lld min": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziel: %lld Min."
+          }
+        }
+      }
+    },
+    "Going offline in %lld s": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline in %lld s"
+          }
+        }
+      }
+    },
+    "Grid": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raster"
+          }
+        }
+      }
+    },
+    "Group Books in Series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bücher in Reihen gruppieren"
+          }
+        }
+      }
+    },
+    "Header": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Header"
+          }
+        }
+      }
+    },
+    "Headphone and Lock Screen next/previous buttons jump between chapters instead of skipping.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Vor- und Zurück-Tasten von Kopfhörern und Sperrbildschirm springen zwischen Kapiteln, statt zu spulen."
+          }
+        }
+      }
+    },
+    "Hearth can connect to several audiobookshelf servers and accounts at the same time.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth kann sich gleichzeitig mit mehreren audiobookshelf-Servern und -Konten verbinden."
+          }
+        }
+      }
+    },
+    "Hearth checks for new items about every three hours in the background.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth sucht etwa alle drei Stunden im Hintergrund nach neuen Titeln."
+          }
+        }
+      }
+    },
+    "Hearth does not collect any data. There are no analytics, no tracking and no third-party services.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth sammelt keine Daten. Es gibt keine Analysen, kein Tracking und keine Drittanbieterdienste."
+          }
+        }
+      }
+    },
+    "Hearth is built entirely with Apple frameworks and has no third-party dependencies.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth basiert ausschließlich auf Apple-Frameworks und hat keine Abhängigkeiten von Drittanbietern."
+          }
+        }
+      }
+    },
+    "Hearth is in offline mode.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth ist im Offlinemodus."
+          }
+        }
+      }
+    },
+    "Hearth is not affiliated with audiobookshelf or Apple.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth steht in keiner Verbindung zu audiobookshelf oder Apple."
+          }
+        }
+      }
+    },
+    "Hearth only talks to the audiobookshelf servers you add. Your credentials are stored in the Keychain on your device.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hearth kommuniziert nur mit den audiobookshelf-Servern, die du hinzufügst. Deine Zugangsdaten werden im Schlüsselbund auf deinem Gerät gespeichert."
+          }
+        }
+      }
+    },
+    "Hide Discover": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "„Entdecken“ ausblenden"
+          }
+        }
+      }
+    },
+    "High-Quality Images": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilder in hoher Qualität"
+          }
+        }
+      }
+    },
+    "High-quality images use more data and storage.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilder in hoher Qualität benötigen mehr Daten und Speicherplatz."
+          }
+        }
+      }
+    },
+    "Home": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        }
+      }
+    },
+    "Hours": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stunden"
+          }
+        }
+      }
+    },
+    "Import Client Certificate…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Client-Zertifikat importieren …"
+          }
+        }
+      }
+    },
+    "In Progress": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Begonnen"
+          }
+        }
+      }
+    },
+    "In-progress and downloaded items from all your libraries.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Begonnene und geladene Titel aus all deinen Bibliotheken."
+          }
+        }
+      }
+    },
+    "Increase Goal": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziel erhöhen"
+          }
+        }
+      }
+    },
+    "Item is downloading": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titel wird geladen"
+          }
+        }
+      }
+    },
+    "Item is playing": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titel wird wiedergegeben"
+          }
+        }
+      }
+    },
+    "Item Unavailable": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titel nicht verfügbar"
+          }
+        }
+      }
+    },
+    "Keeps the items in Listen Now downloaded so you can listen offline.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hält die Titel in „Jetzt hören“ geladen, damit du offline hören kannst."
+          }
+        }
+      }
+    },
+    "Last Played": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zuletzt gehört"
+          }
+        }
+      }
+    },
+    "Last, First": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nachname, Vorname"
+          }
+        }
+      }
+    },
+    "Latest": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neueste"
+          }
+        }
+      }
+    },
+    "Leave the note empty to use the current date and time.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lass die Notiz leer, um Datum und Uhrzeit zu verwenden."
+          }
+        }
+      }
+    },
+    "Libraries": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bibliotheken"
+          }
+        }
+      }
+    },
+    "Library": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bibliothek"
+          }
+        }
+      }
+    },
+    "Library Tabs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bibliothekstabs"
+          }
+        }
+      }
+    },
+    "License": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lizenz"
+          }
+        }
+      }
+    },
+    "List": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liste"
+          }
+        }
+      }
+    },
+    "Listen Again": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut hören"
+          }
+        }
+      }
+    },
+    "Listen Anywhere": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Überall hören"
+          }
+        }
+      }
+    },
+    "Listen Now": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jetzt hören"
+          }
+        }
+      }
+    },
+    "Listened Today": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute gehört"
+          }
+        }
+      }
+    },
+    "Listening statistics and progress are stored on your own server and on this device.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hörstatistiken und Fortschritt werden auf deinem eigenen Server und auf diesem Gerät gespeichert."
+          }
+        }
+      }
+    },
+    "Listening time is counted across all your servers and resets at midnight.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Hörzeit wird über alle deine Server gezählt und um Mitternacht zurückgesetzt."
+          }
+        }
+      }
+    },
+    "Lock Seek Bar": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitleiste sperren"
+          }
+        }
+      }
+    },
+    "Logs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protokolle"
+          }
+        }
+      }
+    },
+    "Made for Listening": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zum Hören gemacht"
+          }
+        }
+      }
+    },
+    "Make sure Hearth can reach your server.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stelle sicher, dass Hearth deinen Server erreichen kann."
+          }
+        }
+      }
+    },
+    "min": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Min."
+          }
+        }
+      }
+    },
+    "Minutes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minuten"
+          }
+        }
+      }
+    },
+    "MIT License": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MIT-Lizenz"
+          }
+        }
+      }
+    },
+    "More Tabs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weitere Tabs"
+          }
+        }
+      }
+    },
+    "Most Listened": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Am meisten gehört"
+          }
+        }
+      }
+    },
+    "Name": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "Narrators": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprecher:innen"
+          }
+        }
+      }
+    },
+    "New Bookmark": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neues Lesezeichen"
+          }
+        }
+      }
+    },
+    "New Collection": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Sammlung"
+          }
+        }
+      }
+    },
+    "New Collection…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Sammlung …"
+          }
+        }
+      }
+    },
+    "New Playlist": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Playlist"
+          }
+        }
+      }
+    },
+    "New Playlist…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Playlist …"
+          }
+        }
+      }
+    },
+    "New Preset": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Voreinstellung"
+          }
+        }
+      }
+    },
+    "Newest Authors": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neueste Autor:innen"
+          }
+        }
+      }
+    },
+    "Newest Episodes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neueste Folgen"
+          }
+        }
+      }
+    },
+    "Next Chapter": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nächstes Kapitel"
+          }
+        }
+      }
+    },
+    "Next/Previous Skips Chapters": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vor/Zurück wechselt Kapitel"
+          }
+        }
+      }
+    },
+    "No Audiobooks": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Hörbücher"
+          }
+        }
+      }
+    },
+    "No Authors": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Autor:innen"
+          }
+        }
+      }
+    },
+    "No Bookmarks": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Lesezeichen"
+          }
+        }
+      }
+    },
+    "No Collections": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Sammlungen"
+          }
+        }
+      }
+    },
+    "No Downloads": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Downloads"
+          }
+        }
+      }
+    },
+    "No Episodes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Folgen"
+          }
+        }
+      }
+    },
+    "No Libraries": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Bibliotheken"
+          }
+        }
+      }
+    },
+    "No libraries selected.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Bibliotheken ausgewählt."
+          }
+        }
+      }
+    },
+    "No Narrators": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Sprecher:innen"
+          }
+        }
+      }
+    },
+    "No Playlists": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Playlists"
+          }
+        }
+      }
+    },
+    "No Podcasts": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Podcasts"
+          }
+        }
+      }
+    },
+    "No Series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Reihen"
+          }
+        }
+      }
+    },
+    "None": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine"
+          }
+        }
+      }
+    },
+    "Not Finished": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht beendet"
+          }
+        }
+      }
+    },
+    "Not Found": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht gefunden"
+          }
+        }
+      }
+    },
+    "Not Playing": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Wiedergabe"
+          }
+        }
+      }
+    },
+    "Not Started": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht begonnen"
+          }
+        }
+      }
+    },
+    "Note": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notiz"
+          }
+        }
+      }
+    },
+    "Nothing Here Yet": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch nichts hier"
+          }
+        }
+      }
+    },
+    "Nothing in progress. Start listening and your books and episodes show up here.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nichts begonnen. Fang an zu hören, dann erscheinen deine Bücher und Folgen hier."
+          }
+        }
+      }
+    },
+    "Nothing is playing.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es wird nichts wiedergegeben."
+          }
+        }
+      }
+    },
+    "Off": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus"
+          }
+        }
+      }
+    },
+    "Offline": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline"
+          }
+        }
+      }
+    },
+    "Offline Mode": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offlinemodus"
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        }
+      }
+    },
+    "On": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein"
+          }
+        }
+      }
+    },
+    "Online": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Online"
+          }
+        }
+      }
+    },
+    "Only needed if your server requires a client certificate (mutual TLS). Import a .p12 file.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur nötig, wenn dein Server ein Client-Zertifikat verlangt (Mutual TLS). Importiere eine .p12-Datei."
+          }
+        }
+      }
+    },
+    "Open player": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player öffnen"
+          }
+        }
+      }
+    },
+    "Options": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optionen"
+          }
+        }
+      }
+    },
+    "Other Libraries": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Andere Bibliotheken"
+          }
+        }
+      }
+    },
+    "Passphrase": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passphrase"
+          }
+        }
+      }
+    },
+    "Password": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passwort"
+          }
+        }
+      }
+    },
+    "Pause": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
+    "Pin": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anheften"
+          }
+        }
+      }
+    },
+    "Pin tabs from any library to build your own tab bar.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hefte Tabs aus beliebigen Bibliotheken an, um deine eigene Tableiste zu bauen."
+          }
+        }
+      }
+    },
+    "Pinned Tabs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angeheftete Tabs"
+          }
+        }
+      }
+    },
+    "Play": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abspielen"
+          }
+        }
+      }
+    },
+    "Play to Extend": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abspielen zum Verlängern"
+          }
+        }
+      }
+    },
+    "Playback": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wiedergabe"
+          }
+        }
+      }
+    },
+    "Playback failed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wiedergabe fehlgeschlagen"
+          }
+        }
+      }
+    },
+    "Player": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player"
+          }
+        }
+      }
+    },
+    "Playlists": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlists"
+          }
+        }
+      }
+    },
+    "Please include exported logs when reporting a problem. Logs never contain passwords or tokens.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitte füge exportierte Protokolle hinzu, wenn du ein Problem meldest. Protokolle enthalten niemals Passwörter oder Tokens."
+          }
+        }
+      }
+    },
+    "Podcasts": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podcasts"
+          }
+        }
+      }
+    },
+    "Presets": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voreinstellungen"
+          }
+        }
+      }
+    },
+    "Preview": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorschau"
+          }
+        }
+      }
+    },
+    "Previous Chapter": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorheriges Kapitel"
+          }
+        }
+      }
+    },
+    "Privacy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datenschutz"
+          }
+        }
+      }
+    },
+    "Published": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erschienen"
+          }
+        }
+      }
+    },
+    "Range": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitraum"
+          }
+        }
+      }
+    },
+    "Read Again": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut lesen"
+          }
+        }
+      }
+    },
+    "Recent Searches": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letzte Suchen"
+          }
+        }
+      }
+    },
+    "Recent Series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Reihen"
+          }
+        }
+      }
+    },
+    "Recent Servers": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letzte Server"
+          }
+        }
+      }
+    },
+    "Recently Added": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kürzlich hinzugefügt"
+          }
+        }
+      }
+    },
+    "Recently Added Episodes": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kürzlich hinzugefügte Folgen"
+          }
+        }
+      }
+    },
+    "Release Date": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erscheinungsdatum"
+          }
+        }
+      }
+    },
+    "Reload": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neu laden"
+          }
+        }
+      }
+    },
+    "Remove": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernen"
+          }
+        }
+      }
+    },
+    "Remove All": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle entfernen"
+          }
+        }
+      }
+    },
+    "Remove All Downloads": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Downloads entfernen"
+          }
+        }
+      }
+    },
+    "Remove all downloads?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Downloads entfernen?"
+          }
+        }
+      }
+    },
+    "Remove All Servers": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Server entfernen"
+          }
+        }
+      }
+    },
+    "Remove all servers?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Server entfernen?"
+          }
+        }
+      }
+    },
+    "Remove Download": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Download entfernen"
+          }
+        }
+      }
+    },
+    "Remove Finished Downloads": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beendete Downloads entfernen"
+          }
+        }
+      }
+    },
+    "Remove Rule & Download": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Regel & Download entfernen"
+          }
+        }
+      }
+    },
+    "Remove Server": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server entfernen"
+          }
+        }
+      }
+    },
+    "Remove this server?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diesen Server entfernen?"
+          }
+        }
+      }
+    },
+    "Report an Issue on GitHub": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Problem auf GitHub melden"
+          }
+        }
+      }
+    },
+    "Reset Sleep Timer Settings": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schlaftimer-Einstellungen zurücksetzen"
+          }
+        }
+      }
+    },
+    "Reset Speeds": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geschwindigkeiten zurücksetzen"
+          }
+        }
+      }
+    },
+    "Reset to Defaults": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf Standard zurücksetzen"
+          }
+        }
+      }
+    },
+    "Resume": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortsetzen"
+          }
+        }
+      }
+    },
+    "Retry": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut versuchen"
+          }
+        }
+      }
+    },
+    "Retry Connections": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbindungen erneut versuchen"
+          }
+        }
+      }
+    },
+    "Rewinds a few seconds when you resume after a pause, so you don't lose track.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spult beim Fortsetzen nach einer Pause ein paar Sekunden zurück, damit du den Faden nicht verlierst."
+          }
+        }
+      }
+    },
+    "Rules": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Regeln"
+          }
+        }
+      }
+    },
+    "Save": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sichern"
+          }
+        }
+      }
+    },
+    "Save Headers": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Header sichern"
+          }
+        }
+      }
+    },
+    "Search": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suche"
+          }
+        }
+      }
+    },
+    "Search %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ durchsuchen"
+          }
+        }
+      }
+    },
+    "Search Everywhere": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Überall suchen"
+          }
+        }
+      }
+    },
+    "Search Your Libraries": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Durchsuche deine Bibliotheken"
+          }
+        }
+      }
+    },
+    "Searching…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suchen …"
+          }
+        }
+      }
+    },
+    "Sent with every request, for example to pass a reverse proxy or Cloudflare Access.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird mit jeder Anfrage gesendet, zum Beispiel für einen Reverse Proxy oder Cloudflare Access."
+          }
+        }
+      }
+    },
+    "Series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reihen"
+          }
+        }
+      }
+    },
+    "Serif Titles": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titel mit Serifen"
+          }
+        }
+      }
+    },
+    "Server": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server"
+          }
+        }
+      }
+    },
+    "Server Address": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serveradresse"
+          }
+        }
+      }
+    },
+    "Server Removed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server entfernt"
+          }
+        }
+      }
+    },
+    "Server version %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serverversion %@"
+          }
+        }
+      }
+    },
+    "Servers": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server"
+          }
+        }
+      }
+    },
+    "Set up automatic downloads for a series or podcast from its page.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Richte automatische Downloads auf der Seite einer Reihe oder eines Podcasts ein."
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen"
+          }
+        }
+      }
+    },
+    "Settings…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen …"
+          }
+        }
+      }
+    },
+    "Shake to Extend": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schütteln zum Verlängern"
+          }
+        }
+      }
+    },
+    "Share Logs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protokolle teilen"
+          }
+        }
+      }
+    },
+    "Shortcuts": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verknüpfungen"
+          }
+        }
+      }
+    },
+    "Shortcuts appear above your audiobooks.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verknüpfungen erscheinen über deinen Hörbüchern."
+          }
+        }
+      }
+    },
+    "Show": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anzeigen"
+          }
+        }
+      }
+    },
+    "Show Authors Row": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Autor:innen-Zeile anzeigen"
+          }
+        }
+      }
+    },
+    "Show Progress as Percentage": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortschritt in Prozent anzeigen"
+          }
+        }
+      }
+    },
+    "Show Single-Book Series": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reihen mit einem Buch anzeigen"
+          }
+        }
+      }
+    },
+    "Shown in the player's sleep timer menu, together with “End of Chapter”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Werden im Schlaftimer-Menü des Players angezeigt, zusammen mit „Ende des Kapitels“."
+          }
+        }
+      }
+    },
+    "Shows all items": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigt alle Einträge"
+          }
+        }
+      }
+    },
+    "Sign In": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anmelden"
+          }
+        }
+      }
+    },
+    "Sign In Again": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erneut anmelden"
+          }
+        }
+      }
+    },
+    "Sign In with SSO": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit SSO anmelden"
+          }
+        }
+      }
+    },
+    "Sign-In Method": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anmeldemethode"
+          }
+        }
+      }
+    },
+    "Signed Out": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abgemeldet"
+          }
+        }
+      }
+    },
+    "Single Sign-On": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Single Sign-On"
+          }
+        }
+      }
+    },
+    "Siri & Shortcuts": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri & Kurzbefehle"
+          }
+        }
+      }
+    },
+    "Size": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Größe"
+          }
+        }
+      }
+    },
+    "Skip Back": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurückspulen"
+          }
+        }
+      }
+    },
+    "Skip back": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurückspulen"
+          }
+        }
+      }
+    },
+    "Skip Forward": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorspulen"
+          }
+        }
+      }
+    },
+    "Skip forward": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorspulen"
+          }
+        }
+      }
+    },
+    "Skip Intervals": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprungintervalle"
+          }
+        }
+      }
+    },
+    "Sleep Timer": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schlaftimer"
+          }
+        }
+      }
+    },
+    "Slow Down Step": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schritt zum Verlangsamen"
+          }
+        }
+      }
+    },
+    "Smart Rewind": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intelligentes Zurückspulen"
+          }
+        }
+      }
+    },
+    "Something went wrong": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etwas ist schiefgelaufen"
+          }
+        }
+      }
+    },
+    "Sort": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sortieren"
+          }
+        }
+      }
+    },
+    "Sort By": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sortieren nach"
+          }
+        }
+      }
+    },
+    "Source Code": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quellcode"
+          }
+        }
+      }
+    },
+    "Speed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geschwindigkeit"
+          }
+        }
+      }
+    },
+    "Speed Presets": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geschwindigkeitsvoreinstellungen"
+          }
+        }
+      }
+    },
+    "Speed Up Step": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schritt zum Beschleunigen"
+          }
+        }
+      }
+    },
+    "Statistics": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Statistiken"
+          }
+        }
+      }
+    },
+    "Stop & Remove": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stoppen & entfernen"
+          }
+        }
+      }
+    },
+    "Stop playback before removing the download.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stoppe die Wiedergabe, bevor du den Download entfernst."
+          }
+        }
+      }
+    },
+    "Storage": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Speicher"
+          }
+        }
+      }
+    },
+    "Streak": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serie"
+          }
+        }
+      }
+    },
+    "Support": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Support"
+          }
+        }
+      }
+    },
+    "System": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        }
+      }
+    },
+    "Tab Bar": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tableiste"
+          }
+        }
+      }
+    },
+    "Tabs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tabs"
+          }
+        }
+      }
+    },
+    "Tags": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tags"
+          }
+        }
+      }
+    },
+    "Tapping the speed button in the player cycles through these presets.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Tippen auf die Geschwindigkeitstaste im Player wechselt durch diese Voreinstellungen."
+          }
+        }
+      }
+    },
+    "The certificate could not be opened. Check the passphrase.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Zertifikat konnte nicht geöffnet werden. Überprüfe die Passphrase."
+          }
+        }
+      }
+    },
+    "The Hearth and the Hollow Hills": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Herdfeuer in den hohlen Hügeln"
+          }
+        }
+      }
+    },
+    "The item could not be found on the server.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Titel wurde auf dem Server nicht gefunden."
+          }
+        }
+      }
+    },
+    "The item is currently downloading.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Titel wird gerade geladen."
+          }
+        }
+      }
+    },
+    "The item is currently playing.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Titel wird gerade wiedergegeben."
+          }
+        }
+      }
+    },
+    "The request was cancelled.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Anfrage wurde abgebrochen."
+          }
+        }
+      }
+    },
+    "The self-hosted audiobook and podcast server Hearth connects to.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der selbst gehostete Hörbuch- und Podcast-Server, mit dem sich Hearth verbindet."
+          }
+        }
+      }
+    },
+    "The server address is invalid.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Serveradresse ist ungültig."
+          }
+        }
+      }
+    },
+    "The server can't be reached. Check the address and your network connection.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server ist nicht erreichbar. Überprüfe die Adresse und deine Netzwerkverbindung."
+          }
+        }
+      }
+    },
+    "The server responded with an unexpected status (%lld).": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server hat mit einem unerwarteten Status geantwortet (%lld)."
+          }
+        }
+      }
+    },
+    "The server's certificate is not trusted by your device. Only trust it if you recognize this SHA-256 fingerprint:\n\n%@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Gerät vertraut dem Zertifikat des Servers nicht. Vertraue ihm nur, wenn du diesen SHA-256-Fingerabdruck kennst:\n\n%@"
+          }
+        }
+      }
+    },
+    "The server's certificate is not trusted.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dem Zertifikat des Servers wird nicht vertraut."
+          }
+        }
+      }
+    },
+    "The server's response could not be read.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Antwort des Servers konnte nicht gelesen werden."
+          }
+        }
+      }
+    },
+    "This audiobookshelf server has not been set up yet.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser audiobookshelf-Server wurde noch nicht eingerichtet."
+          }
+        }
+      }
+    },
+    "This connection uses a legacy token that never expires. Update your server to audiobookshelf %@ or later and sign in again for secure, refreshable tokens.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Verbindung verwendet ein veraltetes Token, das nie abläuft. Aktualisiere deinen Server auf audiobookshelf %@ oder neuer und melde dich erneut an, um sichere, erneuerbare Tokens zu erhalten."
+          }
+        }
+      }
+    },
+    "This item can't be downloaded.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Titel kann nicht geladen werden."
+          }
+        }
+      }
+    },
+    "This item can't be played.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Titel kann nicht abgespielt werden."
+          }
+        }
+      }
+    },
+    "This item is playing. Playback will switch to the downloaded files once the download finishes.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Titel wird gerade wiedergegeben. Nach dem Download wechselt die Wiedergabe zu den geladenen Dateien."
+          }
+        }
+      }
+    },
+    "This item is still downloading. Cancel the download and stream it instead?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Titel wird noch geladen. Download abbrechen und stattdessen streamen?"
+          }
+        }
+      }
+    },
+    "This item was downloaded by an automatic download rule and may be downloaded again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Titel wurde durch eine automatische Download-Regel geladen und wird eventuell erneut geladen."
+          }
+        }
+      }
+    },
+    "This Library": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Bibliothek"
+          }
+        }
+      }
+    },
+    "This server is outdated. Update to audiobookshelf %@ or later for secure sign-in tokens.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Server ist veraltet. Aktualisiere auf audiobookshelf %@ oder neuer für sichere Anmelde-Tokens."
+          }
+        }
+      }
+    },
+    "This sign-in method is not supported by the server.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Anmeldemethode wird vom Server nicht unterstützt."
+          }
+        }
+      }
+    },
+    "Tint Color": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Akzentfarbe"
+          }
+        }
+      }
+    },
+    "Title": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titel"
+          }
+        }
+      }
+    },
+    "Today": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute"
+          }
+        }
+      }
+    },
+    "Total Progress Instead of Volume": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gesamtfortschritt statt Lautstärke"
+          }
+        }
+      }
+    },
+    "Total Time": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gesamtzeit"
+          }
+        }
+      }
+    },
+    "Track your listening time and keep your streak going.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verfolge deine Hörzeit und halte deine Serie am Laufen."
+          }
+        }
+      }
+    },
+    "Trust Certificate": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zertifikat vertrauen"
+          }
+        }
+      }
+    },
+    "Trusted self-signed certificate": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertrauenswürdiges selbstsigniertes Zertifikat"
+          }
+        }
+      }
+    },
+    "Unavailable Library": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht verfügbare Bibliothek"
+          }
+        }
+      }
+    },
+    "Untrusted Certificate": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht vertrauenswürdiges Zertifikat"
+          }
+        }
+      }
+    },
+    "Up to 5 pinned tabs are shown in the tab bar.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bis zu 5 angeheftete Tabs werden in der Tableiste angezeigt."
+          }
+        }
+      }
+    },
+    "Up to 5 tabs. Search is always available.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bis zu 5 Tabs. Die Suche ist immer verfügbar."
+          }
+        }
+      }
+    },
+    "User": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benutzer:in"
+          }
+        }
+      }
+    },
+    "Username": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benutzername"
+          }
+        }
+      }
+    },
+    "Value": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wert"
+          }
+        }
+      }
+    },
+    "Version": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "Version %@ (%@)": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %1$@ (%2$@)"
+          }
+        }
+      }
+    },
+    "Welcome to Hearth": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Willkommen bei Hearth"
+          }
+        }
+      }
+    },
+    "When off, series with only one book show the book instead.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn deaktiviert, wird bei Reihen mit nur einem Buch stattdessen das Buch angezeigt."
+          }
+        }
+      }
+    },
+    "When on, “Extend” adds the timer's original duration again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn aktiviert, fügt „Verlängern“ erneut die ursprüngliche Dauer des Timers hinzu."
+          }
+        }
+      }
+    },
+    "You will be signed out and its downloads are removed.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du wirst abgemeldet und die zugehörigen Downloads werden entfernt."
+          }
+        }
+      }
+    },
+    "You will be signed out of every server. Downloads are removed.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du wirst von allen Servern abgemeldet. Downloads werden entfernt."
+          }
+        }
+      }
+    },
+    "You're Offline": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du bist offline"
+          }
+        }
+      }
+    },
+    "Your audiobookshelf library, right at home on iPhone and iPad.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine audiobookshelf-Bibliothek, ganz zu Hause auf iPhone und iPad."
+          }
+        }
+      }
+    },
+    "Your server doesn't have any libraries you can access.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Server hat keine Bibliotheken, auf die du zugreifen kannst."
+          }
+        }
+      }
+    },
+    "Your session expired. Please sign in again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deine Sitzung ist abgelaufen. Bitte melde dich erneut an."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

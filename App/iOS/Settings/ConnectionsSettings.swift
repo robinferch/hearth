@@ -179,6 +179,7 @@ struct ConnectionDetailView: View {
                 Button("Remove", role: .destructive) {
                     Task {
                         await connections.remove(connectionID)
+                        ClientIdentityStore.delete(connectionID)
                         dismiss()
                     }
                 }
