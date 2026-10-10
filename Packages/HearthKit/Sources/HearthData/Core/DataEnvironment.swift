@@ -37,7 +37,7 @@ final class DataEnvironment: @unchecked Sendable {
         self.clientFactory = clientFactory
         self.defaults = defaults
         self.keyValueStore = keyValueStore
-        self.trust = SessionTrust()
+        self.trust = SessionTrust(credentials: credentials)
         self.downloadsURL = downloadsURL
         self.cachesURL = cachesURL
         self.supportURL = supportURL

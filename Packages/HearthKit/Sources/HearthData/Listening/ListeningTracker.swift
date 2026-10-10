@@ -9,7 +9,7 @@ import SwiftData
 ///
 /// `listenedToday` = server sessions updated since local midnight (all connections)
 ///                 + local sessions not yet uploaded (today)
-///                 + time the player hasn't reported anywhere yet (`addUnreported`).
+///                 + time reported to the server since the last fetch (`addUnreported`).
 @MainActor
 @Observable
 public final class ListeningTracker {
@@ -162,8 +162,9 @@ public final class ListeningTracker {
         return total
     }
 
-    /// Adds time the player listened but hasn't reported anywhere yet (delta in seconds). It is folded into the
-    /// server total on the next `refresh()` or moved to the local bucket by `recordLocalSession`.
+    /// Adds time (delta in seconds) the player reported to a server session (`sync`/`close`) since the last
+    /// `refresh()`. The server total fetched by `refresh()` already contains it, so the bucket is reset there.
+    /// Time recorded through `recordLocalSession` is counted separately and must not be passed here.
     public func addUnreported(_ seconds: TimeInterval) {
         guard seconds > 0, seconds.isFinite else { return }
         rollDayIfNeeded()
@@ -198,7 +199,6 @@ public final class ListeningTracker {
             openLocal[key] = session.id
         }
         localSessions[session.id] = session
-        unreported = max(0, unreported - delta)
         recompute()
         let record = session
         await environment.store.perform { $0.upsertLocalSession(record) }

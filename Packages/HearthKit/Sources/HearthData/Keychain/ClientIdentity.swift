@@ -1,4 +1,4 @@
-import CryptoKit
+import HearthAPI
 import Foundation
 import HearthModel
 import os
@@ -63,65 +63,76 @@ final class SessionTrust: Sendable {
         var identity: ClientIdentity?
     }
 
-    private let entries = Mutex<[String: Entry]>([:])
-    private let logger = Logger(category: "SessionTrust")
+    private struct State {
+        var entries: [String: Entry] = [:]
+        /// Connection id → host key.
+        var hosts: [ConnectionID: String] = [:]
+    }
+
+    private let state = Mutex(State())
+    private let credentials: any CredentialStoring
+
+    init(credentials: any CredentialStoring) {
+        self.credentials = credentials
+    }
 
     /// Rebuilds the host table from the current connections.
-    func update(connections: [Connection], credentials: any CredentialStoring) {
+    func update(connections: [Connection]) {
         var table = [String: Entry]()
+        var hosts = [ConnectionID: String]()
         for connection in connections {
             let key = ClientIdentityKey.make(connection.host)
+            hosts[connection.id] = key
             var entry = table[key] ?? Entry()
             if let pin = connection.pinnedCertificateSHA256 {
-                entry.pinnedSHA256 = Self.normalizedFingerprint(pin)
+                entry.pinnedSHA256 = ServerTrust.normalizedFingerprint(pin)
             }
             if entry.identity == nil, let certificate = credentials.clientCertificate(for: key) {
                 entry.identity = try? PKCS12.importIdentity(certificate.pkcs12, passphrase: certificate.passphrase)
             }
             table[key] = entry
         }
-        entries.withLock { $0 = table }
+        state.withLock {
+            $0.entries = table
+            $0.hosts = hosts
+        }
     }
 
     func identity(for host: URL) -> ClientIdentity? {
-        entries.withLock { $0[ClientIdentityKey.make(host)]?.identity }
+        let key = ClientIdentityKey.make(host)
+        if let identity = state.withLock({ $0.entries[key]?.identity }) {
+            return identity
+        }
+        guard let certificate = credentials.clientCertificate(for: key) else { return nil }
+        return try? PKCS12.importIdentity(certificate.pkcs12, passphrase: certificate.passphrase)
     }
 
-    static func normalizedFingerprint(_ value: String) -> String {
-        value.lowercased().filter { $0.isHexDigit }
-    }
-
-    static func sha256(of certificate: SecCertificate) -> String {
-        let data = SecCertificateCopyData(certificate) as Data
-        return SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+    /// Backs `APIClientFactory.clientIdentityProvider`: resolves real and provisional (`provisional:<host>`) ids.
+    func identity(forConnectionID id: ConnectionID) -> SecIdentity? {
+        let provisionalPrefix = "provisional:"
+        if id.hasPrefix(provisionalPrefix), let host = URL(string: String(id.dropFirst(provisionalPrefix.count))) {
+            return identity(for: host)?.identity
+        }
+        guard let key = state.withLock({ $0.hosts[id] }) else { return nil }
+        if let identity = state.withLock({ $0.entries[key]?.identity }) {
+            return identity.identity
+        }
+        guard let certificate = credentials.clientCertificate(for: key) else { return nil }
+        return (try? PKCS12.importIdentity(certificate.pkcs12, passphrase: certificate.passphrase))?.identity
     }
 
     private func entry(for space: URLProtectionSpace) -> Entry? {
         let scheme = space.protocol ?? "https"
         let key = "\(scheme.lowercased())://\(space.host.lowercased()):\(space.port)"
-        return entries.withLock { $0[key] }
+        return state.withLock { $0.entries[key] }
     }
 
-    /// Handles an authentication challenge for one of Hearth's sessions.
+    /// Handles an authentication challenge for one of Hearth's sessions (downloads, images).
     func handle(_ challenge: URLAuthenticationChallenge) -> (URLSession.AuthChallengeDisposition, URLCredential?) {
         let space = challenge.protectionSpace
         switch space.authenticationMethod {
         case NSURLAuthenticationMethodServerTrust:
-            guard let trust = space.serverTrust else { return (.performDefaultHandling, nil) }
-            if SecTrustEvaluateWithError(trust, nil) {
-                return (.performDefaultHandling, nil)
-            }
-            guard let pin = entry(for: space)?.pinnedSHA256,
-                  let chain = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
-                  let leaf = chain.first
-            else {
-                return (.performDefaultHandling, nil)
-            }
-            if Self.sha256(of: leaf) == pin {
-                return (.useCredential, URLCredential(trust: trust))
-            }
-            logger.error("Pinned certificate mismatch for \(space.host, privacy: .public)")
-            return (.cancelAuthenticationChallenge, nil)
+            return ServerTrust.handle(challenge, pinnedSHA256: entry(for: space)?.pinnedSHA256)
         case NSURLAuthenticationMethodClientCertificate:
             if let identity = entry(for: space)?.identity {
                 return (.useCredential, identity.credential)

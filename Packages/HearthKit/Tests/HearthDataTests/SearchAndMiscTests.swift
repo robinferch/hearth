@@ -239,16 +239,22 @@ struct ConnectionAndListeningTests {
         await hearth.listening.refresh()
         #expect(hearth.listening.listenedToday == 600)
 
+        // Reported to the server session after the fetch.
         hearth.listening.addUnreported(30)
         #expect(hearth.listening.listenedToday == 630)
 
-        // Moving 30 s from "unreported" to a local session keeps the total.
-        await hearth.listening.recordLocalSession(itemID: book, startTime: 0, currentTime: 30, duration: 100, timeListened: 30)
-        #expect(hearth.listening.listenedToday == 630)
+        // Recorded locally (server unreachable): counted on its own.
+        await hearth.listening.recordLocalSession(itemID: book, startTime: 0, currentTime: 20, duration: 100, timeListened: 20)
+        #expect(hearth.listening.listenedToday == 650)
 
+        // Uploading moves it to the server bucket without changing the total.
         await hearth.listening.closeLocalSession(itemID: book)
-        #expect(client.read { $0.uploadedSessions.map(\.timeListened) } == [30])
-        #expect(hearth.listening.listenedToday == 630)
+        #expect(client.read { $0.uploadedSessions.map(\.timeListened) } == [20])
+        #expect(hearth.listening.listenedToday == 650)
+
+        // A refresh replaces the estimate with the server's numbers.
+        await hearth.listening.refresh()
+        #expect(hearth.listening.listenedToday == 600)
     }
 
     @Test func staleServerSessionsAreClosed() async {

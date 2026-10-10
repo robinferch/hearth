@@ -82,7 +82,7 @@ public final class ConnectionStore {
         for connection in connections where status[connection.id] == nil {
             status[connection.id] = .loading
         }
-        environment.trust.update(connections: connections, credentials: environment.credentials)
+        environment.trust.update(connections: connections)
         isLoaded = true
         Task {
             knownServers = await environment.store.perform { $0.knownServers() }
@@ -228,7 +228,7 @@ public final class ConnectionStore {
             connectionNeedingReauthorization = nil
         }
         saveLibrariesCache()
-        environment.trust.update(connections: connections, credentials: environment.credentials)
+        environment.trust.update(connections: connections)
         if connections.isEmpty, isOffline {
             isOffline = false
         }
@@ -247,7 +247,7 @@ public final class ConnectionStore {
         hearth?.stopLiveUpdates(for: connection.id)
         clients[connection.id] = environment.clientFactory(connection, environment.tokenStore, relay)
         status[connection.id] = .loading
-        environment.trust.update(connections: connections, credentials: environment.credentials)
+        environment.trust.update(connections: connections)
     }
 
     // MARK: Libraries & reachability
@@ -366,9 +366,8 @@ public final class ConnectionStore {
     public func importClientCertificate(_ data: Data, passphrase: String, for host: URL) throws(ClientCertificateError) {
         _ = try PKCS12.importIdentity(data, passphrase: passphrase)
         environment.credentials.saveClientCertificate(ClientCertificate(pkcs12: data, passphrase: passphrase), for: ClientIdentityKey.make(host))
-        environment.trust.update(connections: connections, credentials: environment.credentials)
-        // TODO: Once HearthAPI exposes `APIClientFactory.clientIdentityProvider`, set it to `clientIdentity(for:)`
-        // in `HearthData.init` so API requests and the socket present the certificate too.
+        // API clients pick it up through `APIClientFactory.clientIdentityProvider` (wired in `HearthData.init`).
+        environment.trust.update(connections: connections)
     }
 
     public func hasClientCertificate(for host: URL) -> Bool {
@@ -377,15 +376,11 @@ public final class ConnectionStore {
 
     public func removeClientCertificate(for host: URL) {
         environment.credentials.deleteClientCertificate(for: ClientIdentityKey.make(host))
-        environment.trust.update(connections: connections, credentials: environment.credentials)
+        environment.trust.update(connections: connections)
     }
 
     /// The imported client identity for a server, if any (also usable before the connection exists).
     public nonisolated func clientIdentity(for host: URL) -> ClientIdentity? {
-        if let identity = environment.trust.identity(for: host) {
-            return identity
-        }
-        guard let certificate = environment.credentials.clientCertificate(for: ClientIdentityKey.make(host)) else { return nil }
-        return try? PKCS12.importIdentity(certificate.pkcs12, passphrase: certificate.passphrase)
+        environment.trust.identity(for: host)
     }
 }

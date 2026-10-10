@@ -433,7 +433,15 @@ public final class DownloadManager {
 
     // MARK: Removing
 
+    /// Removes a download. Passing a podcast removes all of its downloaded episodes.
     public func remove(_ id: ItemIdentifier) async {
+        if id.kind == .podcast {
+            let episodes = items.values.map(\.item.id).filter { $0.kind == .episode && $0.connectionID == id.connectionID && $0.groupingID == id.primaryID }
+            for episode in episodes {
+                await remove(episode)
+            }
+            return
+        }
         let key = id.storageKey
         if locked.contains(key) {
             logger.notice("\(id.description, privacy: .public) is playing; removing after playback")

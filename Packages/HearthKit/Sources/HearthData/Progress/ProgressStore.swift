@@ -97,8 +97,10 @@ public final class ProgressStore {
 
     private func apply(_ changed: [ProgressRecord], removed: [ItemIdentifier] = []) {
         guard !changed.isEmpty || !removed.isEmpty else { return }
+        var listenNowChanged = false
         for record in changed {
             let key = record.entity.itemID.storageKey
+            listenNowChanged = listenNowChanged || Self.isListed(records[key]) != Self.isListed(record)
             records[key] = record
             if let cell = cells[key] {
                 let visible = Self.visible(record)
@@ -108,10 +110,20 @@ public final class ProgressStore {
             }
         }
         for id in removed {
+            listenNowChanged = listenNowChanged || Self.isListed(records[id.storageKey])
             records[id.storageKey] = nil
             cells[id.storageKey]?.value = nil
         }
         revision &+= 1
+        if listenNowChanged {
+            hearth?.listenNowChanged()
+        }
+    }
+
+    /// Whether a record makes its item appear in Listen Now.
+    private static func isListed(_ record: ProgressRecord?) -> Bool {
+        guard let record, record.status != .tombstone else { return false }
+        return record.entity.isInProgress && !record.entity.hideFromContinueListening
     }
 
     private func commit(_ changed: [ProgressRecord], removed: [ItemIdentifier] = []) async {

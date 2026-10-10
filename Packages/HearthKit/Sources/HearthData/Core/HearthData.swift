@@ -36,6 +36,7 @@ public final class HearthData {
     @ObservationIgnored private var liveUpdateTasks: [ConnectionID: Task<Void, Never>] = [:]
     @ObservationIgnored private var wantsLiveUpdates = false
     @ObservationIgnored private var snapshotTask: Task<Void, Never>?
+    @ObservationIgnored private var autoDownloadTask: Task<Void, Never>?
     @ObservationIgnored private let logger = Logger(category: "HearthData")
 
     init(environment: DataEnvironment, settings: AppSettings) {
@@ -63,8 +64,11 @@ public final class HearthData {
             client: { [weak self] id in await self?.availableClient(id) },
             localCover: { [weak self] id, size in await self?.downloads.localCoverURL(for: id, size: size) }
         ))
-        // TODO: When HearthAPI adds `APIClientFactory.clientIdentityProvider`, wire it here:
-        // `APIClientFactory.clientIdentityProvider = { [connections] host in connections.clientIdentity(for: host)?.credential }`
+        if environment.isLive {
+            // mTLS for API requests, the socket and the add-connection flow (provisional ids).
+            let trust = environment.trust
+            APIClientFactory.clientIdentityProvider = { id in trust.identity(forConnectionID: id) }
+        }
         APINetworkPolicy.shared.isOffline = connections.isOffline
     }
 
@@ -150,7 +154,7 @@ public final class HearthData {
     /// foreground; sockets reconnect automatically after offline periods.
     public func startLiveUpdates() {
         wantsLiveUpdates = true
-        guard environment.isLive || !connections.connections.isEmpty, !connections.isOffline else { return }
+        guard !connections.isOffline else { return }
         for connection in connections.connections where connections.isAvailable(connection.id) && liveUpdateTasks[connection.id] == nil {
             guard let client = try? connections.client(for: connection.id) else { continue }
             let id = connection.id
@@ -250,6 +254,18 @@ public final class HearthData {
 
     func downloadsChanged() {
         scheduleSnapshotUpdate()
+    }
+
+    /// An item entered or left Listen Now (started, finished, reset, hidden, remote change).
+    func listenNowChanged() {
+        scheduleSnapshotUpdate()
+        guard environment.isLive, settings.autoDownloadsEnabled, settings.autoDownloadListenNow else { return }
+        autoDownloadTask?.cancel()
+        autoDownloadTask = Task {
+            try? await Task.sleep(for: .seconds(5))
+            guard !Task.isCancelled else { return }
+            await downloads.runAutoDownloads()
+        }
     }
 
     func listenedTodayChanged() {
