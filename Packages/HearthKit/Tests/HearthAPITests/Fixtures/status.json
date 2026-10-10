@@ -1,0 +1,8 @@
+{
+  "app": "audiobookshelf",
+  "serverVersion": "2.25.1",
+  "isInit": true,
+  "language": "en-us",
+  "authMethods": ["local", "openid", "some-future-method"],
+  "authFormData": { "authOpenIDButtonText": "Login with Authentik", "authOpenIDAutoLaunch": false }
+}

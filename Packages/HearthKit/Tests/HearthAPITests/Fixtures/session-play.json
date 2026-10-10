@@ -1,0 +1,58 @@
+{
+  "id": "play_session_1",
+  "userId": "usr_1",
+  "libraryId": "lib_pods",
+  "libraryItemId": "li_pod1",
+  "bookId": null,
+  "episodeId": "ep_1",
+  "mediaType": "podcast",
+  "mediaMetadata": { "title": "Dan Carlin's Hardcore History", "author": "Dan Carlin" },
+  "chapters": [],
+  "displayTitle": "Show 68 - Blueprint for Armageddon I",
+  "displayAuthor": "Dan Carlin",
+  "coverPath": "/podcasts/Hardcore History/cover.jpg",
+  "duration": 11220.5,
+  "playMethod": 0,
+  "mediaPlayer": "AVPlayer",
+  "deviceInfo": { "deviceId": "dev1", "clientName": "Hearth", "clientVersion": "1.0", "manufacturer": "Apple", "model": "iPhone17,1", "osName": "iOS" },
+  "serverVersion": "2.26.0",
+  "date": "2024-05-01",
+  "dayOfWeek": "Wednesday",
+  "timeListening": 0,
+  "startTime": 120.5,
+  "currentTime": 120.5,
+  "startedAt": 1714550400000,
+  "updatedAt": 1714550400000,
+  "audioTracks": [
+    {
+      "index": 1,
+      "startOffset": 0,
+      "duration": 11220.5,
+      "title": "ep68.mp3",
+      "contentUrl": "/api/items/li_pod1/file/101",
+      "mimeType": "audio/mpeg",
+      "codec": "mp3",
+      "metadata": { "filename": "ep68.mp3", "ext": ".mp3", "size": 150000000 }
+    }
+  ],
+  "libraryItem": {
+    "id": "li_pod1",
+    "libraryId": "lib_pods",
+    "mediaType": "podcast",
+    "media": {
+      "metadata": { "title": "Dan Carlin's Hardcore History", "author": "Dan Carlin" },
+      "tags": [],
+      "numEpisodes": 1,
+      "episodes": [
+        {
+          "libraryItemId": "li_pod1",
+          "id": "ep_1",
+          "title": "Show 68 - Blueprint for Armageddon I",
+          "description": "<p>00:00 Intro<br>12:30 The Assassination<br/>1:05:10 Mobilization &amp; War</p>",
+          "chapters": [],
+          "duration": 11220.5
+        }
+      ]
+    }
+  }
+}

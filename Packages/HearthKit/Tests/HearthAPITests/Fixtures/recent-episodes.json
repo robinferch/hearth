@@ -1,0 +1,33 @@
+{
+  "episodes": [
+    {
+      "libraryItemId": "li_pod1",
+      "podcastId": "pod_1",
+      "id": "ep_1",
+      "index": 1,
+      "season": "1",
+      "episode": "68",
+      "episodeType": "full",
+      "title": "Show 68 - Blueprint for Armageddon I",
+      "description": "The planet hadn't seen a major war.",
+      "enclosure": { "url": "https://example.com/ep68.mp3", "type": "audio/mpeg", "length": "150000000" },
+      "chapters": [],
+      "audioFile": { "ino": "101", "metadata": { "filename": "ep68.mp3", "ext": ".mp3" }, "duration": 11220.5 },
+      "publishedAt": 1383080400000,
+      "addedAt": 1667326679503,
+      "audioTrack": { "index": 1, "startOffset": 0, "duration": 11220.5, "contentUrl": "/api/items/li_pod1/file/101" },
+      "size": 150000000,
+      "duration": 11220.5,
+      "podcast": {
+        "id": "pod_1",
+        "libraryItemId": "li_pod1",
+        "metadata": { "title": "Dan Carlin's Hardcore History", "author": "Dan Carlin", "genres": [] },
+        "tags": [],
+        "episodes": []
+      },
+      "libraryId": "lib_pods"
+    }
+  ],
+  "limit": 25,
+  "page": 0
+}

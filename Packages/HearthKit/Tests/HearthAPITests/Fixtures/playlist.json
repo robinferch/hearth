@@ -1,0 +1,40 @@
+{
+  "id": "pl_1",
+  "name": "Commute",
+  "libraryId": "lib_books",
+  "userId": "usr_1",
+  "description": "Things for the train",
+  "lastUpdate": 1700000000000,
+  "createdAt": 1690000000000,
+  "items": [
+    {
+      "libraryItemId": "li_book1",
+      "libraryItem": {
+        "id": "li_book1",
+        "libraryId": "lib_books",
+        "mediaType": "book",
+        "media": { "metadata": { "title": "Wizards First Rule", "authorName": "Terry Goodkind" }, "tags": [], "numTracks": 2, "duration": 11922.9 }
+      }
+    },
+    {
+      "episodeId": "ep_1",
+      "episode": {
+        "libraryItemId": "li_pod1",
+        "podcastId": "pod_1",
+        "id": "ep_1",
+        "title": "Show 68 - Blueprint for Armageddon I",
+        "episodeType": "bonus",
+        "audioTrack": { "index": 1, "startOffset": 0, "duration": 11220.5, "contentUrl": "/api/items/li_pod1/file/101" },
+        "duration": 11220.5,
+        "size": 150000000
+      },
+      "libraryItemId": "li_pod1",
+      "libraryItem": {
+        "id": "li_pod1",
+        "libraryId": "lib_pods",
+        "mediaType": "podcast",
+        "media": { "metadata": { "title": "Dan Carlin's Hardcore History", "author": "Dan Carlin" }, "tags": [], "numEpisodes": 2 }
+      }
+    }
+  ]
+}

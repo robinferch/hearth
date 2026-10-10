@@ -1,0 +1,128 @@
+[
+  {
+    "id": "continue-listening",
+    "label": "Continue Listening",
+    "labelStringKey": "LabelContinueListening",
+    "type": "book",
+    "entities": [
+      {
+        "id": "li_book1",
+        "libraryId": "lib_books",
+        "mediaType": "book",
+        "addedAt": 1650621073750,
+        "media": {
+          "id": "book_1",
+          "metadata": { "title": "Wizards First Rule", "authorName": "Terry Goodkind", "narratorName": "Sam Tsoutsouvas", "seriesName": "Sword of Truth #1", "genres": ["Fantasy"] },
+          "tags": [],
+          "numTracks": 2,
+          "duration": 11922.9075,
+          "size": 95373312
+        },
+        "size": 95373312,
+        "progressLastUpdate": 1700000000000
+      }
+    ],
+    "total": 1
+  },
+  {
+    "id": "continue-series",
+    "label": "Continue Series",
+    "labelStringKey": "LabelContinueSeries",
+    "type": "book",
+    "entities": [
+      {
+        "id": "li_book6",
+        "libraryId": "lib_books",
+        "mediaType": "book",
+        "media": {
+          "id": "book_6",
+          "metadata": {
+            "title": "Stone of Tears",
+            "authorName": "Terry Goodkind",
+            "seriesName": "Sword of Truth #2",
+            "series": { "id": "ser_sot", "name": "Sword of Truth", "sequence": "2" },
+            "genres": []
+          },
+          "tags": [],
+          "numTracks": 4,
+          "duration": 40000
+        }
+      }
+    ],
+    "total": 1
+  },
+  {
+    "id": "recent-series",
+    "label": "Recent Series",
+    "labelStringKey": "LabelRecentSeries",
+    "type": "series",
+    "entities": [
+      {
+        "id": "ser_expanse",
+        "name": "The Expanse",
+        "nameIgnorePrefix": "Expanse",
+        "description": null,
+        "addedAt": 1650621073750,
+        "updatedAt": 1650621073750,
+        "libraryId": "lib_books",
+        "books": [
+          {
+            "id": "li_book3",
+            "libraryId": "lib_books",
+            "mediaType": "book",
+            "media": { "metadata": { "title": "Leviathan Wakes", "authorName": "James S. A. Corey", "seriesName": "The Expanse #1" }, "tags": [], "numTracks": 1, "duration": 74000 }
+          },
+          {
+            "id": "li_book4",
+            "libraryId": "lib_books",
+            "mediaType": "book",
+            "media": { "metadata": { "title": "Caliban's War", "authorName": "James S. A. Corey", "seriesName": "The Expanse #2" }, "tags": [], "numTracks": 1, "duration": 76000 }
+          }
+        ]
+      }
+    ],
+    "total": 1
+  },
+  {
+    "id": "newest-authors",
+    "label": "Newest Authors",
+    "labelStringKey": "LabelNewestAuthors",
+    "type": "authors",
+    "entities": [
+      {
+        "id": "aut_goodkind",
+        "asin": null,
+        "name": "Terry Goodkind",
+        "description": "American writer",
+        "imagePath": "/metadata/authors/aut_goodkind.jpg",
+        "libraryId": "lib_books",
+        "addedAt": 1650621073750,
+        "updatedAt": 1650621073750,
+        "numBooks": 2
+      },
+      {
+        "id": "aut_corey",
+        "name": "James S. A. Corey",
+        "imagePath": null,
+        "libraryId": "lib_books",
+        "addedAt": 1650621073750,
+        "numBooks": 9
+      }
+    ],
+    "total": 2
+  },
+  {
+    "id": "listen-again",
+    "label": "Listen Again",
+    "labelStringKey": "LabelListenAgain",
+    "type": "book",
+    "entities": [],
+    "total": 0
+  },
+  {
+    "id": "some-future-shelf",
+    "label": "Future Shelf",
+    "type": "unknown-type",
+    "entities": [{ "id": "x" }]
+  }
+]

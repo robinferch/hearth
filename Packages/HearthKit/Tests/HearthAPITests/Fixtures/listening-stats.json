@@ -1,0 +1,12 @@
+{
+  "totalTime": 5400.5,
+  "items": {
+    "li_book1": { "id": "li_book1", "timeListening": 3600, "mediaMetadata": { "title": "Wizards First Rule" }, "lastUpdate": 1700000000000 },
+    "li_pod1": { "id": "li_pod1", "timeListening": "1800.5", "mediaMetadata": { "title": "Dan Carlin's Hardcore History" } },
+    "li_zero": { "id": "li_zero", "timeListening": 0, "mediaMetadata": null }
+  },
+  "days": { "2024-05-01": 3600, "2024-05-02": 1800.5 },
+  "dayOfWeek": { "Wednesday": 3600, "Thursday": 1800.5 },
+  "today": 1800.5,
+  "recentSessions": []
+}
