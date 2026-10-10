@@ -1,0 +1,17 @@
+// Shared build settings for all Hearth targets.
+// Copy `Local.xcconfig.template` to `Local.xcconfig` to set your team and bundle prefix.
+
+MARKETING_VERSION = 1.0.0
+CURRENT_PROJECT_VERSION = 1
+
+BUNDLE_ID_PREFIX = dev.hearth
+DEVELOPMENT_TEAM =
+
+// `Full` uses app groups, iCloud, CarPlay and Siri entitlements (paid developer account,
+// CarPlay requires an approved entitlement). `Basic` works with a free account.
+HEARTH_ENTITLEMENTS = Basic
+
+#include? "Local.xcconfig"
+
+HEARTH_APP_GROUP = group.$(BUNDLE_ID_PREFIX).hearth
+HEARTH_KEYCHAIN_GROUP = $(AppIdentifierPrefix)$(BUNDLE_ID_PREFIX).hearth
