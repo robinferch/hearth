@@ -961,6 +961,16 @@
         }
       }
     },
+    "Client certificate installed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Client-Zertifikat installiert"
+          }
+        }
+      }
+    },
     "Close player": {
       "localizations": {
         "de": {
@@ -3681,6 +3691,16 @@
         }
       }
     },
+    "The file doesn't contain a client certificate.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Datei enthält kein Client-Zertifikat."
+          }
+        }
+      }
+    },
     "The Hearth and the Hollow Hills": {
       "localizations": {
         "de": {
@@ -3717,6 +3737,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Der Titel wird gerade wiedergegeben."
+          }
+        }
+      }
+    },
+    "The passphrase is incorrect.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Passphrase ist falsch."
           }
         }
       }

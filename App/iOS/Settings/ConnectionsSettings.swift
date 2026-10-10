@@ -117,6 +117,10 @@ struct ConnectionDetailView: View {
                         LabeledContent("Version", value: version)
                     }
                     LabeledContent("Added", value: connection.addedAt.formatted(date: .abbreviated, time: .omitted))
+                    if connections.hasClientCertificate(for: connection.host) {
+                        Label("Client certificate installed", systemImage: "lock.doc")
+                            .foregroundStyle(.secondary)
+                    }
                     if connection.pinnedCertificateSHA256 != nil {
                         Label("Trusted self-signed certificate", systemImage: "checkmark.seal")
                             .foregroundStyle(.secondary)
@@ -178,8 +182,12 @@ struct ConnectionDetailView: View {
             .confirmationDialog("Remove this server?", isPresented: $confirmsRemove, titleVisibility: .visible) {
                 Button("Remove", role: .destructive) {
                     Task {
+                        let host = connections.connection(connectionID)?.host
                         await connections.remove(connectionID)
-                        ClientIdentityStore.delete(connectionID)
+                        // Keep the client certificate while another account still uses the same server.
+                        if let host, !connections.connections.contains(where: { $0.host == host }) {
+                            connections.removeClientCertificate(for: host)
+                        }
                         dismiss()
                     }
                 }

@@ -62,7 +62,6 @@ final class AppLifecycle {
     func launch() {
         guard !didLaunch else { return }
         didLaunch = true
-        ClientIdentityStore.install()
         AudioPlayer.shared.setup()
         Task {
             await HearthData.shared.bootstrap()
@@ -91,28 +90,20 @@ final class AppLifecycle {
             AudioPlayer.shared.appDidEnterBackground()
             BackgroundTaskScheduler.scheduleAll()
             QuickActions.update()
+            Task { await HearthData.shared.updateListenNowSnapshot() }
             Task { await stopLiveUpdates() }
         default:
             break
         }
     }
 
-    /// Socket.IO live updates for every online connection (foreground only).
+    /// Socket.IO live updates (foreground only).
     func startLiveUpdates() async {
-        let connections = HearthData.shared.connections
-        guard !connections.isOffline else { return }
-        for connection in connections.connections {
-            guard let client = try? connections.client(for: connection.id) else { continue }
-            await client.connectSocket()
-        }
+        HearthData.shared.startLiveUpdates()
     }
 
     func stopLiveUpdates() async {
-        let connections = HearthData.shared.connections
-        for connection in connections.connections {
-            guard let client = try? connections.client(for: connection.id) else { continue }
-            await client.disconnectSocket()
-        }
+        HearthData.shared.stopLiveUpdates()
     }
 }
 

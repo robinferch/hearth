@@ -81,10 +81,9 @@ final class AddConnectionModel {
         }
         hostInput = host.absoluteString
         errorMessage = nil
-        if clientCertificateData != nil, !validateClientCertificate() {
+        guard importClientCertificate(for: host) else {
             return
         }
-        ClientIdentityStore.setProvisional(clientCertificateData, passphrase: clientCertificatePassphrase, host: host)
         phase = .verifying
         do {
             let status = try await ServerAuthenticator.status(host: host, headers: validHeaders, pinnedCertificateSHA256: pinnedCertificate)
@@ -136,22 +135,29 @@ final class AddConnectionModel {
         clientCertificateError = nil
     }
 
-    /// Checks that the passphrase unlocks the .p12 file.
-    func validateClientCertificate() -> Bool {
+    /// Stores the imported .p12 for `host` through HearthData (validates the passphrase). HearthData supplies it to
+    /// every request against that host, including the unauthenticated ones made while adding the connection.
+    func importClientCertificate(for host: URL) -> Bool {
         guard let data = clientCertificateData else { return true }
-        guard ClientIdentityStore.decode(data, passphrase: clientCertificatePassphrase) != nil else {
+        do {
+            try HearthData.shared.connections.importClientCertificate(data, passphrase: clientCertificatePassphrase, for: host)
+            clientCertificateError = nil
+            return true
+        } catch .invalidPassphrase {
+            clientCertificateError = String(localized: "The passphrase is incorrect.")
+        } catch .noIdentity {
+            clientCertificateError = String(localized: "The file doesn't contain a client certificate.")
+        } catch {
             clientCertificateError = String(localized: "The certificate could not be opened. Check the passphrase.")
-            return false
         }
-        clientCertificateError = nil
-        return true
+        return false
     }
 
     // MARK: Sign in
 
     func signIn() async -> Bool {
         guard let host, let status else { return false }
-        guard validateClientCertificate() else { return false }
+        guard importClientCertificate(for: host) else { return false }
         isSigningIn = true
         errorMessage = nil
         defer { isSigningIn = false }
@@ -182,7 +188,7 @@ final class AddConnectionModel {
 
     func beginOpenID() async -> OpenIDAuthorization? {
         guard let host else { return nil }
-        guard validateClientCertificate() else { return nil }
+        guard importClientCertificate(for: host) else { return nil }
         errorMessage = nil
         do {
             return try await ServerAuthenticator.beginOpenID(host: host, headers: validHeaders, pinnedCertificateSHA256: pinnedCertificate)
@@ -213,9 +219,6 @@ final class AddConnectionModel {
             connections.connectionNeedingReauthorization = nil
         } else {
             await connections.add(connection, tokens: result.tokens)
-        }
-        if clientCertificateData != nil {
-            ClientIdentityStore.save(clientCertificateData, passphrase: clientCertificatePassphrase, for: connection.id)
         }
     }
 

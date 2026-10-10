@@ -125,6 +125,7 @@ struct RootView: View {
         switch sheet {
         case .settings:
             SettingsView()
+                .presentationSizing(.page)
         case .listenNow:
             NavigationStack {
                 ListenNowView()

@@ -9,7 +9,7 @@ struct WelcomeView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 32) {
-                Spacer(minLength: sizeClass == .compact ? 24 : 80)
+                Spacer(minLength: 24)
 
                 VStack(spacing: 18) {
                     HearthAppIcon()
@@ -38,6 +38,7 @@ struct WelcomeView: View {
             }
             .padding(.horizontal, 24)
             .frame(maxWidth: .infinity)
+            .modifier(CenterInRegularWidth(isRegular: sizeClass == .regular))
         }
         .scrollBounceBehavior(.basedOnSize)
         .safeAreaInset(edge: .bottom) {
@@ -133,4 +134,17 @@ enum AppLinks {
     static let license = URL(string: "https://github.com/hearth-app/hearth/blob/main/LICENSE")!
     static let privacy = URL(string: "https://github.com/hearth-app/hearth/blob/main/PRIVACY.md")!
     static let audiobookshelf = URL(string: "https://www.audiobookshelf.org")!
+}
+
+/// On iPad the welcome content fits on screen; center it vertically instead of pinning it to the top.
+private struct CenterInRegularWidth: ViewModifier {
+    let isRegular: Bool
+
+    func body(content: Content) -> some View {
+        if isRegular {
+            content.containerRelativeFrame(.vertical, alignment: .center)
+        } else {
+            content
+        }
+    }
 }
