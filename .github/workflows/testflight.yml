@@ -47,7 +47,10 @@ jobs:
           xcode-version: ${{ vars.XCODE_VERSION || 'latest-stable' }}
 
       - name: Install tools
-        run: brew install xcodegen
+        run: |
+          brew install xcodegen
+          ls -d /Applications/Xcode*.app
+          xcodebuild -version
 
       - uses: ruby/setup-ruby@v1
         with:

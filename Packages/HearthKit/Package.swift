@@ -24,7 +24,7 @@ let package = Package(
     targets: [
         .target(name: "HearthModel", swiftSettings: swiftSettings),
         .target(name: "HearthAPI", dependencies: ["HearthModel"], swiftSettings: swiftSettings),
-        .target(name: "HearthData", dependencies: ["HearthModel", "HearthAPI"], swiftSettings: swiftSettings),
+        .target(name: "HearthData", dependencies: ["HearthModel", "HearthAPI"], resources: [.process("Resources")], swiftSettings: swiftSettings),
         .target(name: "HearthPlayback", dependencies: ["HearthModel", "HearthAPI", "HearthData"], swiftSettings: swiftSettings),
         .target(name: "HearthUI", dependencies: ["HearthModel", "HearthData"], resources: [.process("Resources")], swiftSettings: swiftSettings),
         .target(name: "HearthIntents", dependencies: ["HearthModel", "HearthData", "HearthPlayback"], swiftSettings: swiftSettings),
