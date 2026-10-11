@@ -8,6 +8,12 @@ enum ExternalRequest: Hashable, Sendable {
     case open(ItemIdentifier)
     case play(ItemIdentifier)
     case search(String?)
+    /// Listen Now sheet (Listen Now / Play widgets).
+    case listenNow
+    /// Listening statistics (Listened Today widget).
+    case statistics
+    /// Full-screen player (Now Playing complication / Live Activity).
+    case nowPlaying
 }
 
 @MainActor
@@ -36,8 +42,9 @@ final class AppEvents {
 
 /// Parses `hearth://` URLs.
 enum DeepLink {
-    /// `hearth://item/<id>`, `hearth://play/<id>`, `hearth://search?q=…`. `hearth://oauth` is handled by
-    /// the authentication session and ignored here.
+    /// `hearth://item/<id>`, `hearth://play/<id>`, `hearth://search?q=…`, `hearth://listen-now`,
+    /// `hearth://statistics`, `hearth://nowplaying`. `hearth://oauth` is handled by the authentication session
+    /// and ignored here.
     static func request(for url: URL) -> ExternalRequest? {
         guard url.scheme?.lowercased() == "hearth", let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         let host = components.host?.lowercased()
@@ -52,6 +59,12 @@ enum DeepLink {
         case "search":
             let query = components.queryItems?.first { $0.name == "q" }?.value
             return .search(query)
+        case "listen-now":
+            return .listenNow
+        case "statistics":
+            return .statistics
+        case "nowplaying", "now-playing":
+            return .nowPlaying
         default:
             return nil
         }
@@ -72,6 +85,12 @@ enum DeepLink {
             if let query {
                 components.queryItems = [URLQueryItem(name: "q", value: query)]
             }
+        case .listenNow:
+            components.host = "listen-now"
+        case .statistics:
+            components.host = "statistics"
+        case .nowPlaying:
+            components.host = "nowplaying"
         }
         return components.url
     }

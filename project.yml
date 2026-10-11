@@ -246,6 +246,22 @@ targets:
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
 
+  HearthUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: App/UITests
+        type: syncedFolder
+    dependencies:
+      - target: Hearth
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).hearth.uitests
+        TEST_TARGET_NAME: Hearth
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_STRICT_CONCURRENCY: complete
+
 schemes:
   Hearth:
     build:
@@ -255,6 +271,8 @@ schemes:
       config: Debug
     test:
       config: Debug
+      targets:
+        - HearthUITests
     archive:
       config: Release
   HearthWatch:

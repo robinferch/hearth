@@ -435,7 +435,7 @@ extension AudioPlayer {
     /// so failures during a recovery are ignored.
     func handleTrackFailure(_ identifier: ObjectIdentifier, message: String?) {
         guard let failed = loadedTracks.first(where: { ObjectIdentifier($0.item) == identifier }), !isRecoveringStream else { return }
-        let reason = message ?? String(localized: "The audio stream failed.")
+        let reason = message ?? String(localized: "The audio stream failed.", bundle: .module)
         let errorEvent = failed.item.errorLog()?.events.last
         logger.error("Player item failed: \(reason, privacy: .public) (\(errorEvent?.errorStatusCode ?? 0), \(errorEvent?.errorComment ?? "-", privacy: .public))")
 

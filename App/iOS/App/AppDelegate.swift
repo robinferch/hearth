@@ -77,15 +77,19 @@ final class AppLifecycle {
         switch phase {
         case .active:
             Task {
-                // Avoid double refreshes right after launch / quick app switches.
+                // Avoid double full refreshes right after launch / quick app switches. The sockets were disconnected
+                // in the background, so progress changes from that time are still pulled and live updates resumed.
                 if let lastRefresh, Date.now.timeIntervalSince(lastRefresh) < 30 {
-                    return
+                    if AppEvents.shared.bootstrapFinished {
+                        await HearthData.shared.progress.sync()
+                    }
+                } else {
+                    lastRefresh = .now
+                    if AppEvents.shared.bootstrapFinished {
+                        await HearthData.shared.refresh()
+                    }
+                    await HearthData.shared.listening.refresh()
                 }
-                lastRefresh = .now
-                if AppEvents.shared.bootstrapFinished {
-                    await HearthData.shared.refresh()
-                }
-                await HearthData.shared.listening.refresh()
                 await startLiveUpdates()
             }
         case .background:

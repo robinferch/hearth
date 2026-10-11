@@ -32,11 +32,14 @@ struct MainTabView: View {
         .tabViewStyle(.sidebarAdaptable)
         .tabViewCustomization($customization)
         .tabBarMinimizeBehavior(.onScrollDown)
+        // The sidebar header and bottom bar don't inherit the scene's custom environment objects (crash on iPad).
         .tabViewSidebarHeader {
             ListenedTodaySidebarRow()
+                .environment(navigator)
         }
         .tabViewSidebarBottomBar {
             SidebarBottomBar()
+                .environment(navigator)
         }
         .modifier(MiniPlayerAccessory())
         .fullScreenCover(isPresented: $player.isExpanded) {

@@ -193,6 +193,15 @@ final class Navigator {
         }
     }
 
+    /// Pushes the statistics screen of the current library's server onto the selected tab.
+    func showStatistics(connections: ConnectionStore) {
+        guard let library = resolvedLibrary(connections: connections) else { return }
+        if paths[selectedTab]?.last == .libraryTab(.statistics, library: library.id) {
+            return
+        }
+        push(.libraryTab(.statistics, library: library.id))
+    }
+
     func showSearch(query: String?) {
         if let query {
             searchText = query

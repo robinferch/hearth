@@ -1,0 +1,156 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Add Bookmark": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lesezeichen hinzufügen"
+          }
+        }
+      }
+    },
+    "Apple Watch": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Watch"
+          }
+        }
+      }
+    },
+    "Bookmark": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lesezeichen"
+          }
+        }
+      }
+    },
+    "Collection: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sammlung: %@"
+          }
+        }
+      }
+    },
+    "Listen Now": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jetzt hören"
+          }
+        }
+      }
+    },
+    "No audio files were found for this item.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für diesen Titel wurden keine Audiodateien gefunden."
+          }
+        }
+      }
+    },
+    "Nothing is playing.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es wird nichts wiedergegeben."
+          }
+        }
+      }
+    },
+    "Playback couldn't be started: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Wiedergabe konnte nicht gestartet werden: %@"
+          }
+        }
+      }
+    },
+    "Playlist: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Playlist: %@"
+          }
+        }
+      }
+    },
+    "Podcast: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podcast: %@"
+          }
+        }
+      }
+    },
+    "Series: %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serie: %@"
+          }
+        }
+      }
+    },
+    "The audio stream failed.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Audiostream ist fehlgeschlagen."
+          }
+        }
+      }
+    },
+    "This item can't be played.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Titel kann nicht abgespielt werden."
+          }
+        }
+      }
+    },
+    "This item is currently downloading.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Titel wird gerade geladen."
+          }
+        }
+      }
+    },
+    "This item isn't downloaded and the server can't be reached.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Titel ist nicht geladen und der Server ist nicht erreichbar."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

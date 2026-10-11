@@ -33,6 +33,7 @@ struct DownloadToolbarButton: View {
         }
         .accessibilityLabel(accessibilityLabel(status))
         .accessibilityValue(status.isDownloading ? HearthFormat.percent(status.downloadProgress) : "")
+        .accessibilityIdentifier("detail.download")
         .sensoryFeedback(.success, trigger: status.isDownloaded) { _, new in new }
         .confirmationDialog(String(localized: "Remove Download", table: "Detail"), isPresented: $confirmsRemoval, titleVisibility: .hidden) {
             Button(String(localized: "Remove Download", table: "Detail"), role: .destructive) {

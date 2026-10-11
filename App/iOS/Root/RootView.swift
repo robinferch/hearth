@@ -130,6 +130,18 @@ struct RootView: View {
             navigator.sheet = nil
             player.collapse()
             navigator.showSearch(query: query)
+        case .listenNow:
+            player.collapse()
+            navigator.sheet = .listenNow
+        case .statistics:
+            navigator.sheet = nil
+            player.collapse()
+            navigator.showStatistics(connections: connections)
+        case .nowPlaying:
+            navigator.sheet = nil
+            if AudioPlayer.shared.currentItem != nil || AudioPlayer.shared.lastPlayedItemID != nil {
+                player.expand()
+            }
         }
     }
 

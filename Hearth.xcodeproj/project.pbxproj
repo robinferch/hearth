@@ -68,6 +68,13 @@
 			remoteGlobalIDString = 10158AD887B34334998CA06C;
 			remoteInfo = HearthWidgets;
 		};
+		5A2AE6BA8EC7F55E265EA1DB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 74F50A572083448637AD5668 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ABA944F29E0E685433BF1BB9;
+			remoteInfo = Hearth;
+		};
 		6CDFA85572F1CDBC3A440147 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 74F50A572083448637AD5668 /* Project object */;
@@ -131,6 +138,7 @@
 		8925C3D766B1346CA4B5AB52 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		B349A8BC691ED2A295408123 /* HearthWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HearthWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBB415D370BC05F3121EA073 /* Hearth.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Hearth.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE31F20DCFEC64585CE6172A /* HearthUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = HearthUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D23AFC5AAE01C8AD533525F4 /* HearthKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HearthKit; path = Packages/HearthKit; sourceTree = SOURCE_ROOT; };
 		DC93F2BC0DA9F9D0C931BC59 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		E2798D2B22C647F62FFF2B0E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -148,6 +156,15 @@
 			explicitFolders = (
 			);
 			path = App/WatchWidgets;
+			sourceTree = "<group>";
+		};
+		4ECA82CD999ADA4AA420C3CC /* App/UITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = App/UITests;
 			sourceTree = "<group>";
 		};
 		5BCCF430836D7AE514A417E3 /* App/iOS */ = {
@@ -265,6 +282,7 @@
 				2799B7E9BFA9F7516D7C47F6 /* WatchWidgets */,
 				3038AAD084866C8B4A2264A2 /* Widgets */,
 				5BCCF430836D7AE514A417E3 /* App/iOS */,
+				4ECA82CD999ADA4AA420C3CC /* App/UITests */,
 				DAC0D8CC795917480C1A5704 /* App/Watch */,
 				42F46FF1CA97152F3608A725 /* App/WatchWidgets */,
 				97BA9F0C64FA878BDD78F13C /* App/Widgets */,
@@ -296,6 +314,7 @@
 			isa = PBXGroup;
 			children = (
 				BBB415D370BC05F3121EA073 /* Hearth.app */,
+				CE31F20DCFEC64585CE6172A /* HearthUITests.xctest */,
 				B349A8BC691ED2A295408123 /* HearthWatch.app */,
 				306A17FFAC21B997C600DA70 /* HearthWatchWidgets.appex */,
 				8377C12B539FBB513F3B517A /* HearthWidgets.appex */,
@@ -391,6 +410,27 @@
 			productReference = 306A17FFAC21B997C600DA70 /* HearthWatchWidgets.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		771DFB49BF8900C4DDE0614B /* HearthUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F9AC653BF05DD52BAAC41216 /* Build configuration list for PBXNativeTarget "HearthUITests" */;
+			buildPhases = (
+				2ED34BD6048F6D61B0CC5260 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				62206016426C50EBBE3453A9 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4ECA82CD999ADA4AA420C3CC /* App/UITests */,
+			);
+			name = HearthUITests;
+			packageProductDependencies = (
+			);
+			productName = HearthUITests;
+			productReference = CE31F20DCFEC64585CE6172A /* HearthUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		8A0F8733E2E7D1AC77DAD1FE /* HearthWatch */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6B3A09703545EAA59AB58FC8 /* Build configuration list for PBXNativeTarget "HearthWatch" */;
@@ -469,6 +509,11 @@
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
+					771DFB49BF8900C4DDE0614B = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+						TestTargetID = ABA944F29E0E685433BF1BB9;
+					};
 					8A0F8733E2E7D1AC77DAD1FE = {
 						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
@@ -498,6 +543,7 @@
 			projectRoot = "";
 			targets = (
 				ABA944F29E0E685433BF1BB9 /* Hearth */,
+				771DFB49BF8900C4DDE0614B /* HearthUITests */,
 				8A0F8733E2E7D1AC77DAD1FE /* HearthWatch */,
 				44320B86246E69DAF53356AB /* HearthWatchWidgets */,
 				10158AD887B34334998CA06C /* HearthWidgets */,
@@ -562,6 +608,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2ED34BD6048F6D61B0CC5260 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		469F61F12DFB42DFB1A49571 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -586,6 +639,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		62206016426C50EBBE3453A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ABA944F29E0E685433BF1BB9 /* Hearth */;
+			targetProxy = 5A2AE6BA8EC7F55E265EA1DB /* PBXContainerItemProxy */;
+		};
 		8F9AC04D57BE89D78D4586B2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 8A0F8733E2E7D1AC77DAD1FE /* HearthWatch */;
@@ -779,6 +837,24 @@
 			};
 			name = Release;
 		};
+		C63447FAA2EF932761EBE489 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).hearth.uitests";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Hearth;
+			};
+			name = Release;
+		};
 		CB0D357C3A4A40A601B7A22F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8925C3D766B1346CA4B5AB52 /* Base.xcconfig */;
@@ -848,6 +924,24 @@
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_VERSION = 6.0;
 				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		D7D97D51B930E90AA5883092 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID_PREFIX).hearth.uitests";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Hearth;
 			};
 			name = Debug;
 		};
@@ -937,6 +1031,15 @@
 			buildConfigurations = (
 				47319FE45DFEB1DD6FD0E5A6 /* Debug */,
 				F530BD42D2B3945E7E8EC75E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F9AC653BF05DD52BAAC41216 /* Build configuration list for PBXNativeTarget "HearthUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D7D97D51B930E90AA5883092 /* Debug */,
+				C63447FAA2EF932761EBE489 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

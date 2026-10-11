@@ -66,6 +66,7 @@ struct LibraryPickerMenu: View {
         }
         .accessibilityLabel("Libraries")
         .accessibilityValue(title)
+        .accessibilityIdentifier("libraryPicker")
     }
 
     private var title: String {

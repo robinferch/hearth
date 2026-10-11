@@ -83,8 +83,8 @@ extension AudioPlayer {
             self?.setPlaybackRate(Double(rate))
             return .success
         }
-        center.bookmarkCommand.localizedTitle = String(localized: "Add Bookmark")
-        center.bookmarkCommand.localizedShortTitle = String(localized: "Bookmark")
+        center.bookmarkCommand.localizedTitle = String(localized: "Add Bookmark", bundle: .module)
+        center.bookmarkCommand.localizedShortTitle = String(localized: "Bookmark", bundle: .module)
         center.bookmarkCommand.addTarget { [weak self] _ in
             guard let self, self.canCreateBookmark else { return .commandFailed }
             Task {

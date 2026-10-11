@@ -19,10 +19,10 @@ public enum PlaybackError: Error, Sendable {
 extension PlaybackError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .notPlayable: String(localized: "This item can't be played.")
-        case .downloadInProgress: String(localized: "This item is currently downloading.")
-        case .noPlaybackItem: String(localized: "Nothing is playing.")
-        case .startFailed(let reason): String(localized: "Playback couldn't be started: \(reason)")
+        case .notPlayable: String(localized: "This item can't be played.", bundle: .module)
+        case .downloadInProgress: String(localized: "This item is currently downloading.", bundle: .module)
+        case .noPlaybackItem: String(localized: "Nothing is playing.", bundle: .module)
+        case .startFailed(let reason): String(localized: "Playback couldn't be started: \(reason)", bundle: .module)
         }
     }
 }

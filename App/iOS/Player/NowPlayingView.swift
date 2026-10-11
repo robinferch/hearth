@@ -167,6 +167,7 @@ struct NowPlayingView: View {
                 .buttonBorderShape(.circle)
                 .environment(\.colorScheme, .dark)
                 .accessibilityLabel(String(localized: "Close Player", table: "Player"))
+                .accessibilityIdentifier("player.close")
                 .padding(.trailing, 16)
                 .padding(.top, 4)
             }
@@ -272,6 +273,7 @@ struct NowPlayingView: View {
             }
             .popoverTip(PlayerTips.bookmarkLongPress, arrowEdge: .bottom)
             .accessibilityLabel(String(localized: "Add Bookmark", table: "Player"))
+            .accessibilityIdentifier("player.bookmark")
             .accessibilityAction(named: String(localized: "Add Quick Bookmark", table: "Player")) {
                 createBookmark(note: nil)
             }
@@ -323,6 +325,7 @@ struct NowPlayingView: View {
             .buttonStyle(.plain)
             .frame(maxWidth: .infinity)
             .accessibilityLabel(String(localized: "Chapters and Queue", table: "Player"))
+            .accessibilityIdentifier("player.panelToggle")
             .accessibilityAddTraits(showsPanel ? .isSelected : [])
             .sensoryFeedback(.selection, trigger: showsPanel)
         }

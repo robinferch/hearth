@@ -31,6 +31,7 @@ struct PlayerScrubberSection: View {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(HearthFormat.clock(time))
                     .frame(minWidth: 64, alignment: .leading)
+                    .accessibilityIdentifier("player.elapsed")
                 Spacer(minLength: 0)
                 centerLabel(time: time, total: total)
                     .lineLimit(1)
@@ -151,6 +152,7 @@ struct PlayPauseButton: View {
         .sensoryFeedback(.impact(weight: .medium), trigger: playing)
         .accessibilityLabel(playing ? String(localized: "Pause", table: "Player") : String(localized: "Play", table: "Player"))
         .accessibilityValue(player.isBuffering ? String(localized: "Buffering", table: "Player") : "")
+        .accessibilityIdentifier("player.playPause")
     }
 }
 
@@ -231,6 +233,7 @@ struct SkipButton: View {
         .sensoryFeedback(.impact(weight: .light), trigger: tapTrigger)
         .sensoryFeedback(.impact(weight: .heavy), trigger: chapterTrigger)
         .accessibilityLabel(forward ? String(localized: "Skip forward \(interval) seconds", table: "Player") : String(localized: "Skip back \(interval) seconds", table: "Player"))
+        .accessibilityIdentifier(forward ? "player.skipForward" : "player.skipBackward")
         .accessibilityHint(forward ? String(localized: "Long-press to go to the next chapter", table: "Player") : String(localized: "Long-press to go to the start of the chapter", table: "Player"))
         .accessibilityAction(named: forward ? String(localized: "Next chapter", table: "Player") : String(localized: "Previous chapter", table: "Player")) {
             Task {
@@ -427,6 +430,12 @@ enum PlayerTips {
     static func configureIfNeeded() {
         guard !configured else { return }
         configured = true
+        #if DEBUG
+        // `-HearthDisableTips YES` hides all tips (UI tests: popovers would cover controls).
+        if UserDefaults.standard.bool(forKey: "HearthDisableTips") {
+            Tips.hideAllTipsForTesting()
+        }
+        #endif
         try? Tips.configure([.displayFrequency(.daily)])
     }
 }

@@ -227,7 +227,7 @@ extension AudioPlayer {
         case .listenNow:
             let items = await data.items.listenNow()
             if !items.isEmpty {
-                return (items, String(localized: "Listen Now"))
+                return (items, String(localized: "Listen Now", bundle: .module))
             }
         case .none, .carPlay:
             break
@@ -250,7 +250,7 @@ extension AudioPlayer {
             case .listenNow:
                 let items = await data.items.listenNow()
                 if !items.isEmpty {
-                    return (items, String(localized: "Listen Now"))
+                    return (items, String(localized: "Listen Now", bundle: .module))
                 }
             case .default:
                 let items = await data.items.upNext(after: item.id, origin: grouping)
@@ -273,7 +273,7 @@ extension AudioPlayer {
             if name == nil {
                 name = try? await data.items.item(id).name
             }
-            return name.map { String(localized: "Series: \($0)") }
+            return name.map { String(localized: "Series: \($0)", bundle: .module) }
         case .podcast(let id):
             var name: String?
             if case .episode(let episode) = item {
@@ -282,12 +282,12 @@ extension AudioPlayer {
             if name == nil {
                 name = try? await data.items.item(id).name
             }
-            return name.map { String(localized: "Podcast: \($0)") }
+            return name.map { String(localized: "Podcast: \($0)", bundle: .module) }
         case .collection(let id):
             guard let name = try? await data.items.item(id).name else { return nil }
-            return id.kind == .playlist ? String(localized: "Playlist: \(name)") : String(localized: "Collection: \(name)")
+            return id.kind == .playlist ? String(localized: "Playlist: \(name)", bundle: .module) : String(localized: "Collection: \(name)", bundle: .module)
         case .listenNow:
-            return String(localized: "Listen Now")
+            return String(localized: "Listen Now", bundle: .module)
         case .none, .carPlay:
             return nil
         }

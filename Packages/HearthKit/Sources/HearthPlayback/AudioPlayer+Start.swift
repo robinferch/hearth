@@ -82,7 +82,7 @@ extension AudioPlayer {
         // 6. Episode chapters from the show notes when the server has none.
         var chapters = media.chapters
         if chapters.isEmpty, case .episode(let episode) = item {
-            chapters = DescriptionChapterParser.chapters(from: episode.descriptionHTML, duration: total)
+            chapters = ChapterParser.parse(description: episode.descriptionHTML ?? "", duration: total)
         }
         // 7. Sort / normalize; lock the download.
         chapters = ChapterLookup.normalized(chapters, duration: total)
@@ -222,9 +222,9 @@ extension AudioPlayer {
         guard !media.tracks.isEmpty else {
             Self.closeAbandonedSession(media)
             if online {
-                throw PlaybackError.startFailed(String(localized: "No audio files were found for this item."))
+                throw PlaybackError.startFailed(String(localized: "No audio files were found for this item.", bundle: .module))
             }
-            throw PlaybackError.startFailed(String(localized: "This item isn't downloaded and the server can't be reached."))
+            throw PlaybackError.startFailed(String(localized: "This item isn't downloaded and the server can't be reached.", bundle: .module))
         }
         return media
     }

@@ -165,7 +165,7 @@ extension AudioPlayer {
 
     static var deviceName: String {
         #if os(watchOS)
-        String(localized: "Apple Watch")
+        String(localized: "Apple Watch", bundle: .module)
         #else
         UIDevice.current.localizedModel
         #endif
