@@ -41,6 +41,7 @@ struct MainTabView: View {
         .modifier(MiniPlayerAccessory())
         .fullScreenCover(isPresented: $player.isExpanded) {
             NowPlayingView()
+                .sceneAlertHost()
                 .modifier(ZoomTransition(sourceID: PlayerPresentation.transitionSourceID, namespace: playerNamespace))
         }
         .onAppear(perform: validate)

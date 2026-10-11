@@ -74,6 +74,8 @@ enum AppItemActions {
             await data.downloads.cancel(id)
         }
         handler.addTo = { id in
+            // Scene sheets are presented below the full-screen player (e.g. from its queue).
+            player.isExpanded = false
             navigator.sheet = .addTo(id)
         }
         handler.navigate = { destination in

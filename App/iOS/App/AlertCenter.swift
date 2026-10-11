@@ -35,6 +35,23 @@ final class AlertCenter {
     private(set) var successTrigger = 0
     private(set) var errorTrigger = 0
 
+    /// Views able to present the scene's alerts (root, sheets, full-screen player), in the order they appeared.
+    /// Only the topmost one presents: an alert attached to a view covered by a sheet or cover isn't shown.
+    private var hosts: [UUID] = []
+
+    func registerHost(_ id: UUID) {
+        hosts.removeAll { $0 == id }
+        hosts.append(id)
+    }
+
+    func unregisterHost(_ id: UUID) {
+        hosts.removeAll { $0 == id }
+    }
+
+    func isTopmostHost(_ id: UUID) -> Bool {
+        hosts.last == id
+    }
+
     func present(_ alert: WarningAlert) {
         self.alert = alert
     }
