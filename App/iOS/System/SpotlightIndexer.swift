@@ -76,7 +76,9 @@ final class SpotlightIndexer {
         await HearthData.shared.bootstrap()
         let count = await indexAll()
         schedule()
-        return count >= 0 && !Task.isCancelled
+        let success = count >= 0 && !Task.isCancelled
+        Self.logger.notice("Spotlight background task finished (\(count) items, success: \(success))")
+        return success
     }
 
     /// Schedules the next full index (when it becomes due).
@@ -135,6 +137,7 @@ final class SpotlightIndexer {
         var count = 0
         var failures = 0
         var domains = indexedDomains
+        Self.logger.debug("Indexing \(data.connections.allLibraries.count) libraries")
         for library in data.connections.allLibraries {
             guard !Task.isCancelled else { break }
             do {

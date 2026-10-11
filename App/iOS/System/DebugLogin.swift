@@ -9,7 +9,7 @@ import OSLog
 /// DEBUG-only: `-HearthDebugLogin <url> <user> <password>` signs in without UI (simulator checks, screenshots).
 /// Skipped when the connection already exists. `-HearthDebugReindexSpotlight` forces a full Spotlight index.
 /// `-HearthDebugSimulateSpotlightTask [expire]` launches the Spotlight `BGProcessingTask` the way the system does
-/// (handler on a background queue), optionally expiring it after a few seconds.
+/// (handler on a background queue), optionally expiring it right after the launch.
 @MainActor
 enum DebugLogin {
     private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Hearth", category: "DebugLogin")
@@ -50,11 +50,24 @@ enum DebugLogin {
         }
     }
 
-    /// Uses the scheduler's private simulation hooks (the ones the debugger commands use).
+    /// Device: the scheduler's private simulation hooks (the ones the debugger commands use). Simulator (no
+    /// `BGTaskScheduler`): calls the registered launch handler and the expiration handler on background queues.
     private static func simulateSpotlightTask(expire: Bool) {
         let identifier = SpotlightIndexer.taskIdentifier
         DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 5) {
             let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Hearth", category: "DebugLogin")
+            #if targetEnvironment(simulator)
+            let taskClass: NSObject.Type = BGProcessingTask.self
+            guard let task = taskClass.init() as? BGProcessingTask else { return }
+            logger.notice("Calling the launch handler of \(identifier, privacy: .public) on a background queue")
+            SpotlightIndexer.handleLaunch(task)
+            guard expire else { return }
+            nonisolated(unsafe) let expiring = task
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 0.05) {
+                logger.notice("Calling the expiration handler of \(identifier, privacy: .public) on a background queue")
+                expiring.expirationHandler?()
+            }
+            #else
             let scheduler = BGTaskScheduler.shared
             let launch = NSSelectorFromString("_simulateLaunchForTaskWithIdentifier:")
             guard scheduler.responds(to: launch) else {
@@ -68,6 +81,7 @@ enum DebugLogin {
                 logger.notice("Simulating the expiration of \(identifier, privacy: .public)")
                 _ = BGTaskScheduler.shared.perform(NSSelectorFromString("_simulateExpirationForTaskWithIdentifier:"), with: identifier)
             }
+            #endif
         }
     }
 }
