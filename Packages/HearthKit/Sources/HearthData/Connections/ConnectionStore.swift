@@ -272,7 +272,10 @@ public final class ConnectionStore {
             for (id, client) in clients {
                 group.addTask {
                     do {
-                        return (id, .success(try await client.libraries()))
+                        // Keep the `try await` out of the returned tuple: Release builds (Swift 6.4, -O) dropped the
+                        // child result entirely, so no library ever loaded in TestFlight/App Store builds.
+                        let fetched = try await client.libraries()
+                        return (id, .success(fetched))
                     } catch {
                         return (id, .failure(error))
                     }
