@@ -25,6 +25,8 @@ final class DownloadCell {
 public final class DownloadManager {
     static let maxConcurrentDownloads = 4
     static let maxRetries = 3
+    /// 401 answers per asset (each after refreshing the token) before waiting for the next refresh / launch.
+    static let maxAuthorizationRetries = 2
     nonisolated static let coverWeight = 10.0
     nonisolated static let pdfWeight = 10.0
     nonisolated static let audioWeight = 80.0
@@ -53,7 +55,21 @@ public final class DownloadManager {
     @ObservationIgnored private var rules: [String: AutoDownloadRuleRecord] = [:]
     @ObservationIgnored private var tracked: [String: Set<ItemIdentifier>] = [:]
     @ObservationIgnored private var session: URLSession?
-    @ObservationIgnored private var backgroundCompletion: (@Sendable () -> Void)?
+    /// Session callbacks, processed one after another by `eventsTask`.
+    @ObservationIgnored private var events: AsyncStream<DownloadEvent>.Continuation?
+    @ObservationIgnored private var eventsTask: Task<Void, Never>?
+    @ObservationIgnored private var backgroundCompletions: [@Sendable () -> Void] = []
+    /// `urlSessionDidFinishEvents` arrived and wasn't matched with a completion handler yet.
+    @ObservationIgnored private var backgroundEventsDelivered = false
+    /// Assets whose task is being created / runs in this process (prevents duplicate tasks).
+    @ObservationIgnored private var startingAssets = Set<String>()
+    @ObservationIgnored private var runningAssets = Set<String>()
+    /// 401 answers per asset since the last success or resume.
+    @ObservationIgnored private var authorizationRetries: [String: Int] = [:]
+    /// Assets whose finished files may be moved into place (shared with the session delegate).
+    @ObservationIgnored let activeAssets = ActiveDownloadAssets()
+    /// Delay before retrying a failed asset; doubles with every further failure.
+    @ObservationIgnored var retryBaseDelay: Duration
     @ObservationIgnored private var isRunningAutoDownloads = false
 
     @ObservationIgnored let environment: DataEnvironment
@@ -64,6 +80,7 @@ public final class DownloadManager {
 
     init(environment: DataEnvironment) {
         self.environment = environment
+        retryBaseDelay = environment.isLive ? .seconds(5) : .milliseconds(10)
         let context = ModelContext(environment.container)
         for value in context.storedItems(downloadedOnly: false) {
             items[value.item.id.storageKey] = value
@@ -72,6 +89,9 @@ public final class DownloadManager {
             let key = asset.itemID.storageKey
             assets[key, default: []].append(asset)
             assetOwners[asset.id] = key
+            if !asset.isDownloaded {
+                activeAssets.insert([asset.id])
+            }
         }
         for (key, value) in items where value.item.id.isPlayable {
             if value.isDownloaded {
@@ -161,18 +181,16 @@ public final class DownloadManager {
         if let session {
             return session
         }
-        let events = DownloadSessionDelegate.Events(
-            progress: { [weak self] assetID, written, expected in
-                Task { @MainActor in self?.taskProgressed(assetID, written: written, expected: expected) }
-            },
-            finished: { [weak self] assetID, result, resumeData in
-                Task { @MainActor in await self?.taskFinished(assetID, result: result, resumeData: resumeData) }
-            },
-            allEventsDelivered: { [weak self] in
-                Task { @MainActor in self?.finishBackgroundEvents() }
+        // One ordered stream: a background completion handler must only run after the work for all earlier
+        // callbacks is done (independent tasks per callback could run it first).
+        let (stream, continuation) = AsyncStream<DownloadEvent>.makeStream()
+        events = continuation
+        eventsTask = Task { [weak self] in
+            for await event in stream {
+                await self?.handle(event)
             }
-        )
-        let delegate = DownloadSessionDelegate(root: root, trust: environment.trust, events: events)
+        }
+        let delegate = DownloadSessionDelegate(root: root, trust: environment.trust, active: activeAssets, send: { continuation.yield($0) })
         let configuration: URLSessionConfiguration
         if environment.isLive {
             configuration = .background(withIdentifier: Self.sessionIdentifier)
@@ -193,20 +211,45 @@ public final class DownloadManager {
         return session
     }
 
-    /// Forwarded from `application(_:handleEventsForBackgroundURLSession:completionHandler:)`.
+    /// Forwarded from `application(_:handleEventsForBackgroundURLSession:completionHandler:)` (iOS) or a
+    /// `WKURLSessionRefreshBackgroundTask` (watchOS, possibly several). Every handler is called once the session
+    /// delivered all events and their work is done.
     public func handleBackgroundEvents(identifier: String, completion: @escaping @Sendable () -> Void) {
         guard identifier == Self.sessionIdentifier else {
             completion()
             return
         }
-        backgroundCompletion = completion
+        backgroundCompletions.append(completion)
         _ = downloadSession()
+        if backgroundEventsDelivered {
+            // The events arrived before the handler; finish after the work still queued.
+            events?.yield(.drainBackgroundCompletions)
+        }
     }
 
-    private func finishBackgroundEvents() {
-        let completion = backgroundCompletion
-        backgroundCompletion = nil
-        completion?()
+    /// Processes session callbacks in order.
+    func handle(_ event: DownloadEvent) async {
+        switch event {
+        case .progress(let assetID, let written, let expected):
+            await taskProgressed(assetID, written: written, expected: expected)
+        case .finished(let assetID, let taskIdentifier, let result, let resumeData):
+            await taskFinished(assetID, taskIdentifier: taskIdentifier, result: result, resumeData: resumeData)
+        case .allEventsDelivered:
+            backgroundEventsDelivered = true
+            drainBackgroundCompletions()
+        case .drainBackgroundCompletions:
+            drainBackgroundCompletions()
+        }
+    }
+
+    private func drainBackgroundCompletions() {
+        guard backgroundEventsDelivered, !backgroundCompletions.isEmpty else { return }
+        let completions = backgroundCompletions
+        backgroundCompletions.removeAll()
+        backgroundEventsDelivered = false
+        for completion in completions {
+            completion()
+        }
     }
 
     private func applyNetworkPolicy(_ request: inout URLRequest) {
@@ -227,11 +270,26 @@ public final class DownloadManager {
         }
     }
 
-    /// Creates and resumes the task for an asset (no-op while its connection is unavailable).
+    private func currentAsset(_ assetID: String) -> DownloadAsset? {
+        assetOwners[assetID].flatMap { key in assets[key]?.first { $0.id == assetID } }
+    }
+
+    private func availableClient(for asset: DownloadAsset) -> (any AudiobookshelfClient)? {
+        guard let hearth, hearth.connections.isAvailable(asset.itemID.connectionID) else { return nil }
+        return try? hearth.connections.client(for: asset.itemID.connectionID)
+    }
+
+    /// Creates and resumes the task for an asset (no-op while its connection is unavailable, the asset was removed
+    /// or a task for it is already being created or running).
     private func start(_ asset: DownloadAsset, resumeData: Data? = nil) async {
-        guard let hearth, hearth.connections.isAvailable(asset.itemID.connectionID), let client = try? hearth.connections.client(for: asset.itemID.connectionID) else {
+        let assetID = asset.id
+        guard assetOwners[assetID] != nil, !startingAssets.contains(assetID), !runningAssets.contains(assetID), let client = availableClient(for: asset) else {
             return
         }
+        // Marked before the first suspension so concurrent callers (resumePendingDownloads) skip it.
+        startingAssets.insert(assetID)
+        defer { startingAssets.remove(assetID) }
+
         let session = downloadSession()
         let task: URLSessionDownloadTask
         if let resumeData {
@@ -242,17 +300,24 @@ public final class DownloadManager {
                 applyNetworkPolicy(&request)
                 task = session.downloadTask(with: request)
             } catch {
+                if (error as? APIError) != .invalidURL {
+                    // Offline, unreachable, token refresh failed: not the asset's fault, resumed later.
+                    logger.notice("Creating a download request failed, retrying later: \(String(describing: error), privacy: .public)")
+                    return
+                }
                 logger.error("Creating a download request failed: \(String(describing: error), privacy: .public)")
-                await taskFinished(asset.id, result: .failure(error), resumeData: nil)
+                startingAssets.remove(assetID)
+                await taskFinished(assetID, taskIdentifier: nil, result: .failure(error), resumeData: nil)
                 return
             }
         }
         // The asset may have been removed while awaiting the request.
-        guard let key = assetOwners[asset.id], var list = assets[key], let index = list.firstIndex(where: { $0.id == asset.id }) else {
+        guard let key = assetOwners[assetID], var list = assets[key], let index = list.firstIndex(where: { $0.id == assetID }) else {
             task.cancel()
             return
         }
-        task.taskDescription = DownloadTaskDescription(assetID: asset.id, relativePath: asset.relativePath).encoded
+        runningAssets.insert(assetID)
+        task.taskDescription = DownloadTaskDescription(assetID: assetID, relativePath: asset.relativePath).encoded
         list[index].taskIdentifier = task.taskIdentifier
         assets[key] = list
         let updated = list[index]
@@ -311,6 +376,7 @@ public final class DownloadManager {
             for asset in list {
                 assetOwners[asset.id] = key
             }
+            activeAssets.insert(list.map(\.id))
             hearth.items.remember([item])
             for asset in list {
                 await start(asset)
@@ -352,56 +418,134 @@ public final class DownloadManager {
         return list
     }
 
-    private func taskProgressed(_ assetID: String, written: Int64, expected: Int64) {
+    private func taskProgressed(_ assetID: String, written: Int64, expected: Int64) async {
         guard let key = assetOwners[assetID], expected > 0 else { return }
+        let isFirstReport = inflightFractions[assetID] == nil
         inflightFractions[assetID] = min(1, Double(written) / Double(expected))
         refreshProgress(key)
+        if isFirstReport, var list = assets[key], let index = list.firstIndex(where: { $0.id == assetID }), list[index].failureCount > 0 {
+            // Data flows again: earlier failures were transient and don't count towards giving up.
+            list[index].failureCount = 0
+            assets[key] = list
+            let updated = list[index]
+            await environment.store.perform { $0.upsertAssets([updated]) }
+        }
     }
 
-    private func taskFinished(_ assetID: String, result: Result<Int64, any Error>, resumeData: Data?) async {
-        inflightFractions[assetID] = nil
+    enum FailureKind: Equatable {
+        /// Cancelled by a removal, the system or a force quit; not the download's fault.
+        case cancelled
+        /// 401: refresh the token and try again.
+        case unauthorized
+        /// Retrying can't help (400, 403, 404, 410).
+        case permanent
+        case transient
+    }
+
+    nonisolated static func classify(_ error: any Error) -> FailureKind {
+        switch error {
+        case DownloadTaskError.unauthorized:
+            .unauthorized
+        case DownloadTaskError.httpStatus(let status) where [400, 403, 404, 410].contains(status):
+            .permanent
+        case DownloadTaskError.discarded, APIError.cancelled:
+            .cancelled
+        case let error as URLError where error.code == .cancelled:
+            .cancelled
+        default:
+            .transient
+        }
+    }
+
+    /// - Parameter taskIdentifier: the finished task (`nil` if no task could be created).
+    private func taskFinished(_ assetID: String, taskIdentifier: Int?, result: Result<Int64, any Error>, resumeData: Data?) async {
         guard let key = assetOwners[assetID], var list = assets[key], let index = list.firstIndex(where: { $0.id == assetID }) else {
+            inflightFractions[assetID] = nil
             return
         }
+        if let taskIdentifier, let current = list[index].taskIdentifier, current != taskIdentifier {
+            // A replaced task (e.g. cancelled by a force quit, reported after the asset was restarted).
+            logger.notice("Ignoring completion of a replaced download task")
+            return
+        }
+        inflightFractions[assetID] = nil
+        runningAssets.remove(assetID)
         var asset = list[index]
+        asset.taskIdentifier = nil
         switch result {
         case .success(let bytes):
             asset.isDownloaded = true
-            asset.taskIdentifier = nil
             asset.byteCount = bytes
             list[index] = asset
             assets[key] = list
+            authorizationRetries[assetID] = nil
             let updated = asset
             await environment.store.perform { $0.upsertAssets([updated]) }
             await checkCompletion(key)
         case .failure(let error):
-            if (error as? URLError)?.code == .cancelled, resumeData == nil, statuses[key] != .downloading {
-                return
-            }
-            asset.failureCount += 1
-            asset.taskIdentifier = nil
-            logger.error("Download task failed (\(asset.failureCount)): \(String(describing: error), privacy: .public)")
-            if asset.failureCount > Self.maxRetries {
-                if asset.kind == .audio {
-                    logger.error("Giving up on \(asset.itemID.description, privacy: .public)")
-                    await removeNow(asset.itemID)
-                } else {
-                    // Covers and PDFs are optional.
-                    list.remove(at: index)
-                    assets[key] = list
-                    assetOwners[assetID] = nil
-                    await environment.store.perform { $0.deleteAsset(id: assetID) }
-                    await checkCompletion(key)
-                }
-            } else {
-                list[index] = asset
-                assets[key] = list
-                let updated = asset
-                await environment.store.perform { $0.upsertAssets([updated]) }
+            let kind = Self.classify(error)
+            switch kind {
+            case .cancelled:
+                // Removals are handled above (the asset is gone).
+                guard statuses[key] == .downloading else { return }
+                logger.notice("Download task was cancelled, resuming")
+                await save(asset, at: index, in: key)
                 await start(asset, resumeData: resumeData)
+            case .unauthorized:
+                let retries = (authorizationRetries[assetID] ?? 0) + 1
+                authorizationRetries[assetID] = retries
+                await save(asset, at: index, in: key)
+                guard retries <= Self.maxAuthorizationRetries, let client = availableClient(for: asset) else {
+                    logger.error("Download rejected with 401 again; retrying after the next refresh")
+                    return
+                }
+                if case DownloadTaskError.unauthorized(let request?) = error {
+                    // Throws (and marks the connection unauthorized) if the user must sign in again; `start` is a
+                    // no-op then.
+                    try? await client.refreshAuthorization(rejectedRequest: request)
+                }
+                await start(asset)
+            case .permanent, .transient:
+                asset.failureCount = kind == .permanent ? Self.maxRetries + 1 : asset.failureCount + 1
+                logger.error("Download task failed (\(asset.failureCount)): \(String(describing: error), privacy: .public)")
+                if asset.failureCount > Self.maxRetries {
+                    if asset.kind == .audio {
+                        logger.error("Giving up on \(asset.itemID.description, privacy: .public)")
+                        await removeNow(asset.itemID)
+                    } else {
+                        // Covers and PDFs are optional.
+                        list.remove(at: index)
+                        assets[key] = list
+                        assetOwners[assetID] = nil
+                        activeAssets.remove([assetID])
+                        await environment.store.perform { $0.deleteAsset(id: assetID) }
+                        await checkCompletion(key)
+                    }
+                } else {
+                    await save(asset, at: index, in: key)
+                    scheduleRetry(asset, resumeData: resumeData)
+                }
             }
         }
         refreshProgress(key)
+    }
+
+    private func save(_ asset: DownloadAsset, at index: Int, in key: String) async {
+        guard var list = assets[key], list.indices.contains(index), list[index].id == asset.id else { return }
+        list[index] = asset
+        assets[key] = list
+        await environment.store.perform { $0.upsertAssets([asset]) }
+    }
+
+    /// Restarts a failed asset after an exponential backoff.
+    private func scheduleRetry(_ asset: DownloadAsset, resumeData: Data?) {
+        let delay = retryBaseDelay * (1 << min(max(asset.failureCount - 1, 0), 6))
+        let assetID = asset.id
+        Task { [weak self] in
+            try? await Task.sleep(for: delay)
+            guard let self, let current = self.currentAsset(assetID), !current.isDownloaded else { return }
+            await self.start(current, resumeData: resumeData)
+        }
     }
 
     private func checkCompletion(_ key: String) async {
@@ -427,6 +571,8 @@ public final class DownloadManager {
         let tasks = await session.allTasks
         let live = Set(tasks.compactMap { DownloadTaskDescription($0.taskDescription)?.assetID })
         for asset in pending where !live.contains(asset.id) {
+            authorizationRetries[asset.id] = nil
+            // Skips assets removed meanwhile and assets whose task is being created or running (`download`).
             await start(asset)
         }
     }
@@ -486,6 +632,9 @@ public final class DownloadManager {
         let key = requested.storageKey
         let id = items[key]?.item.id ?? requested
         let assetIDs = Set((assets[key] ?? []).map(\.id))
+        // First, so tasks finishing from now on don't move files into the directory deleted below.
+        activeAssets.remove(assetIDs)
+        runningAssets.subtract(assetIDs)
 
         if let session, !assetIDs.isEmpty {
             for task in await session.allTasks where assetIDs.contains(DownloadTaskDescription(task.taskDescription)?.assetID ?? "") {
@@ -495,6 +644,7 @@ public final class DownloadManager {
         for assetID in assetIDs {
             assetOwners[assetID] = nil
             inflightFractions[assetID] = nil
+            authorizationRetries[assetID] = nil
         }
         assets[key] = nil
         chapters[key] = nil
