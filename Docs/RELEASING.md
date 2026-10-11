@@ -47,7 +47,7 @@ You need a paid Apple Developer account.
    Then set the repository **variable** `TESTFLIGHT_ENABLED` to `true`. Until it is set, the TestFlight workflow is skipped.
 
    Optional repository **variables**:
-   - `XCODE_VERSION` (default `latest-stable`);
+   - `XCODE_VERSION` (default `27.0`) and `RUNNER_LABEL` (default `xcode-27`, the GitHub-hosted Xcode 27 image);
    - `HEARTH_ENTITLEMENTS` (default `Full`; set it to `CarPlay` once Apple granted the CarPlay audio entitlement, then re-run `fastlane match appstore --force` locally so the profiles include it).
 
 ## Entitlement variants
