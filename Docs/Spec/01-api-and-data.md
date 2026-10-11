@@ -17,7 +17,7 @@ Client name sent to the server: `Hearth`. OAuth callback: `hearth://oauth`.
 - Deduplicate identical in-flight GETs. Optional in-memory TTL cache (~12 s) for list endpoints.
 - Concurrency limit ~6 requests per connection. Login/status/refresh/authorize bypass the limiter and the "unreachable" gate.
 - Offline mode: requests fail with `.offline` unless explicitly allowed.
-- 401 → refresh token once (single-flight per connection; skip if token already changed since request was sent) → retry. 404 → no retry. Other errors: retry up to 3 attempts total. Valid status range 200–299.
+- 401 → refresh token once (single-flight per connection; skip if token already changed since request was sent) → retry. Tokens are refreshed proactively when the JWT `exp` is close (1 min for API calls, 15 min for download/stream/cover requests). Only idempotent requests (GET and explicitly marked calls) are retried on network errors / 5xx / 408 / 429, up to 3 attempts. Valid status range 200–299.
 - Refresh failure → mark connection unavailable for this run, post "connection unauthorized" notification (UI offers re-login).
 
 ### 1.2 Authentication & server
@@ -170,7 +170,7 @@ Live: also apply Socket.IO `user_item_progress_updated` events.
 Local sessions recorded when no server session/sync fails; uploaded via `session/local` on launch. Today total = server sessions since midnight (`listening-sessions` paging) + unsynced local + current unreported. Daily goal setting default 30 min; resets at midnight.
 
 ### 4.6 Downloads
-Fetch `items/{id}?expanded=1`; assets: covers (4 sizes), PDFs, audio tracks; weight 10/10/80. Background `URLSession` (`<bundle>.downloads`), 4 concurrent, cellular only if allowed. Files under `Downloads/<connection>/<library>/<primary>/…`, excluded from backup. Retry ≤ 3 then remove. Item playing → locked. Podcast without episodes left → removed.
+Fetch `items/{id}?expanded=1`; assets: covers (4 sizes), PDFs, audio tracks; weight 10/10/80. Background `URLSession` (`<bundle>.downloads`), 4 concurrent, cellular only if allowed. Files under `Downloads/<connection>/<library>/<primary>/…`, excluded from backup. 401 → refresh + restart (not counted); 400/403/404/410 → give up; other errors → exponential backoff, max 3 counted failures, then remove. Item playing → locked. Podcast without episodes left → removed.
 Auto-download rules per series/podcast/collection: `all`, `next n unfinished`, `released within h hours`; "keep Listen Now downloaded"; delete-when-finished option; BGAppRefresh every ≥3 h.
 
 ### 4.7 Listen Now / Up Next
