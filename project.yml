@@ -1,6 +1,6 @@
 name: Hearth
 options:
-  bundleIdPrefix: dev.hearth
+  bundleIdPrefix: me.robinferch
   deploymentTarget:
     iOS: "26.0"
     watchOS: "26.0"
@@ -206,7 +206,6 @@ targets:
         CFBundleURLTypes:
           - CFBundleURLName: $(PRODUCT_BUNDLE_IDENTIFIER)
             CFBundleURLSchemes: [hearth]
-        WKBackgroundModes: [audio]
         UIBackgroundModes: [audio]
         NSAppTransportSecurity:
           NSAllowsArbitraryLoads: true

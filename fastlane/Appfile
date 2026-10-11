@@ -1,0 +1,4 @@
+# Values come from the environment so forks can use their own accounts.
+app_identifier(ENV.fetch("HEARTH_BUNDLE_ID", "me.robinferch.hearth"))
+team_id(ENV["APPLE_TEAM_ID"]) if ENV["APPLE_TEAM_ID"]
+apple_id(ENV["FASTLANE_APPLE_ID"]) if ENV["FASTLANE_APPLE_ID"]

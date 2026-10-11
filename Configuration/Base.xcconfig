@@ -4,7 +4,7 @@
 MARKETING_VERSION = 1.0.0
 CURRENT_PROJECT_VERSION = 1
 
-BUNDLE_ID_PREFIX = dev.hearth
+BUNDLE_ID_PREFIX = me.robinferch
 DEVELOPMENT_TEAM =
 
 // `Full` uses app groups, iCloud, CarPlay and Siri entitlements (paid developer account,

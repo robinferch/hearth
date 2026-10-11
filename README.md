@@ -26,15 +26,19 @@
 
 ## Building
 
-1. `cp Configuration/Local.xcconfig.template Configuration/Local.xcconfig` and set `DEVELOPMENT_TEAM` and `BUNDLE_ID_PREFIX`.
+1. `cp Configuration/Local.xcconfig.template Configuration/Local.xcconfig` and set `DEVELOPMENT_TEAM` (forks: also `BUNDLE_ID_PREFIX`).
    - `HEARTH_ENTITLEMENTS = Basic` works with a free Apple developer account.
-   - `Full` also enables iCloud sync, Siri and CarPlay. CarPlay requires an entitlement that Apple has to approve.
+   - `Full` also enables iCloud sync and Siri. `CarPlay` adds CarPlay, which needs an entitlement that Apple has to approve.
 2. `xcodegen generate` (only needed after `project.yml` changes)
 3. Open `Hearth.xcodeproj`, choose the **Hearth** scheme and run.
 
 For OpenID sign-in, add `hearth://oauth` to the allowed redirect URIs in your audiobookshelf authentication settings.
 
 See [Docs/ARCHITECTURE.md](Docs/ARCHITECTURE.md) for how the code is organized.
+
+## Continuous integration & TestFlight
+
+GitHub Actions run the package tests and build the iOS and watchOS apps for every push and pull request. Pushes to `main` are signed with fastlane `match` and uploaded to TestFlight. Setup is described in [Docs/RELEASING.md](Docs/RELEASING.md).
 
 ## Contributing
 

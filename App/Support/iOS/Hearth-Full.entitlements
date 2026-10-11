@@ -11,9 +11,7 @@
 		<string>$(HEARTH_KEYCHAIN_GROUP)</string>
 	</array>
 	<key>com.apple.developer.ubiquity-kvstore-identifier</key>
-	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
-	<key>com.apple.developer.carplay-audio</key>
-	<true/>
+	<string>$(TeamIdentifierPrefix)$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>com.apple.developer.siri</key>
 	<true/>
 </dict>

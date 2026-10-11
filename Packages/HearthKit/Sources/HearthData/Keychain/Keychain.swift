@@ -16,7 +16,7 @@ struct Keychain: Sendable {
     /// `nil` = undecided, `true` = access group works, `false` = fall back to the default group.
     private static let groupUsable = Mutex<Bool?>(nil)
 
-    init(service: String = "dev.hearth.credentials", accessGroup: String? = AppGroup.keychainAccessGroup) {
+    init(service: String = "me.robinferch.hearth.credentials", accessGroup: String? = AppGroup.keychainAccessGroup) {
         self.service = service
         // Unresolved build settings (e.g. `$(AppIdentifierPrefix)` in unsigned builds) can't be valid groups.
         if let accessGroup, !accessGroup.isEmpty, !accessGroup.contains("$("), !accessGroup.hasPrefix(".") {

@@ -94,7 +94,7 @@ enum LogExporter {
             for entry in entries {
                 guard let log = entry as? OSLogEntryLog else { continue }
                 // Hearth's own subsystems plus errors from system frameworks.
-                guard log.subsystem.hasPrefix(subsystem) || log.subsystem.hasPrefix("dev.hearth") || log.level == .error || log.level == .fault else { continue }
+                guard log.subsystem.hasPrefix(subsystem) || log.subsystem.hasPrefix("me.robinferch.hearth") || log.level == .error || log.level == .fault else { continue }
                 lines.append("\(formatter.string(from: log.date)) [\(log.level.label)] \(log.category): \(log.composedMessage)")
             }
             let url = FileManager.default.temporaryDirectory.appending(path: "Hearth-Log-\(Int(Date.now.timeIntervalSince1970)).txt")

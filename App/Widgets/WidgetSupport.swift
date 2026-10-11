@@ -9,9 +9,9 @@ import WidgetKit
 
 /// Widget kinds (also used by the app for targeted reloads).
 enum WidgetKind {
-    static let play = "dev.hearth.widget.play"
-    static let listenNow = "dev.hearth.widget.listenNow"
-    static let listenedToday = "dev.hearth.widget.listenedToday"
+    static let play = "me.robinferch.hearth.widget.play"
+    static let listenNow = "me.robinferch.hearth.widget.listenNow"
+    static let listenedToday = "me.robinferch.hearth.widget.listenedToday"
 }
 
 /// Everything a widget needs about one item, from the shared snapshot (or a configured entity).

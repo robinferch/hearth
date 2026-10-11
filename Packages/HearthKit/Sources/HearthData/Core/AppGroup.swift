@@ -7,7 +7,7 @@ public enum AppGroup {
         if let value = Bundle.main.object(forInfoDictionaryKey: "HearthAppGroup") as? String, !value.isEmpty {
             return value
         }
-        return "group.dev.hearth"
+        return "group.me.robinferch.hearth"
     }()
 
     /// Keychain access group (`$(AppIdentifierPrefix)<bundle prefix>.Hearth`), from the `HearthKeychainGroup` Info.plist key.

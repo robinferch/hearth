@@ -9,11 +9,11 @@ import WidgetKit
 // all controls whenever it writes the snapshot.
 
 enum ControlKind {
-    static let playPause = "dev.hearth.control.playPause"
-    static let skipBackward = "dev.hearth.control.skipBackward"
-    static let skipForward = "dev.hearth.control.skipForward"
-    static let sleepTimer = "dev.hearth.control.sleepTimer"
-    static let search = "dev.hearth.control.search"
+    static let playPause = "me.robinferch.hearth.control.playPause"
+    static let skipBackward = "me.robinferch.hearth.control.skipBackward"
+    static let skipForward = "me.robinferch.hearth.control.skipForward"
+    static let sleepTimer = "me.robinferch.hearth.control.sleepTimer"
+    static let search = "me.robinferch.hearth.control.search"
 }
 
 struct PlaybackControlValue {

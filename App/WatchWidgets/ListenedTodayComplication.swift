@@ -5,7 +5,7 @@ import WidgetKit
 
 /// Minutes listened today against the daily goal.
 struct ListenedTodayComplication: Widget {
-    static let kind = "dev.hearth.watch.listenedToday"
+    static let kind = "me.robinferch.hearth.watch.listenedToday"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: Self.kind, provider: SnapshotProvider(relevance: ListenedTodayRelevance.score)) { entry in

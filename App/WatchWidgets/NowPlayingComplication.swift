@@ -5,7 +5,7 @@ import WidgetKit
 
 /// Now playing (watch or iPhone) or the item to resume: progress with cover, title, chapter.
 struct NowPlayingComplication: Widget {
-    static let kind = "dev.hearth.watch.nowPlaying"
+    static let kind = "me.robinferch.hearth.watch.nowPlaying"
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: Self.kind, provider: SnapshotProvider(relevance: NowPlayingRelevance.score)) { entry in

@@ -18,14 +18,14 @@ import Synchronization
 final class SpotlightIndexer {
     static let shared = SpotlightIndexer()
 
-    static let taskIdentifier = (Bundle.main.bundleIdentifier ?? "dev.hearth.hearth") + ".spotlight"
+    static let taskIdentifier = (Bundle.main.bundleIdentifier ?? "me.robinferch.hearth") + ".spotlight"
     static let reindexInterval: TimeInterval = 21 * 24 * 3600
     private static let lastIndexKey = "spotlight.lastFullIndex"
     private static let indexedDomainsKey = "spotlight.indexedLibraries"
     private static let pageSize = 100
     private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Hearth", category: "Spotlight")
 
-    private let index = CSSearchableIndex(name: (Bundle.main.bundleIdentifier ?? "dev.hearth.hearth") + ".items")
+    private let index = CSSearchableIndex(name: (Bundle.main.bundleIdentifier ?? "me.robinferch.hearth") + ".items")
     private var runningTask: Task<Int, Never>?
 
     private init() {}

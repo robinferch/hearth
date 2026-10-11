@@ -70,7 +70,7 @@ final class SessionReporter {
     private var clock = ListeningClock()
     private var chain: Task<Void, Never>?
     private var isFinalized = false
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "dev.hearth", category: "SessionReporter")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "me.robinferch.hearth", category: "SessionReporter")
 
     init(itemID: ItemIdentifier, sessionID: String?, client: (any AudiobookshelfClient)?, startTime: TimeInterval, duration: TimeInterval) {
         self.itemID = itemID

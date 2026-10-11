@@ -80,7 +80,7 @@ enum DeepLink {
 /// Handoff / Siri suggestion activity identifiers.
 enum UserActivity {
     /// `<bundle id>.item`; `userInfo["itemID"]` / `targetContentIdentifier` = `ItemIdentifier.description`.
-    static let itemType = (Bundle.main.bundleIdentifier ?? "dev.hearth.hearth") + ".item"
+    static let itemType = (Bundle.main.bundleIdentifier ?? "me.robinferch.hearth") + ".item"
     static let itemIDKey = "itemID"
 
     static func itemID(from activity: NSUserActivity) -> ItemIdentifier? {

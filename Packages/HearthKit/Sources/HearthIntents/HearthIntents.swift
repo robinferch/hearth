@@ -72,7 +72,7 @@ public enum HearthIntentError: Error, CustomLocalizedStringResourceConvertible {
 
 /// Shared helpers for intent implementations.
 enum IntentSupport {
-    static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "dev.hearth", category: "Intents")
+    static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "me.robinferch.hearth", category: "Intents")
 
     /// `true` inside the widget extension (no audio session, no player).
     static var isExtension: Bool {

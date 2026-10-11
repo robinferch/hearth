@@ -104,7 +104,7 @@ public final class AudioPlayer {
 
     // MARK: Internal engine state
 
-    @ObservationIgnored let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "dev.hearth", category: "AudioPlayer")
+    @ObservationIgnored let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "me.robinferch.hearth", category: "AudioPlayer")
     @ObservationIgnored var didSetup = false
     @ObservationIgnored var player: AVQueuePlayer?
     @ObservationIgnored var timeObserver: Any?

@@ -71,7 +71,7 @@ final class DataEnvironment: @unchecked Sendable {
     /// Isolated environment for tests and previews.
     static func ephemeral(connections: [Connection] = [], tokens: [ConnectionID: AuthTokens] = [:], clientFactory: @escaping ClientFactory) -> DataEnvironment {
         let root = FileManager.default.temporaryDirectory.appending(path: "HearthTests-\(UUID().uuidString)", directoryHint: .isDirectory)
-        let suite = "dev.hearth.tests.\(UUID().uuidString)"
+        let suite = "me.robinferch.hearth.tests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite) ?? .standard
         return DataEnvironment(
             container: Persistence.makeContainer(inMemory: true),

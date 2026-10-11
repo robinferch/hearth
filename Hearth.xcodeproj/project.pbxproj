@@ -15,6 +15,7 @@
 		1711407887D5705CA2E4150F /* Player.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = E49D773E85A7280D5DC61999 /* Player.xcstrings */; };
 		1C8E56A5ABACB28D16BA753C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800055FB67C9CFB7975A6C82 /* WidgetKit.framework */; };
 		2433AB7452F6BE6D179D0DCD /* HearthAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 4B503FB239DDD01ABCA41098 /* HearthAPI */; };
+		2E44F42F6F1987C3B8C0D1CC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 73A66F4CBBF49B30C6248664 /* PrivacyInfo.xcprivacy */; };
 		3875E2790DCE5A85D535BF97 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 847217928D1BE8394CF58D61 /* InfoPlist.xcstrings */; };
 		419C018C008F503E606B9455 /* HearthIntents in Frameworks */ = {isa = PBXBuildFile; productRef = 00D4E96F5B465ECF69DB740D /* HearthIntents */; };
 		47BCE7FAB70E2B01227627A1 /* HearthModel in Frameworks */ = {isa = PBXBuildFile; productRef = 074990D79557E3F70CAD6176 /* HearthModel */; };
@@ -23,6 +24,7 @@
 		576484495970B2532C40FABA /* HearthWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8377C12B539FBB513F3B517A /* HearthWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5ACE01F686458D3C8F2C8653 /* System.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 22177CB59CA97879076DC968 /* System.xcstrings */; };
 		5D12973A2FDEA3975DC61C2F /* HearthPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = D941176FA99C2FDD33B12644 /* HearthPlayback */; };
+		61F5488D749A4789B5DF4501 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 883E8DF39114CED7D5FB73BD /* PrivacyInfo.xcprivacy */; };
 		6917028B924E10993A3F8552 /* HearthPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = A75B2CFD5CC37C9B4D80F143 /* HearthPlayback */; };
 		6C8774FF55442F7C87B03ABA /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0CC3DD11F9E73531316A08E2 /* HearthUI */; };
 		6F9331C40E1F342B3ADFB46B /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0E034A64BF18762E0AF8E8B8 /* HearthUI */; };
@@ -42,11 +44,13 @@
 		BC11E766BCDE47D048A3C22B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6586AEF0CD22E5C65D5B6297 /* Localizable.xcstrings */; };
 		BC56727628CA036AED5D97B9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BCD6EB16AD03C9166C2C711 /* SwiftUI.framework */; };
 		C257F15B66E8DCB6EDE7916B /* HearthWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B349A8BC691ED2A295408123 /* HearthWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C8FF67D1063359CD179006FC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = DC93F2BC0DA9F9D0C931BC59 /* PrivacyInfo.xcprivacy */; };
 		CCA43209A0F5333C6F4B8B2F /* HearthData in Frameworks */ = {isa = PBXBuildFile; productRef = 2738E88DD81E5297F9EDC116 /* HearthData */; };
 		CF3CAAC0351C1A442C555008 /* HearthData in Frameworks */ = {isa = PBXBuildFile; productRef = 1A85B5B753BE8DAA6FAD4ECD /* HearthData */; };
 		D7DC20C5DEABD0F0FF737DD2 /* HearthIntents in Frameworks */ = {isa = PBXBuildFile; productRef = C17F1303A756F86C4B1AFD18 /* HearthIntents */; };
 		E1B9583A636416F75B375661 /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7058A185ED7FEFB36DE5D10E /* HearthUI */; };
 		E4BC70182D7DEC247B5D1C1B /* HearthModel in Frameworks */ = {isa = PBXBuildFile; productRef = EFEF560CDC71DF82D38A505B /* HearthModel */; };
+		FD92EC8A9AD690D5B08F0B54 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F6C2CB13726739BC8DECE642 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,18 +122,22 @@
 		59FFE3ACA488E3855A0E8581 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6586AEF0CD22E5C65D5B6297 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		6BCD6EB16AD03C9166C2C711 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		73A66F4CBBF49B30C6248664 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		800055FB67C9CFB7975A6C82 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		8377C12B539FBB513F3B517A /* HearthWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = HearthWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		847217928D1BE8394CF58D61 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		883E8DF39114CED7D5FB73BD /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		88805BD92D9AC05651D8FA42 /* Hearth.icon */ = {isa = PBXFileReference; path = Hearth.icon; sourceTree = "<group>"; };
 		8925C3D766B1346CA4B5AB52 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		B349A8BC691ED2A295408123 /* HearthWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HearthWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBB415D370BC05F3121EA073 /* Hearth.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Hearth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D23AFC5AAE01C8AD533525F4 /* HearthKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HearthKit; path = Packages/HearthKit; sourceTree = SOURCE_ROOT; };
+		DC93F2BC0DA9F9D0C931BC59 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		E2798D2B22C647F62FFF2B0E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		E49D773E85A7280D5DC61999 /* Player.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Player.xcstrings; sourceTree = "<group>"; };
 		ED41324068EB755983072348 /* Detail.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Detail.xcstrings; sourceTree = "<group>"; };
 		ED93A1B6C40896FAA3001AF9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F6C2CB13726739BC8DECE642 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -231,6 +239,7 @@
 			children = (
 				0E640205FB678F9D0CE79BDA /* Assets.xcassets */,
 				ED93A1B6C40896FAA3001AF9 /* Localizable.xcstrings */,
+				883E8DF39114CED7D5FB73BD /* PrivacyInfo.xcprivacy */,
 			);
 			name = Watch;
 			path = App/Resources/Watch;
@@ -240,6 +249,7 @@
 			isa = PBXGroup;
 			children = (
 				6586AEF0CD22E5C65D5B6297 /* Localizable.xcstrings */,
+				F6C2CB13726739BC8DECE642 /* PrivacyInfo.xcprivacy */,
 			);
 			name = WatchWidgets;
 			path = App/Resources/WatchWidgets;
@@ -268,6 +278,7 @@
 			isa = PBXGroup;
 			children = (
 				1532A1B870C2C412BAB9FB2B /* Localizable.xcstrings */,
+				73A66F4CBBF49B30C6248664 /* PrivacyInfo.xcprivacy */,
 			);
 			name = Widgets;
 			path = App/Resources/Widgets;
@@ -309,6 +320,7 @@
 				847217928D1BE8394CF58D61 /* InfoPlist.xcstrings */,
 				E2798D2B22C647F62FFF2B0E /* Localizable.xcstrings */,
 				E49D773E85A7280D5DC61999 /* Player.xcstrings */,
+				DC93F2BC0DA9F9D0C931BC59 /* PrivacyInfo.xcprivacy */,
 				22177CB59CA97879076DC968 /* System.xcstrings */,
 			);
 			name = iOS;
@@ -505,6 +517,7 @@
 				3875E2790DCE5A85D535BF97 /* InfoPlist.xcstrings in Resources */,
 				0FF660591C637EB206B9654D /* Localizable.xcstrings in Resources */,
 				1711407887D5705CA2E4150F /* Player.xcstrings in Resources */,
+				C8FF67D1063359CD179006FC /* PrivacyInfo.xcprivacy in Resources */,
 				5ACE01F686458D3C8F2C8653 /* System.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -514,6 +527,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				83FB53702A16B98D4A75169B /* Localizable.xcstrings in Resources */,
+				2E44F42F6F1987C3B8C0D1CC /* PrivacyInfo.xcprivacy in Resources */,
 				B49D31E669AF3B2A87148708 /* System.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -525,6 +539,7 @@
 				0A0E1B16A4F539B33C36F39D /* Assets.xcassets in Resources */,
 				94F008F6E88E7592D397B84B /* Hearth.icon in Resources */,
 				770317BC1D7E64384FB9D039 /* Localizable.xcstrings in Resources */,
+				61F5488D749A4789B5DF4501 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -533,6 +548,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BC11E766BCDE47D048A3C22B /* Localizable.xcstrings in Resources */,
+				FD92EC8A9AD690D5B08F0B54 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

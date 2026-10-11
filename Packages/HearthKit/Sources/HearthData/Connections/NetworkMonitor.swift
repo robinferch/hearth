@@ -10,7 +10,7 @@ struct NetworkState: Sendable, Equatable {
 /// Wraps `NWPathMonitor` and delivers path changes on the main actor.
 final class NetworkMonitor: @unchecked Sendable {
     private let monitor = NWPathMonitor()
-    private let queue = DispatchQueue(label: "dev.hearth.network-monitor", qos: .utility)
+    private let queue = DispatchQueue(label: "me.robinferch.hearth.network-monitor", qos: .utility)
 
     func start(_ handler: @escaping @MainActor @Sendable (NetworkState) -> Void) {
         monitor.pathUpdateHandler = { path in

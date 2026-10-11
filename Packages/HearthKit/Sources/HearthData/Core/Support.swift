@@ -3,7 +3,7 @@ import HearthModel
 import os
 
 extension Logger {
-    static let hearthSubsystem = Bundle.main.bundleIdentifier ?? "dev.hearth"
+    static let hearthSubsystem = Bundle.main.bundleIdentifier ?? "me.robinferch.hearth"
 
     init(category: String) {
         self.init(subsystem: Self.hearthSubsystem, category: category)

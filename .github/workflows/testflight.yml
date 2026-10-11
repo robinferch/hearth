@@ -1,0 +1,69 @@
+name: TestFlight
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "Docs/**"
+      - ".github/ISSUE_TEMPLATE/**"
+  workflow_dispatch:
+    inputs:
+      changelog:
+        description: "What to test (TestFlight notes). Defaults to the latest commit messages."
+        required: false
+
+concurrency:
+  group: testflight
+  cancel-in-progress: false
+
+jobs:
+  beta:
+    name: Build & upload to TestFlight
+    runs-on: macos-26
+    timeout-minutes: 90
+    # Forks don't have the signing secrets.
+    if: github.repository == 'robinferch/hearth'
+    environment: testflight
+    env:
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+      MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+      HEARTH_ENTITLEMENTS: ${{ vars.HEARTH_ENTITLEMENTS || 'Full' }}
+      FASTLANE_SKIP_UPDATE_CHECK: "1"
+      FASTLANE_HIDE_CHANGELOG: "1"
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 50
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ vars.XCODE_VERSION || 'latest-stable' }}
+
+      - name: Install tools
+        run: brew install xcodegen
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+
+      - name: Build & upload
+        run: bundle exec fastlane beta changelog:"${{ github.event.inputs.changelog }}"
+
+      - name: Upload build artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: testflight-build
+          path: |
+            build/fastlane/*.ipa
+            build/fastlane/*.dSYM.zip
+            ~/Library/Logs/gym/*.log
+          if-no-files-found: ignore
+          retention-days: 14

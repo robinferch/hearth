@@ -1,0 +1,178 @@
+require "base64"
+
+default_platform(:ios)
+
+PROJECT = "Hearth.xcodeproj"
+SCHEME = "Hearth"
+BUNDLE_ID_PREFIX = ENV.fetch("HEARTH_BUNDLE_ID_PREFIX", "me.robinferch")
+APP_ID = "#{BUNDLE_ID_PREFIX}.hearth"
+APP_GROUP = "group.#{BUNDLE_ID_PREFIX}.hearth"
+
+# Every bundle identifier that ends up in the App Store build, mapped to its Xcode target.
+TARGETS = {
+  APP_ID => "Hearth",
+  "#{APP_ID}.widgets" => "HearthWidgets",
+  "#{APP_ID}.watchkitapp" => "HearthWatch",
+  "#{APP_ID}.watchkitapp.widgets" => "HearthWatchWidgets",
+}.freeze
+
+# `Full` enables app groups, iCloud key-value storage and Siri. Use `CarPlay` once Apple granted the
+# CarPlay audio entitlement for the app identifier.
+ENTITLEMENTS = ENV.fetch("HEARTH_ENTITLEMENTS", "Full")
+
+platform :ios do
+  before_all do
+    setup_ci if is_ci
+  end
+
+  desc "Generate Hearth.xcodeproj from project.yml"
+  lane :generate do
+    sh("cd .. && xcodegen generate")
+  end
+
+  desc "Run the HearthKit package tests"
+  lane :test do
+    sh("cd ../Packages/HearthKit && swift test")
+  end
+
+  desc "Compile the iOS app (incl. widgets and watch app) and the watchOS app for the simulator"
+  lane :build do
+    generate
+    [["Hearth", "iOS Simulator"], ["HearthWatch", "watchOS Simulator"]].each do |scheme, platform|
+      sh(
+        "cd .. && xcodebuild -quiet -project #{PROJECT} -scheme #{scheme} " \
+        "-destination 'generic/platform=#{platform}' -derivedDataPath build/DerivedData " \
+        "CODE_SIGNING_ALLOWED=NO build"
+      )
+    end
+  end
+
+  desc "One-time setup on a Mac: registers bundle IDs, capabilities, the app group, the App Store Connect app and creates signing assets with match"
+  desc "Requires FASTLANE_APPLE_ID (interactive 2FA), APPLE_TEAM_ID and MATCH_GIT_URL"
+  lane :bootstrap do
+    team_id = ENV.fetch("APPLE_TEAM_ID")
+
+    # App IDs (developer portal) and the App Store Connect record for the main app.
+    produce(
+      app_identifier: APP_ID,
+      app_name: ENV.fetch("HEARTH_APP_NAME", "Hearth"),
+      language: "en-US",
+      app_version: "1.0.0",
+      sku: ENV.fetch("HEARTH_SKU", APP_ID),
+      team_id: team_id,
+      enable_services: {
+        app_group: "on",
+        icloud: "xcode6_compatible",
+        siri_kit: "on",
+      }
+    )
+
+    TARGETS.keys.drop(1).each do |identifier|
+      produce(
+        app_identifier: identifier,
+        app_name: "Hearth #{identifier.split('.').drop(3).join(' ')}".strip,
+        skip_itc: true,
+        team_id: team_id,
+        enable_services: { app_group: "on" }
+      )
+    end
+
+    # Shared app group used by the app, widgets and the watch.
+    sh("cd .. && bundle exec fastlane produce group -g #{APP_GROUP} -n 'Hearth' -u #{ENV.fetch('FASTLANE_APPLE_ID')} -b #{team_id} || true")
+    TARGETS.each_key do |identifier|
+      sh("cd .. && bundle exec fastlane produce associate_group -a #{identifier} #{APP_GROUP} -u #{ENV.fetch('FASTLANE_APPLE_ID')} -b #{team_id} || true")
+    end
+
+    match(type: "appstore", app_identifier: TARGETS.keys, team_id: team_id, readonly: false)
+  end
+
+  desc "Fetch signing assets (read-only) for App Store builds"
+  lane :certificates do
+    match(
+      type: "appstore",
+      app_identifier: TARGETS.keys,
+      team_id: ENV.fetch("APPLE_TEAM_ID"),
+      readonly: true,
+      api_key: app_store_connect_key
+    )
+  end
+
+  desc "Build a signed App Store archive and upload it to TestFlight"
+  lane :beta do |options|
+    team_id = ENV.fetch("APPLE_TEAM_ID")
+    api_key = app_store_connect_key
+
+    generate
+    certificates
+
+    build_number = options[:build_number] || (latest_testflight_build_number(
+      api_key: api_key,
+      app_identifier: APP_ID,
+      initial_build_number: 0
+    ) + 1)
+    UI.message("Building #{APP_ID} build #{build_number} with #{ENTITLEMENTS} entitlements")
+
+    # Switch every target to manual signing with the profiles match installed.
+    TARGETS.each do |identifier, target|
+      update_code_signing_settings(
+        path: PROJECT,
+        targets: [target],
+        use_automatic_signing: false,
+        team_id: team_id,
+        code_sign_identity: "Apple Distribution",
+        profile_name: ENV.fetch("sigh_#{identifier}_appstore_profile-name"),
+        bundle_identifier: identifier
+      )
+    end
+
+    build_app(
+      project: PROJECT,
+      scheme: SCHEME,
+      configuration: "Release",
+      destination: "generic/platform=iOS",
+      export_method: "app-store",
+      output_directory: "build/fastlane",
+      output_name: "Hearth.ipa",
+      clean: true,
+      include_symbols: true,
+      xcargs: [
+        "DEVELOPMENT_TEAM=#{team_id}",
+        "BUNDLE_ID_PREFIX=#{BUNDLE_ID_PREFIX}",
+        "HEARTH_ENTITLEMENTS=#{ENTITLEMENTS}",
+        "CURRENT_PROJECT_VERSION=#{build_number}",
+      ].join(" "),
+      export_options: {
+        signingStyle: "manual",
+        teamID: team_id,
+        provisioningProfiles: TARGETS.keys.to_h { |identifier| [identifier, ENV.fetch("sigh_#{identifier}_appstore_profile-name")] },
+      }
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      app_identifier: APP_ID,
+      changelog: options[:changelog].to_s.strip.empty? ? testflight_changelog : options[:changelog],
+      skip_waiting_for_build_processing: true,
+      distribute_external: false
+    )
+  end
+
+  # MARK: - Helpers
+
+  # App Store Connect API key from the environment (the .p8 content may be base64 encoded).
+  private_lane :app_store_connect_key do
+    content = ENV.fetch("APP_STORE_CONNECT_API_KEY_CONTENT")
+    app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_API_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_ISSUER_ID"),
+      key_content: content,
+      is_key_content_base64: !content.include?("BEGIN PRIVATE KEY"),
+      in_house: false
+    )
+  end
+
+  private_lane :testflight_changelog do
+    commits = changelog_from_git_commits(commits_count: 10, pretty: "- %s", merge_commit_filtering: "exclude_merges") || ""
+    commits.lines.reject { |line| line.include?("Co-Authored-By") }.join.strip[0, 3900]
+  end
+end

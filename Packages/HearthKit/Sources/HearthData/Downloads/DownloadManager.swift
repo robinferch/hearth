@@ -32,7 +32,7 @@ public final class DownloadManager {
     nonisolated static let audioWeight = 80.0
 
     static var sessionIdentifier: String {
-        "\(Bundle.main.bundleIdentifier ?? "dev.hearth").downloads"
+        "\(Bundle.main.bundleIdentifier ?? "me.robinferch.hearth").downloads"
     }
 
     /// Bumped whenever the set of downloads changes (list queries observe it).

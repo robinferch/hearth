@@ -127,7 +127,7 @@ struct SupportTests {
     }
 
     @Test func deviceInfoIsPersistent() throws {
-        let defaults = try #require(UserDefaults(suiteName: "dev.hearth.tests.\(UUID().uuidString)"))
+        let defaults = try #require(UserDefaults(suiteName: "me.robinferch.hearth.tests.\(UUID().uuidString)"))
         let first = DeviceInfoProvider.make(defaults: defaults)
         let second = DeviceInfoProvider.make(defaults: defaults)
         #expect(first.deviceID == second.deviceID)

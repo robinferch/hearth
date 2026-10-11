@@ -4,7 +4,7 @@ import OSLog
 
 /// BGTaskScheduler identifiers and handlers (registered through SwiftUI's `.backgroundTask`).
 enum BackgroundTaskScheduler {
-    private static let bundleID = Bundle.main.bundleIdentifier ?? "dev.hearth.hearth"
+    private static let bundleID = Bundle.main.bundleIdentifier ?? "me.robinferch.hearth"
     /// App refresh every ≥ 3 h: evaluates automatic download rules.
     static let autoDownloadIdentifier = bundleID + ".autodownload"
     /// App refresh: progress / bookmark sync and pending session upload.

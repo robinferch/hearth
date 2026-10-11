@@ -1,0 +1,4 @@
+# Certificates and provisioning profiles are stored encrypted in a private git repository.
+git_url(ENV["MATCH_GIT_URL"]) if ENV["MATCH_GIT_URL"]
+storage_mode("git")
+type("appstore")

@@ -8,7 +8,7 @@ enum URLSessionFactory {
         if let value = Bundle.main.object(forInfoDictionaryKey: "HearthAppGroup") as? String, !value.isEmpty, !value.hasPrefix("$(") {
             return value
         }
-        return "group.dev.hearth"
+        return "group.me.robinferch.hearth"
     }()
 
     static let cookieStorage: HTTPCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: appGroupIdentifier)

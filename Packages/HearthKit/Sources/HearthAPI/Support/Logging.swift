@@ -3,7 +3,7 @@ import os
 
 extension Logger {
     /// Subsystem shared by all HearthAPI loggers (the host app's bundle id).
-    static let hearthSubsystem = Bundle.main.bundleIdentifier ?? "dev.hearth"
+    static let hearthSubsystem = Bundle.main.bundleIdentifier ?? "me.robinferch.hearth"
 
     /// Creates a logger whose category is the given type's name.
     static func api(_ type: Any.Type) -> Logger {

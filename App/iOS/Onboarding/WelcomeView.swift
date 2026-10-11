@@ -129,10 +129,10 @@ struct HearthAppIcon: View {
 
 /// External links.
 enum AppLinks {
-    static let repository = URL(string: "https://github.com/hearth-app/hearth")!
-    static let issues = URL(string: "https://github.com/hearth-app/hearth/issues")!
-    static let license = URL(string: "https://github.com/hearth-app/hearth/blob/main/LICENSE")!
-    static let privacy = URL(string: "https://github.com/hearth-app/hearth/blob/main/PRIVACY.md")!
+    static let repository = URL(string: "https://github.com/robinferch/hearth")!
+    static let issues = URL(string: "https://github.com/robinferch/hearth/issues")!
+    static let license = URL(string: "https://github.com/robinferch/hearth/blob/main/LICENSE")!
+    static let privacy = URL(string: "https://github.com/robinferch/hearth/blob/main/PRIVACY.md")!
     static let audiobookshelf = URL(string: "https://www.audiobookshelf.org")!
 }
 

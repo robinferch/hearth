@@ -46,10 +46,6 @@
 	</array>
 	<key>WKApplication</key>
 	<true/>
-	<key>WKBackgroundModes</key>
-	<array>
-		<string>audio</string>
-	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
 	<string>$(BUNDLE_ID_PREFIX).hearth</string>
 	<key>WKRunsIndependentlyOfCompanionApp</key>
