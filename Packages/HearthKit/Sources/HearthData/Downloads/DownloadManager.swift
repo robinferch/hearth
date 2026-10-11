@@ -490,7 +490,8 @@ public final class DownloadManager {
                 guard statuses[key] == .downloading else { return }
                 logger.notice("Download task was cancelled, resuming")
                 await save(asset, at: index, in: key)
-                await start(asset, resumeData: resumeData)
+                // Delayed (without counting a failure) so repeated system cancellations can't spin.
+                scheduleRetry(asset, resumeData: resumeData)
             case .unauthorized:
                 let retries = (authorizationRetries[assetID] ?? 0) + 1
                 authorizationRetries[assetID] = retries
@@ -537,7 +538,7 @@ public final class DownloadManager {
         await environment.store.perform { $0.upsertAssets([asset]) }
     }
 
-    /// Restarts a failed asset after an exponential backoff.
+    /// Restarts an asset after a delay that doubles with every counted failure.
     private func scheduleRetry(_ asset: DownloadAsset, resumeData: Data?) {
         let delay = retryBaseDelay * (1 << min(max(asset.failureCount - 1, 0), 6))
         let assetID = asset.id
