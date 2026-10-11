@@ -44,6 +44,8 @@ You need a paid Apple Developer account.
    | `MATCH_PASSWORD` | The match passphrase |
    | `MATCH_GIT_BASIC_AUTHORIZATION` | `echo -n "robinferch:<PAT with repo scope>" \| base64` |
 
+   Then set the repository **variable** `TESTFLIGHT_ENABLED` to `true`. Until it is set, the TestFlight workflow is skipped.
+
    Optional repository **variables**:
    - `XCODE_VERSION` (default `latest-stable`);
    - `HEARTH_ENTITLEMENTS` (default `Full`; set it to `CarPlay` once Apple granted the CarPlay audio entitlement, then re-run `fastlane match appstore --force` locally so the profiles include it).

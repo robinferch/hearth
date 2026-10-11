@@ -22,8 +22,9 @@ jobs:
     name: Build & upload to TestFlight
     runs-on: macos-26
     timeout-minutes: 90
+    # Runs only once signing is configured (repository variable TESTFLIGHT_ENABLED=true, see Docs/RELEASING.md).
     # Forks don't have the signing secrets.
-    if: github.repository == 'robinferch/hearth'
+    if: github.repository == 'robinferch/hearth' && vars.TESTFLIGHT_ENABLED == 'true'
     environment: testflight
     env:
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
