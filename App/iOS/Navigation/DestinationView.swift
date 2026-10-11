@@ -77,8 +77,11 @@ struct NamedItemResolver: View {
     private func resolve() async {
         let results = await HearthData.shared.items.search(name, scope: .library(library))
         let candidates: [any Item] = kind == .series ? results.series : results.authors
-        let normalized = name.localizedLowercase
-        let match = candidates.first { $0.name.localizedLowercase == normalized } ?? candidates.first
+        // Exact name only: search is fuzzy, and another author / series must not stand in ("Not Found" instead).
+        let wanted = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let match = candidates.first {
+            $0.name.trimmingCharacters(in: .whitespacesAndNewlines).compare(wanted, options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive]) == .orderedSame
+        }
         state = .loaded(match?.id)
     }
 }

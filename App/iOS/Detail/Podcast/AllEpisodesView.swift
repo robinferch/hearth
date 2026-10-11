@@ -42,16 +42,21 @@ private struct AllEpisodesContent: View {
     @Environment(AlertCenter.self) private var alerts
     @Environment(PlayerPresentation.self) private var presentation
 
-    @State private var settings: EpisodeListSettings
     @State private var searchText = ""
     @State private var editMode: EditMode = .inactive
     @State private var selection = Set<ItemIdentifier>()
     @State private var bulkTrigger = 0
+    /// Plain-text descriptions for search, built once off the main thread (HTML stripping is slow).
+    @State private var plainDescriptions: [ItemIdentifier: String] = [:]
 
-    init(content: PodcastContent, refresh: @escaping @MainActor () async -> Void) {
-        self.content = content
-        self.refresh = refresh
-        _settings = State(initialValue: HearthData.shared.itemSettings.episodeListSettings(for: content.podcast))
+    /// Read and written through the store (not copied into state): the podcast page edits the same settings.
+    private var settings: EpisodeListSettings { HearthData.shared.itemSettings.episodeListSettings(for: content.podcast) }
+    private var settingsBinding: Binding<EpisodeListSettings> {
+        let podcast = content.podcast
+        return Binding(
+            get: { HearthData.shared.itemSettings.episodeListSettings(for: podcast) },
+            set: { HearthData.shared.itemSettings.setEpisodeListSettings($0, for: podcast.id) }
+        )
     }
 
     private var seasons: [String] { HearthData.shared.itemSettings.seasons(in: content.episodes) }
@@ -62,7 +67,7 @@ private struct AllEpisodesContent: View {
         guard !query.isEmpty else { return applied }
         return applied.filter { episode in
             episode.name.localizedStandardContains(query)
-                || (HearthFormat.plainText(fromHTML: episode.descriptionHTML)?.localizedStandardContains(query) ?? false)
+                || (plainDescriptions[episode.id]?.localizedStandardContains(query) ?? false)
         }
     }
 
@@ -72,7 +77,7 @@ private struct AllEpisodesContent: View {
         let episodes = episodes
         List(selection: $selection) {
             if seasons.count >= 2 {
-                SeasonCapsules(seasons: seasons, selection: $settings.season)
+                SeasonCapsules(seasons: seasons, selection: settingsBinding.season)
                     .detailPlainRow(insets: EdgeInsets(top: 4, leading: 0, bottom: 8, trailing: 0))
                     .selectionDisabled()
             }
@@ -98,8 +103,16 @@ private struct AllEpisodesContent: View {
         .environment(\.itemActionHandler, handler.withPlaybackOrigin(.podcast(content.podcast.id), alerts: alerts, presentation: presentation))
         .searchable(text: $searchText, prompt: Text("Search Episodes", tableName: "Detail"))
         .refreshable { await refresh() }
-        .onChange(of: settings) { _, value in
-            HearthData.shared.itemSettings.setEpisodeListSettings(value, for: content.podcast.id)
+        .task(id: content.episodes.map(\.id)) {
+            let episodes = content.episodes
+            let descriptions = await Task.detached(priority: .utility) {
+                var result: [ItemIdentifier: String] = [:]
+                for episode in episodes {
+                    result[episode.id] = HearthFormat.plainText(fromHTML: episode.descriptionHTML)
+                }
+                return result
+            }.value
+            plainDescriptions = descriptions
         }
         .onChange(of: editMode) { _, mode in
             if !mode.isEditing {
@@ -110,7 +123,7 @@ private struct AllEpisodesContent: View {
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 if !isSelecting {
-                    EpisodeListOptionsButton(settings: $settings)
+                    EpisodeListOptionsButton(settings: settingsBinding)
                 }
                 Button {
                     withAnimation {

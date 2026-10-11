@@ -101,11 +101,13 @@ enum AppItemActions {
 
     // MARK: Play
 
-    static func play(_ id: ItemIdentifier, alerts: AlertCenter, player: PlayerPresentation) async {
+    /// Plays `id` (from `time` if given, with `origin` for Up Next). While the item is downloading, offers to
+    /// cancel the download and stream it – keeping the start time and origin.
+    static func play(_ id: ItemIdentifier, origin: PlaybackOrigin = .none, at time: TimeInterval? = nil, alerts: AlertCenter, player: PlayerPresentation) async {
         let audio = AudioPlayer.shared
         let wasCurrent = audio.isCurrent(id)
         do {
-            try await audio.play(id)
+            try await audio.play(id, origin: origin, at: time)
             if !wasCurrent {
                 player.itemStarted()
             }
@@ -117,7 +119,7 @@ enum AppItemActions {
                     .init(title: String(localized: "Cancel Download & Play"), role: .destructive) {
                         await HearthData.shared.downloads.cancel(id)
                         do {
-                            try await AudioPlayer.shared.play(id)
+                            try await AudioPlayer.shared.play(id, origin: origin, at: time)
                             player.itemStarted()
                         } catch {
                             alerts.fail(error)
