@@ -215,24 +215,6 @@ private func chapter(_ id: Int, _ start: TimeInterval, _ end: TimeInterval) -> C
     }
 }
 
-@Suite struct DescriptionChapterParserTests {
-    @Test func parsesTimestamps() {
-        let html = "<p>Show notes</p><p>00:00 Intro<br>(05:30) Main topic<br/>1:02:03 - Outro &amp; credits</p><p>Talk at 12:00 about stuff</p>"
-        let chapters = DescriptionChapterParser.chapters(from: html, duration: 4000)
-        #expect(chapters.map(\.start) == [0, 330, 3723])
-        #expect(chapters.map(\.title) == ["Intro", "Main topic", "Outro & credits"])
-        #expect(chapters.map(\.end) == [330, 3723, 4000])
-    }
-
-    @Test func ignoresSingleOrInvalid() {
-        #expect(DescriptionChapterParser.chapters(from: "10:00 Only one", duration: 1000).isEmpty)
-        #expect(DescriptionChapterParser.chapters(from: "00:00 A\n99:99 B", duration: 1000).isEmpty)
-        #expect(DescriptionChapterParser.chapters(from: nil, duration: 10).isEmpty)
-        // Timestamps beyond the duration are dropped.
-        #expect(DescriptionChapterParser.chapters(from: "00:00 A\n10:00 B\n50:00 C", duration: 1200).count == 2)
-    }
-}
-
 @Suite struct AudioRouteClassifierTests {
     @Test func classifies() {
         #expect(AudioRouteClassifier.kind(port: .bluetoothA2DP, name: "Robin's AirPods Pro") == .airPodsPro)

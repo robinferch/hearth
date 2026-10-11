@@ -339,7 +339,7 @@ extension AudioPlayer {
 
     func handleTrackFailure(_ identifier: ObjectIdentifier, message: String?) {
         guard loadedTracks.contains(where: { ObjectIdentifier($0.item) == identifier }) else { return }
-        let reason = message ?? String(localized: "The audio stream failed.")
+        let reason = message ?? String(localized: "The audio stream failed.", bundle: .module)
         logger.error("Player item failed: \(reason, privacy: .public)")
         if lastStreamRecovery.map({ Date.now.timeIntervalSince($0) > 60 }) ?? true {
             lastStreamRecovery = .now
