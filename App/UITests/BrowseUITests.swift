@@ -29,17 +29,18 @@ final class BrowseUITests: HearthUITestCase {
         let series = waitFor(itemCell("Sherlock Holmes"), timeout: 30, "Series missing")
         series.tap()
 
-        waitFor(button(containing: "Sherlock Holmes 1"), timeout: 20, "Series books did not load")
-        for number in 1...3 {
-            let book = button(containing: "Sherlock Holmes \(number)")
+        let books = ["A Study in Scarlet", "The Sign of the Four", "The Hound of the Baskervilles"]
+        waitFor(button(containing: books[0]), timeout: 20, "Series books did not load")
+        for title in books {
+            let book = button(containing: title)
             if !book.exists {
                 scrollTo(book)
             }
-            XCTAssertTrue(book.waitForExistence(timeout: 10), "Book \(number) missing from series")
+            XCTAssertTrue(book.waitForExistence(timeout: 10), "\(title) missing from series")
         }
     }
 
-    func testSearchFindsSherlock() throws {
+    func testSearchFindsSherlockBooks() throws {
         launchSignedIn()
         waitForMainUI()
         selectLibrary("Audiobooks")
@@ -48,15 +49,15 @@ final class BrowseUITests: HearthUITestCase {
         waitFor(searchTab).tap()
         let field = waitFor(app.searchFields.firstMatch)
         field.tap()
-        field.typeText("sherlock")
+        field.typeText("the")
 
-        XCTAssertTrue(element(containing: "Sherlock Holmes 1").waitForExistence(timeout: 20), "No search results")
-        XCTAssertTrue(element(containing: "Sherlock Holmes 2").exists)
+        XCTAssertTrue(element(containing: "The Sign of the Four").waitForExistence(timeout: 20), "No search results")
+        XCTAssertTrue(element(containing: "The Hound of the Baskervilles").exists)
     }
 
     func testPodcastLibraryShowsEpisodes() async throws {
         // The podcast page lists unfinished episodes by default; start from a clean slate.
-        let podcastID = try await server.itemID(title: "Hearth Test Podcast")
+        let podcastID = try await server.itemID(title: "The Reading Room")
         try await server.resetItem(podcastID)
         launchSignedIn()
         waitForMainUI()
@@ -64,14 +65,15 @@ final class BrowseUITests: HearthUITestCase {
         selectLibrary("Podcasts")
         selectTab("Home")
 
-        let podcast = waitFor(button(containing: "Hearth Test Podcast"), timeout: 30, "Podcast missing on podcast home")
+        let podcast = waitFor(button(containing: "The Reading Room"), timeout: 30, "Podcast missing on podcast home")
         podcast.tap()
 
-        let episode = element(containing: "Episode 1")
+        // Newest first.
+        let episode = element(containing: "Little Women, Big Ideas")
         scrollTo(episode)
         XCTAssertTrue(episode.waitForExistence(timeout: 20), "Episodes not listed")
-        let others = app.descendants(matching: .any).matching(NSPredicate(format: "label MATCHES %@", ".*Episode [2-4].*")).firstMatch
-        scrollTo(others)
-        XCTAssertTrue(others.exists, "Only one episode listed")
+        let other = element(containing: "Great Expectations and the Dickens Machine")
+        scrollTo(other)
+        XCTAssertTrue(other.exists, "Only one episode listed")
     }
 }

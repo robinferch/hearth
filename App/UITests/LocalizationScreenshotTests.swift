@@ -66,7 +66,12 @@ final class LocalizationScreenshotTests: HearthUITestCase {
         capture("context-menu")
         app.tap()
 
-        app.tabBars.buttons.element(boundBy: app.tabBars.buttons.count - 1).tap()
+        let searchTab = app.tabBars.buttons.element(boundBy: app.tabBars.buttons.count - 1)
+        searchTab.tap()
+        // The first tap can land while the context menu is still dismissing.
+        if !app.searchFields.firstMatch.waitForExistence(timeout: 5) {
+            searchTab.tap()
+        }
         let field = waitFor(app.searchFields.firstMatch)
         field.tap()
         field.typeText("sherlock")

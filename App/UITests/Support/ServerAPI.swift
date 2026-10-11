@@ -61,6 +61,8 @@ struct ServerAPI: Sendable {
         struct Episode: Decodable, Sendable {
             let id: String
             let title: String
+            let duration: Double?
+            let publishedAt: Double?
         }
     }
 

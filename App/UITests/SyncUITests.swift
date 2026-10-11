@@ -10,7 +10,7 @@ final class SyncUITests: HearthUITestCase {
         launchSignedIn()
         openAudiobook("The Time Machine")
 
-        // Download (3 mp3 files) and wait until it completes.
+        // Download and wait until it completes.
         let download = waitFor(app.buttons["detail.download"])
         download.tap()
         let deadline = Date.now.addingTimeInterval(120)
@@ -56,9 +56,15 @@ final class SyncUITests: HearthUITestCase {
     }
 
     func testServerProgressReachesApp() async throws {
-        let itemID = try await server.itemID(title: "Sherlock Holmes 2")
+        let title = "The Sign of the Four"
+        let itemID = try await server.itemID(title: title)
+        let duration = try await server.item(itemID).media.chapters?.last?.end ?? 0
+        let server = self.server!
+        func setPosition(_ seconds: Double) async throws {
+            try await server.setProgress(itemID: itemID, body: ["currentTime": seconds, "duration": duration, "progress": seconds / duration, "isFinished": false])
+        }
         try await server.resetItem(itemID)
-        try await server.setProgress(itemID: itemID, body: ["currentTime": 150, "duration": 240, "progress": 150.0 / 240, "isFinished": false])
+        try await setPosition(1500)
 
         launchSignedIn()
         waitForMainUI()
@@ -66,13 +72,13 @@ final class SyncUITests: HearthUITestCase {
         // Series books are grouped in the library grid; open the book from its series.
         selectTab("Series")
         waitFor(itemCell("Sherlock Holmes"), timeout: 30).tap()
-        waitFor(button(containing: "Sherlock Holmes 2"), timeout: 20).tap()
+        waitFor(button(containing: title), timeout: 20).tap()
         let play = waitFor(app.buttons["playButton"], timeout: 20)
         XCTAssertEqual(play.label, "Resume", "Server progress not shown on launch")
         let initial = play.value as? String ?? ""
 
         // Live update over Socket.IO while the detail is visible.
-        try await server.setProgress(itemID: itemID, body: ["currentTime": 60, "duration": 240, "progress": 0.25, "isFinished": false])
+        try await setPosition(600)
         let live = NSPredicate(format: "value != %@", initial)
         let liveUpdated = XCTNSPredicateExpectation(predicate: live, object: play)
         await fulfillment(of: [liveUpdated], timeout: 20)
@@ -80,7 +86,7 @@ final class SyncUITests: HearthUITestCase {
 
         // Change while the app is in the background → picked up on foreground.
         XCUIDevice.shared.press(.home)
-        try await server.setProgress(itemID: itemID, body: ["currentTime": 200, "duration": 240, "progress": 200.0 / 240, "isFinished": false])
+        try await setPosition(2400)
         try await Task.sleep(for: .seconds(2))
         app.activate()
         let foreground = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value != %@", afterLive), object: play)
@@ -88,17 +94,17 @@ final class SyncUITests: HearthUITestCase {
 
         // Pull to refresh on the detail.
         let afterForeground = play.value as? String ?? ""
-        try await server.setProgress(itemID: itemID, body: ["currentTime": 100, "duration": 240, "progress": 100.0 / 240, "isFinished": false])
+        try await setPosition(1000)
         app.swipeDown(velocity: .fast)
         let refreshed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value != %@", afterForeground), object: play)
         await fulfillment(of: [refreshed], timeout: 25)
 
         // Resume starts from the server position (the player shows chapter-relative time).
         let chapters = try await server.item(itemID).media.chapters ?? []
-        let chapterStart = chapters.last { $0.start <= 100 }?.start ?? 0
+        let chapterStart = chapters.last { $0.start <= 1000 }?.start ?? 0
         startPlaybackAndOpenPlayer()
         let position = elapsed()
-        XCTAssertEqual(position, 100 - chapterStart, accuracy: 8, "Resume did not start from server progress")
+        XCTAssertEqual(position, 1000 - chapterStart, accuracy: 8, "Resume did not start from server progress")
         app.buttons["player.playPause"].tap()
     }
 }

@@ -13,10 +13,25 @@ import XCTest
 ///         -scheme Hearth -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max' \
 ///         -only-testing:HearthUITests/AppStoreScreenshots
 ///
-/// `testIPhone` runs on iPhone destinations, `testIPad` (landscape) on iPad destinations.
+/// `testIPhone` runs on iPhone destinations, `testIPad` (landscape) on iPad destinations. Set
+/// `HEARTH_SCREENSHOT_LANGUAGE=de` (`TEST_RUNNER_…`) for German UI (keep the simulator region en_US for the 9:41 clock).
 final class AppStoreScreenshots: HearthUITestCase {
     private static var directory: URL? {
         ProcessInfo.processInfo.environment["HEARTH_SCREENSHOT_DIR"].flatMap { $0.isEmpty ? nil : URL(fileURLWithPath: $0) }
+    }
+
+    private static var language: String { ProcessInfo.processInfo.environment["HEARTH_SCREENSHOT_LANGUAGE"] ?? "en" }
+    private static var isGerman: Bool { language.hasPrefix("de") }
+
+    /// German UI strings for the controls this test finds by label (the rest uses identifiers or server data).
+    private static let german = [
+        "Playback speed": "Wiedergabegeschwindigkeit", "Sleep timer": "Schlaftimer", "30 minutes": "30 Minuten",
+        "1.3×": "1,3×", "Downloaded": "Geladen", "Statistics": "Statistiken", "Resume": "Fortsetzen",
+    ]
+
+    /// `english`, or its German translation when capturing in German.
+    private func localized(_ english: String) -> String {
+        Self.isGerman ? Self.german[english] ?? english : english
     }
 
     private static var user: String { ProcessInfo.processInfo.environment["HEARTH_SCREENSHOT_USER"] ?? "root" }
@@ -41,12 +56,12 @@ final class AppStoreScreenshots: HearthUITestCase {
     func testIPhone() async throws {
         try XCTSkipUnless(UIDevice.current.userInterfaceIdiom == .phone, "iPhone only")
         launch(reset: true)
-        waitForMainUI()
+        waitForMain()
         selectLibrary("Audiobooks")
 
         // Player at 1.3×.
         let close = play("Moby-Dick")
-        setSpeed("1.3×")
+        setSpeed(localized("1.3×"))
         capture("iphone-player")
 
         app.buttons["player.panelToggle"].tap()
@@ -56,9 +71,9 @@ final class AppStoreScreenshots: HearthUITestCase {
         idle(1)
 
         // Sleep timer: the preset menu, then an active timer with its countdown in the action row.
-        let sleepTimer = app.buttons["Sleep timer"]
+        let sleepTimer = app.buttons[localized("Sleep timer")]
         sleepTimer.tap()
-        let preset = waitFor(app.buttons["30 minutes"], timeout: 5, "Sleep timer menu missing")
+        let preset = waitFor(app.buttons[localized("30 minutes")], timeout: 5, "Sleep timer menu missing")
         capture("iphone-sleep-timer")
         preset.tap()
         idle(3)
@@ -80,20 +95,20 @@ final class AppStoreScreenshots: HearthUITestCase {
         waitFor(itemCell("A Study in Scarlet"), timeout: 20, "Series did not load")
         capture("iphone-series")
 
-        selectTab("Library")
+        tab(1).tap()
         popToRoot()
-        tapVisible(waitFor(button(containing: "Downloaded"), timeout: 20, "Downloaded shortcut missing"))
+        tapVisible(waitFor(button(containing: localized("Downloaded")), timeout: 20, "Downloaded shortcut missing"))
         waitFor(element(containing: "Dracula"), timeout: 20, "Downloads missing")
         capture("iphone-downloads")
         popToRoot()
 
-        selectTab("Home")
+        tab(0).tap()
         popToRoot()
         waitFor(itemCell("Moby-Dick"), timeout: 30, "Home did not load")
         capture("iphone-home")
 
         openDeepLink("hearth://statistics")
-        waitFor(app.navigationBars["Statistics"], timeout: 20, "Statistics did not open")
+        waitFor(app.navigationBars[localized("Statistics")], timeout: 20, "Statistics did not open")
         capture("iphone-statistics")
 
         openDeepLink("hearth://search?q=the")
@@ -107,20 +122,20 @@ final class AppStoreScreenshots: HearthUITestCase {
 
         // Library grid without the shortcut rows (relaunch: the setting is read at launch).
         relaunch(shortcuts: "")
-        waitForMainUI()
+        waitForMain()
         selectLibrary("Audiobooks")
-        selectTab("Library")
+        tab(1).tap()
         waitFor(itemCell("Frankenstein"), timeout: 30, "Library grid did not load")
         capture("iphone-library")
 
         // Dark appearance: relaunch with the app's color scheme setting overridden.
         relaunch(dark: true)
-        waitForMainUI()
+        waitForMain()
         let darkClose = play("Moby-Dick")
-        setSpeed("1.3×")
+        setSpeed(localized("1.3×"))
         capture("iphone-player-dark")
         darkClose.tap()
-        selectTab("Home")
+        tab(0).tap()
         popToRoot()
         waitFor(itemCell("Moby-Dick"), timeout: 30, "Home did not load (dark)")
         capture("iphone-home-dark")
@@ -136,19 +151,19 @@ final class AppStoreScreenshots: HearthUITestCase {
         defer { XCUIDevice.shared.orientation = .portrait }
         // Navigate by UI only: opening `hearth://` URLs leaves a "Hearth" breadcrumb in the iPad status bar.
         launch(reset: true, shortcuts: "")
-        waitForMainUI()
+        waitForMain()
         let sidebarToggle = app.buttons["ToggleSidebar"]
         if !app.staticTexts["Podcasts"].waitForExistence(timeout: 5), sidebarToggle.exists {
             sidebarToggle.tap()
         }
-        sidebarEntry("Home").tap()
+        sidebarEntry(["Home", "Start"]).tap()
         waitFor(itemCell("Moby-Dick"), timeout: 30, "Home did not load")
         // Moby-Dick is the last played item (see setUp): resume it from the mini player.
-        let resume = app.buttons.matching(NSPredicate(format: "identifier == %@ OR label == %@", "miniPlayer.playPause", "Resume")).firstMatch
+        let resume = app.buttons.matching(NSPredicate(format: "identifier == %@ OR label == %@", "miniPlayer.playPause", localized("Resume"))).firstMatch
         waitFor(resume, timeout: 20, "Mini player missing").tap()
         idle(2)
         let close = waitForPlayer()
-        setSpeed("1.3×")
+        setSpeed(localized("1.3×"))
         capture("ipad-player")
         close.tap()
 
@@ -159,7 +174,7 @@ final class AppStoreScreenshots: HearthUITestCase {
         tapUntil(itemCell("The Hound of the Baskervilles"), shows: app.buttons["playButton"], "Detail did not load")
         capture("ipad-audiobook")
 
-        sidebarEntry("Library").tap()
+        sidebarEntry(["Library", "Mediathek", "Bibliothek"]).tap()
         waitFor(itemCell("Little Women"), timeout: 30, "Library grid did not load")
         capture("ipad-library")
         pause()
@@ -185,7 +200,8 @@ final class AppStoreScreenshots: HearthUITestCase {
             arguments.append("-HearthDebugReset")
         }
         arguments += [
-            "-HearthDisableTips", "YES", "-AppleLanguages", "(en)", "-AppleLocale", "en_US",
+            "-HearthDisableTips", "YES",
+            "-AppleLanguages", "(\(Self.language))", "-AppleLocale", Self.isGerman ? "de_DE" : "en_US",
             // App settings (app group defaults) and `@AppStorage` values can be overridden for this run only.
             "-colorScheme", dark ? "dark" : "light",
             "-library.shortcuts", shortcuts,
@@ -249,7 +265,7 @@ final class AppStoreScreenshots: HearthUITestCase {
 
     private func setSpeed(_ label: String) {
         // The iPad player can contain more than one speed control (e.g. behind the full-screen cover).
-        let candidates = app.buttons.matching(identifier: "Playback speed")
+        let candidates = app.buttons.matching(identifier: localized("Playback speed"))
         waitFor(candidates.firstMatch, timeout: 10, "Speed button missing")
         let speed = candidates.allElementsBoundByIndex.first { $0.isHittable } ?? candidates.firstMatch
         var taps = 0
@@ -263,14 +279,15 @@ final class AppStoreScreenshots: HearthUITestCase {
     private func download(_ title: String) {
         openDeepLink("hearth://item/\(identifier(.audiobook, title))")
         let button = waitFor(app.buttons["detail.download"], timeout: 20, "Download button missing for \(title)")
-        if button.label != "Downloaded" {
+        let downloaded = localized("Downloaded")
+        if button.label != downloaded {
             button.tap()
         }
         let deadline = Date.now.addingTimeInterval(90)
-        while Date.now < deadline, button.label != "Downloaded" {
+        while Date.now < deadline, button.label != downloaded {
             idle(1)
         }
-        XCTAssertEqual(button.label, "Downloaded", "Download of \(title) did not complete")
+        XCTAssertEqual(button.label, downloaded, "Download of \(title) did not complete")
     }
 
     /// Windowed apps (the iPadOS default) add the app name to the status bar and a resize grabber: switch the
@@ -303,15 +320,27 @@ final class AppStoreScreenshots: HearthUITestCase {
         waitFor(target, timeout: 5, message)
     }
 
-    private func sidebarEntry(_ label: String) -> XCUIElement {
-        let entry = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", label)).firstMatch
-        return waitFor(entry, timeout: 15, "Sidebar entry \(label) missing")
+    /// Sidebar row with one of `labels` (English / German titles).
+    private func sidebarEntry(_ labels: [String]) -> XCUIElement {
+        let entry = app.descendants(matching: .any).matching(NSPredicate(format: "label IN %@", labels)).firstMatch
+        return waitFor(entry, timeout: 15, "Sidebar entry \(labels[0]) missing")
+    }
+
+    /// iPhone tab by position (Home, Library, Series, Authors), independent of the UI language.
+    private func tab(_ index: Int) -> XCUIElement {
+        waitFor(app.tabBars.buttons.element(boundBy: index), timeout: 20, "Tab \(index) missing")
+    }
+
+    /// Main UI (iPhone library picker or iPad sidebar), independent of the UI language.
+    private func waitForMain() {
+        let main = app.buttons.matching(NSPredicate(format: "identifier IN %@", ["libraryPicker", "ToggleSidebar"])).firstMatch
+        waitFor(main, timeout: 40, "Main UI did not appear")
     }
 
     /// Pops the selected tab's navigation stack by tapping its back buttons.
     private func popToRoot() {
         for _ in 0..<5 {
-            let back = app.navigationBars.buttons.matching(NSPredicate(format: "identifier == %@ OR label == %@", "BackButton", "Back")).firstMatch
+            let back = app.navigationBars.buttons.matching(NSPredicate(format: "identifier == %@ OR label IN %@", "BackButton", ["Back", "Zurück"])).firstMatch
             guard back.exists, back.isHittable else { return }
             back.tap()
             idle(0.8)
@@ -320,7 +349,7 @@ final class AppStoreScreenshots: HearthUITestCase {
 
     private func dismissKeyboard() {
         guard app.keyboards.firstMatch.exists else { return }
-        let search = app.keyboards.buttons.matching(NSPredicate(format: "label IN %@", ["search", "Search"])).firstMatch
+        let search = app.keyboards.buttons.matching(NSPredicate(format: "label IN %@", ["search", "Search", "Suchen"])).firstMatch
         if search.exists {
             search.tap()
         }
@@ -329,7 +358,7 @@ final class AppStoreScreenshots: HearthUITestCase {
 
     private func pause() {
         let playPause = app.descendants(matching: .any)["miniPlayer.playPause"]
-        if playPause.exists, playPause.label == "Pause" {
+        if playPause.exists, ["Pause", "Pausieren"].contains(playPause.label) {
             playPause.tap()
         }
     }

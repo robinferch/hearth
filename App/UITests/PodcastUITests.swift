@@ -3,18 +3,21 @@ import XCTest
 /// Podcast episode playback: Up Next per podcast settings, auto-advance to the next episode.
 final class PodcastUITests: HearthUITestCase {
     func testEpisodeUpNextAndAutoAdvance() async throws {
-        let podcast = try await server.items()["Hearth Test Podcast"]
+        let podcast = try await server.items()["The Reading Room"]
         let podcastID = try XCTUnwrap(podcast?.id)
         try await server.resetItem(podcastID)
         let episodes = try await server.item(podcastID).media.episodes ?? []
-        let first = try XCTUnwrap(episodes.first { $0.title == "Episode 1" })
+        // The oldest episode, resumed 20 s before its end so that skipping forward finishes it.
+        let first = try XCTUnwrap(episodes.min { ($0.publishedAt ?? 0) < ($1.publishedAt ?? 0) })
+        let duration = try XCTUnwrap(first.duration)
+        try await server.setProgress(itemID: podcastID, episodeID: first.id, body: ["currentTime": duration - 20, "duration": duration, "progress": (duration - 20) / duration])
 
         launchSignedIn()
         waitForMainUI()
         selectLibrary("Podcasts")
         selectTab("Library")
-        waitFor(button(containing: "Hearth Test Podcast"), timeout: 30).tap()
-        let row = element(containing: "Episode 1")
+        waitFor(button(containing: "The Reading Room"), timeout: 30).tap()
+        let row = element(containing: first.title)
         scrollTo(row)
         waitFor(row, timeout: 20).tap()
         waitFor(app.buttons["playButton"], timeout: 20, "Episode detail did not load")
@@ -25,19 +28,22 @@ final class PodcastUITests: HearthUITestCase {
         app.buttons["player.panelToggle"].tap()
         waitFor(app.buttons["Queue"], timeout: 10).tap()
         waitFor(app.staticTexts["Up Next"], timeout: 10, "Up Next missing")
-        let upNext = app.buttons.matching(NSPredicate(format: "label MATCHES %@", ".*Episode [2-9].*")).firstMatch
+        let others = episodes.filter { $0.id != first.id }
+        let anyOther = NSCompoundPredicate(orPredicateWithSubpredicates: others.map { NSPredicate(format: "label CONTAINS %@", $0.title) })
+        let upNext = app.buttons.matching(anyOther).firstMatch
         waitFor(upNext, timeout: 10, "No episodes in Up Next")
-        let nextTitle = try XCTUnwrap(episodes.map(\.title).first { upNext.label.contains($0) && $0 != "Episode 1" })
-        let next = try XCTUnwrap(episodes.first { $0.title == nextTitle })
+        let upNextLabel = upNext.label
+        let next = try XCTUnwrap(others.first { upNextLabel.contains($0.title) })
+        let nextTitle = next.title
         app.buttons["player.panelToggle"].tap()
 
-        // Skip to the end (60 s episode): it finishes and the next one starts.
+        // Skip past the end: the episode finishes and the next one starts.
         app.buttons["player.skipForward"].tap()
         idle(1)
         app.buttons["player.skipForward"].tap()
 
         let server = self.server!
-        try await eventually(timeout: 40, "Episode 1 not finished on the server") {
+        try await eventually(timeout: 40, "\(first.title) not finished on the server") {
             try await server.progress(itemID: podcastID, episodeID: first.id)?.isFinished == true
         }
         XCTAssertTrue(element(containing: nextTitle).waitForExistence(timeout: 20), "\(nextTitle) did not start")
