@@ -39,6 +39,8 @@ targets:
       - path: App/Resources/iOS
         buildPhase: resources
         optional: true
+      - path: Hearth.icon
+        buildPhase: resources
     dependencies:
       - package: HearthKit
         product: HearthModel
@@ -62,7 +64,7 @@ targets:
         TARGETED_DEVICE_FAMILY: "1,2"
         SUPPORTS_MACCATALYST: NO
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: YES
-        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_APPICON_NAME: Hearth
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         INFOPLIST_KEY_CFBundleDisplayName: Hearth
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.books
@@ -162,6 +164,8 @@ targets:
       - path: App/Resources/Watch
         buildPhase: resources
         optional: true
+      - path: Hearth.icon
+        buildPhase: resources
     dependencies:
       - package: HearthKit
         product: HearthModel
@@ -180,7 +184,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).hearth.watchkitapp
         CODE_SIGN_ENTITLEMENTS: App/Support/Watch/HearthWatch.entitlements
         TARGETED_DEVICE_FAMILY: "4"
-        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_APPICON_NAME: Hearth
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         GENERATE_INFOPLIST_FILE: YES
         SKIP_INSTALL: YES
@@ -194,6 +198,10 @@ targets:
         HearthKeychainGroup: $(HEARTH_KEYCHAIN_GROUP)
         WKApplication: true
         WKCompanionAppBundleIdentifier: $(BUNDLE_ID_PREFIX).hearth
+        WKRunsIndependentlyOfCompanionApp: true
+        CFBundleURLTypes:
+          - CFBundleURLName: $(PRODUCT_BUNDLE_IDENTIFIER)
+            CFBundleURLSchemes: [hearth]
         WKBackgroundModes: [audio]
         UIBackgroundModes: [audio]
         NSAppTransportSecurity:

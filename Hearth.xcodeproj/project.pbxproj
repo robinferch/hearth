@@ -26,6 +26,8 @@
 		6F9331C40E1F342B3ADFB46B /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0E034A64BF18762E0AF8E8B8 /* HearthUI */; };
 		7390DB5E47CA7E7057A34860 /* HearthPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = EB4A4ECE7282259E0EE32660 /* HearthPlayback */; };
 		770317BC1D7E64384FB9D039 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = ED93A1B6C40896FAA3001AF9 /* Localizable.xcstrings */; };
+		7B8EE3901FB06290BAD951E1 /* Hearth.icon in Resources */ = {isa = PBXBuildFile; fileRef = 88805BD92D9AC05651D8FA42 /* Hearth.icon */; };
+		94F008F6E88E7592D397B84B /* Hearth.icon in Resources */ = {isa = PBXBuildFile; fileRef = 88805BD92D9AC05651D8FA42 /* Hearth.icon */; };
 		957E2ECF18CFB4E7D52F0E20 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800055FB67C9CFB7975A6C82 /* WidgetKit.framework */; };
 		A6B5FF1764F47237536FB880 /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = D092E9BD1C2DBB96E5F1559F /* HearthUI */; };
 		B80F05E04CBC30172A5B8CE0 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BCD6EB16AD03C9166C2C711 /* SwiftUI.framework */; };
@@ -112,6 +114,7 @@
 		800055FB67C9CFB7975A6C82 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		8377C12B539FBB513F3B517A /* HearthWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = HearthWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		847217928D1BE8394CF58D61 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		88805BD92D9AC05651D8FA42 /* Hearth.icon */ = {isa = PBXFileReference; path = Hearth.icon; sourceTree = "<group>"; };
 		8925C3D766B1346CA4B5AB52 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		B349A8BC691ED2A295408123 /* HearthWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HearthWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBB415D370BC05F3121EA073 /* Hearth.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Hearth.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -246,6 +249,7 @@
 				DAC0D8CC795917480C1A5704 /* App/Watch */,
 				42F46FF1CA97152F3608A725 /* App/WatchWidgets */,
 				97BA9F0C64FA878BDD78F13C /* App/Widgets */,
+				88805BD92D9AC05651D8FA42 /* Hearth.icon */,
 				E446A678A7C8276D27ACDC60 /* Frameworks */,
 				98F50AE03A1AFB85C69BC3DE /* Products */,
 			);
@@ -482,6 +486,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				47BF835C9A4F4D9E0AB546BD /* Assets.xcassets in Resources */,
+				7B8EE3901FB06290BAD951E1 /* Hearth.icon in Resources */,
 				3875E2790DCE5A85D535BF97 /* InfoPlist.xcstrings in Resources */,
 				0FF660591C637EB206B9654D /* Localizable.xcstrings in Resources */,
 			);
@@ -500,6 +505,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A0E1B16A4F539B33C36F39D /* Assets.xcassets in Resources */,
+				94F008F6E88E7592D397B84B /* Hearth.icon in Resources */,
 				770317BC1D7E64384FB9D039 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -567,7 +573,7 @@
 		136D6C759BAB211ACD13DC2B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Hearth;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/Support/Watch/HearthWatch.entitlements;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -601,7 +607,7 @@
 		3DDC6F82367E3F1635F2BBCB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Hearth;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "App/Support/iOS/Hearth-$(HEARTH_ENTITLEMENTS).entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -625,7 +631,7 @@
 		42D845369AC24B3107E83DE0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Hearth;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = App/Support/Watch/HearthWatch.entitlements;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -814,7 +820,7 @@
 		DB6A562CD0B94DB812075DB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = Hearth;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "App/Support/iOS/Hearth-$(HEARTH_ENTITLEMENTS).entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
