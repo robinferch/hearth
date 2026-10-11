@@ -31,6 +31,9 @@ final class SyncUITests: HearthUITestCase {
         idle(2)
         let localTime = elapsed()
         app.buttons["player.close"].tap()
+        // Stopping finalizes the run: the local session becomes eligible for upload.
+        waitFor(app.descendants(matching: .any)["miniPlayer"]).press(forDuration: 1.2)
+        waitFor(button(containing: "Stop Playback"), timeout: 10).tap()
 
         // Nothing reached the server while offline.
         let offlineProgress = try await server.progress(itemID: itemID)
@@ -58,8 +61,13 @@ final class SyncUITests: HearthUITestCase {
         try await server.setProgress(itemID: itemID, body: ["currentTime": 150, "duration": 240, "progress": 150.0 / 240, "isFinished": false])
 
         launchSignedIn()
-        openAudiobook("Sherlock Holmes 2")
-        let play = app.buttons["playButton"]
+        waitForMainUI()
+        selectLibrary("Audiobooks")
+        // Series books are grouped in the library grid; open the book from its series.
+        selectTab("Series")
+        waitFor(button(containing: "Sherlock Holmes"), timeout: 30).tap()
+        waitFor(button(containing: "Sherlock Holmes 2"), timeout: 20).tap()
+        let play = waitFor(app.buttons["playButton"], timeout: 20)
         XCTAssertEqual(play.label, "Resume", "Server progress not shown on launch")
         let initial = play.value as? String ?? ""
 

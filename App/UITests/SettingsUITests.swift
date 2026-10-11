@@ -17,8 +17,10 @@ final class SettingsUITests: HearthUITestCase {
         let picker = waitFor(button(containing: "Skip Forward"))
         picker.tap()
         waitFor(button(containing: "45")).tap()
-        let updated = button(containing: "Skip Forward")
-        XCTAssertTrue(waitFor(updated).label.contains("45") || (updated.value as? String)?.contains("45") == true, "Skip forward interval not updated: \(updated.label) / \(String(describing: updated.value))")
+        // The menu picker row shows the selection next to its label.
+        let row = button(containing: "Skip Forward")
+        let selection = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "45")).firstMatch
+        XCTAssertTrue(selection.waitForExistence(timeout: 5) || row.label.contains("45"), "Skip forward interval not updated: \(row.label)")
 
         // Restore the default.
         button(containing: "Skip Forward").tap()

@@ -6,7 +6,7 @@ final class LocalizationScreenshotTests: HearthUITestCase {
     private var index = 0
 
     private func capture(_ name: String) {
-        RunLoop.current.run(until: .now.addingTimeInterval(1.5))
+        idle(1.5)
         let screenshot = app.screenshot()
         let attachment = XCTAttachment(screenshot: screenshot)
         attachment.name = name
@@ -61,7 +61,8 @@ final class LocalizationScreenshotTests: HearthUITestCase {
         capture("mini-player")
 
         // Context menu of a library item.
-        itemCell("Frankenstein").press(forDuration: 1.2)
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        waitFor(itemCell("Frankenstein")).press(forDuration: 1.2)
         capture("context-menu")
         app.tap()
 
@@ -69,8 +70,14 @@ final class LocalizationScreenshotTests: HearthUITestCase {
         let field = waitFor(app.searchFields.firstMatch)
         field.tap()
         field.typeText("sherlock")
-        RunLoop.current.run(until: .now.addingTimeInterval(3))
+        idle(3)
         capture("search")
+        // Leave search (the active search field hides the toolbar).
+        let closeSearch = app.buttons.matching(NSPredicate(format: "label IN %@", ["Schließen", "Close"])).firstMatch
+        if closeSearch.exists {
+            closeSearch.tap()
+        }
+        tab(0).tap()
 
         waitFor(app.buttons["libraryPicker"]).tap()
         capture("library-picker")

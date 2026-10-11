@@ -120,7 +120,8 @@ class HearthUITestCase: XCTestCase {
     /// Waits until the main UI (tab bar with library content) is visible.
     func waitForMainUI(timeout: TimeInterval = 40, file: StaticString = #filePath, line: UInt = #line) {
         let home = app.tabBars.buttons["Home"]
-        let sidebarHome = app.buttons["Home"]
+        // iPad sidebar rows are cells / other elements, not buttons.
+        let sidebarHome = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Home")).firstMatch
         let deadline = Date.now.addingTimeInterval(timeout)
         while Date.now < deadline {
             if home.exists || sidebarHome.exists {
@@ -135,11 +136,17 @@ class HearthUITestCase: XCTestCase {
     func selectLibrary(_ library: String, file: StaticString = #filePath, line: UInt = #line) {
         let picker = app.buttons["libraryPicker"]
         waitFor(picker, timeout: 20, "Library picker missing", file: file, line: line)
-        if picker.value as? String == library {
+        // Library roots are titled with the library name.
+        if picker.value as? String == library || app.navigationBars[library].exists {
             return
         }
+        let item = app.buttons[library]
         picker.tap()
-        waitFor(app.buttons[library], timeout: 10, "Library \(library) missing in picker", file: file, line: line).tap()
+        if !item.waitForExistence(timeout: 5) {
+            // The first tap can be swallowed by a dismissing system sheet (e.g. "Save Password?").
+            picker.tap()
+        }
+        waitFor(item, timeout: 10, "Library \(library) missing in picker", file: file, line: line).tap()
     }
 
     /// Dismisses the system "Save Password?" sheet if it appears.

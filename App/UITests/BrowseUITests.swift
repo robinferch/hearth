@@ -52,7 +52,10 @@ final class BrowseUITests: HearthUITestCase {
         XCTAssertTrue(element(containing: "Sherlock Holmes 2").exists)
     }
 
-    func testPodcastLibraryShowsEpisodes() throws {
+    func testPodcastLibraryShowsEpisodes() async throws {
+        // The podcast page lists unfinished episodes by default; start from a clean slate.
+        let podcastID = try await server.itemID(title: "Hearth Test Podcast")
+        try await server.resetItem(podcastID)
         launchSignedIn()
         waitForMainUI()
 
@@ -65,6 +68,8 @@ final class BrowseUITests: HearthUITestCase {
         let episode = element(containing: "Episode 1")
         scrollTo(episode)
         XCTAssertTrue(episode.waitForExistence(timeout: 20), "Episodes not listed")
-        XCTAssertTrue(element(containing: "Episode 4").exists || element(containing: "Episode 3").exists)
+        let others = app.descendants(matching: .any).matching(NSPredicate(format: "label MATCHES %@", ".*Episode [2-4].*")).firstMatch
+        scrollTo(others)
+        XCTAssertTrue(others.exists, "Only one episode listed")
     }
 }
