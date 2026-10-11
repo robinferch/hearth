@@ -5,9 +5,22 @@
   "groups" : [
     {
       "layers" : [
+
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.3
+      }
+    },
+    {
+      "layers" : [
         {
-          "image-name" : "flame.fill.svg",
-          "name" : "flame.fill",
+          "image-name" : "fire.svg",
+          "name" : "fire",
           "position" : {
             "scale" : 20,
             "translation-in-points" : [
