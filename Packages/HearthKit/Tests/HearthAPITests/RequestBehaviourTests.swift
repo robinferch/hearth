@@ -60,8 +60,11 @@ extension NetworkTests {
 
     @Test func doesNotRetryNonIdempotentMutations() async throws {
         let counter = Counter()
-        let harness = ClientHarness { _ in
-            counter.increment()
+        let harness = ClientHarness { request in
+            // Count only the mutations; the local session upload may look up the item title first.
+            if request.method != "GET" {
+                counter.increment()
+            }
             return MockResponse(error: URLError(.timedOut))
         }
         let library = LibraryIdentifier(connectionID: harness.connection.id, libraryID: "lib")

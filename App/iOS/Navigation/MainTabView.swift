@@ -178,28 +178,20 @@ private struct MiniPlayerAccessory: ViewModifier {
     }
 }
 
-/// iPad sidebar bottom bar: Settings and offline toggle.
+/// iPad sidebar bottom bar: offline toggle.
 private struct SidebarBottomBar: View {
-    @Environment(Navigator.self) private var navigator
 
     var body: some View {
-        HStack {
-            Button {
-                navigator.sheet = .settings
-            } label: {
-                Label("Settings", systemImage: "gear")
-            }
-            Spacer()
-            Button {
-                Task { await HearthData.shared.connections.setOffline(true) }
-            } label: {
-                Label("Go Offline", systemImage: "icloud.slash")
-            }
-            .labelStyle(.iconOnly)
+        // Settings is a regular sidebar tab; the bottom bar only offers switching to offline mode.
+        Button {
+            Task { await HearthData.shared.connections.setOffline(true) }
+        } label: {
+            Label("Go Offline", systemImage: "icloud.slash")
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .buttonStyle(.borderless)
         .padding(.horizontal, 16)
-        .padding(.vertical, 8)
+        .padding(.vertical, 12)
     }
 }
 

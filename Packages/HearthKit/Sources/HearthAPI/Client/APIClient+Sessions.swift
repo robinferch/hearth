@@ -38,7 +38,15 @@ extension APIClient {
         if userID == nil {
             userID = try? await me().userID
         }
-        let body = LocalSessionBody(session, userID: userID, device: device)
+        var body = LocalSessionBody(session, userID: userID, device: device)
+        // Without a display title the server labels episode sessions with the podcast name.
+        if session.itemID.kind == .episode, let episode = try? await episode(session.itemID) {
+            body.displayTitle = episode.name
+            body.displayAuthor = episode.podcastName
+        } else if session.itemID.kind == .audiobook, let audiobook = try? await audiobook(session.itemID) {
+            body.displayTitle = audiobook.name
+            body.displayAuthor = audiobook.authors.joined(separator: ", ")
+        }
         try await perform(APIRequest.post("api", "session", "local").json(body))
     }
 
