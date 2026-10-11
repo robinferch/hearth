@@ -31,6 +31,10 @@ public final class ProgressStore {
 
     @ObservationIgnored private var records: [String: ProgressRecord] = [:]
     @ObservationIgnored private var cells: [String: ProgressCell] = [:]
+    /// Monotonic change counter and the value it had at each key's last change. A reconcile skips keys changed
+    /// while its `api/authorize` request was in flight: the response may predate them.
+    @ObservationIgnored private var changeCounter: UInt64 = 0
+    @ObservationIgnored private var changeStamps: [String: UInt64] = [:]
     @ObservationIgnored let environment: DataEnvironment
     @ObservationIgnored weak var hearth: HearthData?
     @ObservationIgnored private let logger = Logger(category: "ProgressStore")
@@ -98,8 +102,10 @@ public final class ProgressStore {
     private func apply(_ changed: [ProgressRecord], removed: [ItemIdentifier] = []) {
         guard !changed.isEmpty || !removed.isEmpty else { return }
         var listenNowChanged = false
+        changeCounter &+= 1
         for record in changed {
             let key = record.entity.itemID.storageKey
+            changeStamps[key] = changeCounter
             listenNowChanged = listenNowChanged || Self.isListed(records[key]) != Self.isListed(record)
             records[key] = record
             if let cell = cells[key] {
@@ -110,6 +116,7 @@ public final class ProgressStore {
             }
         }
         for id in removed {
+            changeStamps[id.storageKey] = changeCounter
             listenNowChanged = listenNowChanged || Self.isListed(records[id.storageKey])
             records[id.storageKey] = nil
             cells[id.storageKey]?.value = nil
@@ -284,6 +291,15 @@ public final class ProgressStore {
 
     // MARK: Sync
 
+    /// Current change counter; pass to `reconcile(…changedAfter:)` to skip records changed after this point.
+    var changeMark: UInt64 { changeCounter }
+
+    /// Keys changed after `mark`.
+    private func keysChanged(after mark: UInt64?) -> Set<String> {
+        guard let mark else { return [] }
+        return Set(changeStamps.compactMap { $0.value > mark ? $0.key : nil })
+    }
+
     /// Full reconcile with the server(s).
     public func sync() async {
         guard let hearth, !hearth.connections.isOffline else { return }
@@ -300,10 +316,12 @@ public final class ProgressStore {
     /// Reconciles progress *and* bookmarks of one connection (both come from `api/authorize`).
     public func sync(connection: ConnectionID) async {
         guard let hearth, hearth.connections.isAvailable(connection), let client = try? hearth.connections.client(for: connection) else { return }
+        let progressMark = changeMark
+        let bookmarkMark = hearth.bookmarks.changeMark
         do {
             let response = try await client.authorize()
-            await reconcile(connection: connection, remote: response.progress, client: client)
-            await hearth.bookmarks.reconcile(connection: connection, remote: response.bookmarks, client: client)
+            await reconcile(connection: connection, remote: response.progress, client: client, unresolvedItemIDs: response.unresolvedItemIDs, changedAfter: progressMark)
+            await hearth.bookmarks.reconcile(connection: connection, remote: response.bookmarks, client: client, unresolvedItemIDs: response.unresolvedItemIDs, changedAfter: bookmarkMark)
         } catch APIError.unauthorized {
             hearth.connections.markUnauthorized(connection)
         } catch {
@@ -311,9 +329,15 @@ public final class ProgressStore {
         }
     }
 
-    func reconcile(connection: ConnectionID, remote: [ProgressEntity], client: any AudiobookshelfClient) async {
-        let local = records.values.filter { $0.entity.itemID.connectionID == connection }
-        let plan = ProgressReconciler.plan(local: Array(local), remote: remote)
+    /// - Parameters:
+    ///   - unresolvedItemIDs: items the server has entries for that couldn't be mapped (never deleted locally).
+    ///   - changedAfter: `changeMark` taken before the server state was fetched; records changed since are left
+    ///     for the next reconcile.
+    func reconcile(connection: ConnectionID, remote: [ProgressEntity], client: any AudiobookshelfClient, unresolvedItemIDs: Set<String> = [], changedAfter mark: UInt64? = nil) async {
+        let recent = keysChanged(after: mark)
+        let local = records.values.filter { $0.entity.itemID.connectionID == connection && !recent.contains($0.entity.itemID.storageKey) }
+        let remote = remote.filter { !recent.contains($0.itemID.storageKey) }
+        let plan = ProgressReconciler.plan(local: Array(local), remote: remote, unresolvedItemIDs: unresolvedItemIDs)
         await commit(plan.upsertLocal, removed: plan.deleteLocal)
 
         if !plan.push.isEmpty {

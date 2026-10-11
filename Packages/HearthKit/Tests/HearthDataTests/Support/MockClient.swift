@@ -13,6 +13,10 @@ final class MockClient: AudiobookshelfClient {
         var libraries: [Library] = []
         var authorizeProgress: [ProgressEntity] = []
         var authorizeBookmarks: [Bookmark] = []
+        var authorizeUnresolved: Set<String> = []
+        /// Delays `authorize()` (to change local state while the request is in flight).
+        var authorizeDelay: Duration?
+        var authorizeCount = 0
         var audiobooks: [String: Audiobook] = [:]
         var seriesBooks: [String: [Audiobook]] = [:]
         var podcasts: [String: (Podcast, [Episode])] = [:]
@@ -46,6 +50,13 @@ final class MockClient: AudiobookshelfClient {
         state.withLock { body($0) }
     }
 
+    /// Waits until `authorize()` was called (the request is in flight while `authorizeDelay` is set).
+    func waitForAuthorize() async {
+        while read({ $0.authorizeCount }) == 0 {
+            try? await Task.sleep(for: .milliseconds(5))
+        }
+    }
+
     private func check() throws {
         if state.withLock({ $0.failAll }) {
             throw APIError.unreachable
@@ -61,7 +72,15 @@ final class MockClient: AudiobookshelfClient {
 
     func authorize() async throws -> AuthorizeResponse {
         try check()
-        return state.withLock { AuthorizeResponse(userID: "user", username: connection.username, progress: $0.authorizeProgress, bookmarks: $0.authorizeBookmarks) }
+        // The server state is captured when the request is handled, before the (delayed) response arrives.
+        let response = state.withLock {
+            $0.authorizeCount += 1
+            return AuthorizeResponse(userID: "user", username: connection.username, progress: $0.authorizeProgress, bookmarks: $0.authorizeBookmarks, unresolvedItemIDs: $0.authorizeUnresolved)
+        }
+        if let delay = state.withLock({ $0.authorizeDelay }) {
+            try await Task.sleep(for: delay)
+        }
+        return response
     }
 
     // MARK: Libraries

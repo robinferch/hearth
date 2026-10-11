@@ -242,6 +242,21 @@ extension NetworkTests {
         #expect(Set(ids) == ["li_book1", "li_pod1", "li_deleted"])
     }
 
+    @Test func authorizeReportsItemsThatCouldNotBeLookedUp() async throws {
+        let harness = ClientHarness { request in
+            switch request.path {
+            case "/api/authorize": .fixture("authorize")
+            case "/api/items/li_pod1": .fixture("item-podcast-expanded")
+            case "/api/items/li_deleted": .status(404)
+            default: .status(500)
+            }
+        }
+        let response = try await harness.client.authorize()
+        // li_book1 failed (server error): still on the server, must not be treated as deleted. li_deleted is gone.
+        #expect(response.unresolvedItemIDs == ["li_book1"])
+        #expect(response.progress.map(\.id) == ["mp_ep1"])
+    }
+
     @Test func startSessionSendsDeviceInfoAndReturnsAbsoluteTracks() async throws {
         let harness = ClientHarness(path: "/abs") { _ in .fixture("session-play") }
         let id = ItemIdentifier(kind: .episode, connectionID: harness.connection.id, libraryID: "lib_pods", primaryID: "ep_1", groupingID: "li_pod1")

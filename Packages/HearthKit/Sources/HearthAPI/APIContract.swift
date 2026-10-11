@@ -180,12 +180,17 @@ public struct AuthorizeResponse: Sendable {
     public var username: String
     public var progress: [ProgressEntity]
     public var bookmarks: [Bookmark]
+    /// Library item ids (`ItemIdentifier.apiItemID`) whose progress/bookmarks are missing from `progress` and
+    /// `bookmarks` because their library couldn't be looked up (request failed). The server still has those
+    /// entries, so they must not be treated as deleted remotely.
+    public var unresolvedItemIDs: Set<String>
 
-    public init(userID: String, username: String, progress: [ProgressEntity], bookmarks: [Bookmark]) {
+    public init(userID: String, username: String, progress: [ProgressEntity], bookmarks: [Bookmark], unresolvedItemIDs: Set<String> = []) {
         self.userID = userID
         self.username = username
         self.progress = progress
         self.bookmarks = bookmarks
+        self.unresolvedItemIDs = unresolvedItemIDs
     }
 }
 

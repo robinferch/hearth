@@ -13,6 +13,9 @@ import HearthModel
 /// | synced | yes | take remote |
 /// | synced | no | delete locally (deleted elsewhere) |
 /// | – (remote only) | yes | insert locally |
+///
+/// Items whose server entries couldn't be mapped (`unresolvedItemIDs`) are left alone when no remote copy is known:
+/// the server may well have it.
 enum BookmarkReconciler {
     struct Plan: Sendable, Equatable {
         var create: [Bookmark] = []
@@ -22,7 +25,7 @@ enum BookmarkReconciler {
         var deleteLocal: [String] = []
     }
 
-    static func plan(local: [BookmarkRecord], remote: [Bookmark]) -> Plan {
+    static func plan(local: [BookmarkRecord], remote: [Bookmark], unresolvedItemIDs: Set<String> = []) -> Plan {
         var plan = Plan()
         var remoteByKey = [String: Bookmark]()
         for bookmark in remote {
@@ -34,6 +37,9 @@ enum BookmarkReconciler {
             let key = record.key
             seen.insert(key)
             let remote = remoteByKey[key]
+            if remote == nil, unresolvedItemIDs.contains(record.bookmark.itemID.apiItemID) {
+                continue
+            }
             switch record.status {
             case .deleted:
                 if remote != nil {

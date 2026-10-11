@@ -51,6 +51,16 @@ struct BookmarkReconcilerTests {
         #expect(gone.deleteLocal.count == 1)
     }
 
+    @Test func unresolvedServerItemsAreLeftAlone() {
+        let local = [
+            BookmarkRecord(bookmark: bookmark(10, "synced"), status: .synced),
+            BookmarkRecord(bookmark: bookmark(20, "deleted"), status: .deleted),
+            BookmarkRecord(bookmark: bookmark(30, "new"), status: .pendingCreate),
+        ]
+        let plan = BookmarkReconciler.plan(local: local, remote: [], unresolvedItemIDs: [book.apiItemID])
+        #expect(plan == BookmarkReconciler.Plan())
+    }
+
     @Test func remoteOnlyIsInserted() {
         let plan = BookmarkReconciler.plan(local: [], remote: [bookmark(5, "x"), bookmark(7, "y")])
         #expect(plan.upsertLocal.map(\.bookmark.time) == [5, 7])
@@ -94,6 +104,20 @@ struct BookmarkStoreTests {
         try await hearth.bookmarks.delete(bookmark)
         #expect(client.read { $0.deletedBookmarks.map(\.time) } == [10])
         #expect(hearth.bookmarks.bookmarks(for: book).isEmpty)
+    }
+
+    @Test func bookmarkCreatedDuringSyncIsKept() async throws {
+        let client = MockClient(connection: Fixtures.connection())
+        client.update { $0.authorizeDelay = .milliseconds(300) }
+        let book = Fixtures.bookID("b1", connection: client.connection.id)
+        let hearth = makeHearth([client])
+
+        // The authorize response predates the bookmark, which is pushed and synced while the request is in flight.
+        let sync = Task { await hearth.progress.sync() }
+        await client.waitForAuthorize()
+        try await hearth.bookmarks.create(book, time: 5, note: "During sync")
+        await sync.value
+        #expect(hearth.bookmarks.bookmarks(for: book).map(\.note) == ["During sync"])
     }
 
     @Test func bookmarkedItemsCountsPerLibrary() async throws {

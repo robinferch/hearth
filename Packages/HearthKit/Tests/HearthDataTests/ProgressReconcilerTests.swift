@@ -24,6 +24,16 @@ struct ProgressReconcilerTests {
         #expect(plan.deleteLocal == [book])
     }
 
+    @Test func unresolvedServerItemsAreNotDeletedLocally() {
+        let synced = ProgressRecord(entity: Fixtures.progress(book, currentTime: 10, lastUpdate: Fixtures.date(10)), status: .synced, hasServerID: true)
+        let plan = ProgressReconciler.plan(local: [synced], remote: [], unresolvedItemIDs: [book.apiItemID])
+        #expect(plan.deleteLocal.isEmpty)
+        #expect(plan.push.isEmpty)
+
+        let dirty = ProgressRecord(entity: synced.entity, status: .dirty, hasServerID: true)
+        #expect(ProgressReconciler.plan(local: [dirty], remote: [], unresolvedItemIDs: [book.apiItemID]).push == [dirty.entity])
+    }
+
     @Test func localOnlyTombstoneIsDeletedLocally() {
         let local = ProgressRecord(entity: Fixtures.progress(book, currentTime: 10, lastUpdate: Fixtures.date(10)), status: .tombstone, hasServerID: true)
         let plan = ProgressReconciler.plan(local: [local], remote: [])
