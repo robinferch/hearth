@@ -33,6 +33,7 @@ final class MockClient: AudiobookshelfClient {
         var uploadedSessions: [LocalSessionUpload] = []
         var closedSessions: [String] = []
         var closedSessionsWithoutProgress: [String] = []
+        var authorizationRefreshes = 0
         /// Order of `authorize` / `close` calls.
         var calls: [String] = []
         var searchedLibraries: [LibraryIdentifier] = []
@@ -277,6 +278,11 @@ final class MockClient: AudiobookshelfClient {
     }
 
     func streamingHeaders() async throws -> [String: String] { [:] }
+
+    func refreshAuthorization(rejectedRequest: URLRequest) async throws {
+        try check()
+        state.withLock { $0.authorizationRefreshes += 1 }
+    }
     func webURL(for id: ItemIdentifier) -> URL { connection.host }
 
     // MARK: Live updates

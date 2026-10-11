@@ -180,6 +180,77 @@ extension NetworkTests {
         #expect(!harness.requests.contains { $0.path == "/auth/refresh" })
     }
 
+    static func jwt(expiresIn seconds: TimeInterval) -> String {
+        func encode(_ json: String) -> String {
+            Data(json.utf8).base64EncodedString().replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "=", with: "")
+        }
+        let exp = Int(Date.now.timeIntervalSince1970 + seconds)
+        return "\(encode(#"{"alg":"HS256","typ":"JWT"}"#)).\(encode(#"{"userId":"usr_1","type":"access","exp":\#(exp)}"#)).signature"
+    }
+
+    static func refreshingServer(refreshes: Counter) -> MockURLProtocol.Handler {
+        { request in
+            if request.path == "/auth/refresh" {
+                refreshes.increment()
+                return .json(#"{"user":{"id":"usr_1","username":"robin","accessToken":"access-2","refreshToken":"refresh-2"}}"#)
+            }
+            return .json("{}")
+        }
+    }
+
+    @Test func parsesJWTExpiry() throws {
+        let expiry = try #require(JWT.expiry(of: Self.jwt(expiresIn: 3600)))
+        #expect(abs(expiry.timeIntervalSinceNow - 3600) < 5)
+        #expect(JWT.expiry(of: "legacy-token") == nil)
+        #expect(JWT.bearerToken(in: "Bearer abc") == "abc")
+        #expect(JWT.bearerToken(in: nil) == nil)
+    }
+
+    @Test func handedOutRequestsRefreshTokensAboutToExpire() async throws {
+        let refreshes = Counter()
+        let harness = ClientHarness(tokens: AuthTokens(accessToken: Self.jwt(expiresIn: 120), refreshToken: "refresh-1"), handler: Self.refreshingServer(refreshes: refreshes))
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+
+        // Downloads may start long after the request was built: a token valid for two more minutes is renewed.
+        let request = try await harness.client.audioFileRequest(for: book, ino: "1")
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer access-2")
+        #expect(try await harness.client.streamingHeaders()["Authorization"] == "Bearer access-2")
+        #expect(refreshes.current == 1)
+    }
+
+    @Test func validTokensAreNotRefreshedEarly() async throws {
+        let refreshes = Counter()
+        let token = Self.jwt(expiresIn: 3600)
+        let harness = ClientHarness(tokens: AuthTokens(accessToken: token, refreshToken: "refresh-1"), handler: Self.refreshingServer(refreshes: refreshes))
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        #expect(try await harness.client.coverRequest(for: book, size: .large).value(forHTTPHeaderField: "Authorization") == "Bearer \(token)")
+        try await harness.client.setFinished(book, finished: true)
+        #expect(refreshes.current == 0)
+    }
+
+    @Test func expiredTokensAreRefreshedBeforeSending() async throws {
+        let refreshes = Counter()
+        let harness = ClientHarness(tokens: AuthTokens(accessToken: Self.jwt(expiresIn: -10), refreshToken: "refresh-1"), handler: Self.refreshingServer(refreshes: refreshes))
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        try await harness.client.setFinished(book, finished: true)
+        #expect(harness.requests.map(\.path) == ["/auth/refresh", "/api/me/progress/li"])
+        #expect(harness.requests.last?.header("Authorization") == "Bearer access-2")
+    }
+
+    @Test func rejectedHandedOutRequestRefreshesOnce() async throws {
+        let refreshes = Counter()
+        let harness = ClientHarness(handler: Self.refreshingServer(refreshes: refreshes))
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        let rejected = try await harness.client.audioFileRequest(for: book, ino: "1")
+        #expect(rejected.value(forHTTPHeaderField: "Authorization") == "Bearer access-1")
+
+        try await harness.client.refreshAuthorization(rejectedRequest: rejected)
+        // A second task rejected with the same old token doesn't refresh again.
+        try await harness.client.refreshAuthorization(rejectedRequest: rejected)
+        #expect(refreshes.current == 1)
+        #expect(try await harness.client.audioFileRequest(for: book, ino: "1").value(forHTTPHeaderField: "Authorization") == "Bearer access-2")
+    }
+
     @Test func deduplicatesIdenticalInFlightGets() async throws {
         let counter = Counter()
         let harness = ClientHarness { _ in

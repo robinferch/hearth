@@ -12,6 +12,11 @@ actor RequestExecutor {
         var concurrencyLimit = 6
         /// Base delay between attempts; attempt `n` waits `n × retryDelay`.
         var retryDelay: Duration = .milliseconds(500)
+        /// Access tokens expiring sooner are refreshed before a request is sent.
+        var requestTokenValidity: TimeInterval = 60
+        /// Minimum remaining lifetime of tokens handed out for requests executed elsewhere (downloads, covers,
+        /// streaming headers), which may run a while after they were built.
+        var handoffTokenValidity: TimeInterval = 15 * 60
     }
 
     let connection: Connection
@@ -83,17 +88,17 @@ actor RequestExecutor {
     /// Current headers for authorized downloads / streaming: custom headers + bearer.
     func authorizationHeaders() async -> [String: String] {
         var request = URLRequest(url: connection.host)
-        request.applyHeaders(connectionHeaders: connection.headers, accessToken: await currentTokens()?.accessToken)
+        request.applyHeaders(connectionHeaders: connection.headers, accessToken: await accessToken(validFor: configuration.handoffTokenValidity))
         return request.allHTTPHeaderFields ?? [:]
     }
 
     /// An authorized `URLRequest` for `request` without executing it (covers, downloads).
     func urlRequest(for request: APIRequest) async throws(APIError) -> URLRequest {
-        try request.urlRequest(host: connection.host, connectionHeaders: connection.headers, accessToken: await currentTokens()?.accessToken)
+        try request.urlRequest(host: connection.host, connectionHeaders: connection.headers, accessToken: await accessToken(validFor: configuration.handoffTokenValidity))
     }
 
     func accessToken() async -> String? {
-        await currentTokens()?.accessToken
+        await accessToken(validFor: configuration.requestTokenValidity)
     }
 
     /// Drops all cached responses.
@@ -197,21 +202,35 @@ actor RequestExecutor {
         return tokens
     }
 
+    /// The current access token, refreshed first when it expires within `interval` (JWT `exp`). Falls back to the
+    /// current token if refreshing fails for other reasons than a rejected refresh token; the request then takes the
+    /// regular 401 path.
+    private func accessToken(validFor interval: TimeInterval) async -> String? {
+        guard let current = await currentTokens() else { return nil }
+        guard !isRejected, current.refreshToken != nil, let expiry = JWT.expiry(of: current.accessToken), expiry.timeIntervalSinceNow < interval else {
+            return current.accessToken
+        }
+        do {
+            return try await refreshedTokens(replacing: current.accessToken).accessToken
+        } catch {
+            return tokens?.accessToken ?? current.accessToken
+        }
+    }
+
     /// The access token to send, failing fast if the connection was already rejected.
     private func usableAccessToken() async throws(APIError) -> String? {
-        let token = await currentTokens()?.accessToken
-        if isRejected {
-            // Pick up tokens stored after a re-login.
-            let stored = await tokenStore.tokens(for: connection.id)
-            if let stored, stored.accessToken != rejectedAccessToken {
-                tokens = stored
-                isRejected = false
-                rejectedAccessToken = nil
-                return stored.accessToken
-            }
-            throw .unauthorized
+        guard isRejected else {
+            return await accessToken(validFor: configuration.requestTokenValidity)
         }
-        return token
+        // Pick up tokens stored after a re-login.
+        let stored = await tokenStore.tokens(for: connection.id)
+        if let stored, stored.accessToken != rejectedAccessToken {
+            tokens = stored
+            isRejected = false
+            rejectedAccessToken = nil
+            return stored.accessToken
+        }
+        throw .unauthorized
     }
 
     /// Returns tokens newer than `staleAccessToken`, refreshing at most once concurrently.

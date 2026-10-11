@@ -321,6 +321,10 @@ public protocol AudiobookshelfClient: Sendable {
     func pdfRequest(for id: ItemIdentifier, ino: String) async throws -> URLRequest
     /// Headers (custom + bearer) for AVURLAsset streaming.
     func streamingHeaders() async throws -> [String: String]
+    /// Call when a request built by `coverRequest`/`audioFileRequest`/`pdfRequest` (or streamed with
+    /// `streamingHeaders`) was answered with 401: refreshes the access token unless it changed since. Afterwards
+    /// build a new request. Throws `.unauthorized` when the user has to sign in again.
+    func refreshAuthorization(rejectedRequest: URLRequest) async throws
     func webURL(for id: ItemIdentifier) -> URL
 
     // MARK: Live updates
