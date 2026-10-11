@@ -15,7 +15,9 @@ extension AudioPlayer {
         var isLocal = false
     }
 
-    func startPlayback(_ id: ItemIdentifier, origin: PlaybackOrigin, at explicitTime: TimeInterval?, resetUpNext: Bool) async throws {
+    /// - Parameter chained: Started by the queue (auto-advance). A failure then leaves the queue, Up Next and the audio
+    ///   session alone so the caller can try the next item; the caller resets to idle once nothing is left.
+    func startPlayback(_ id: ItemIdentifier, origin: PlaybackOrigin, at explicitTime: TimeInterval?, resetUpNext: Bool, chained: Bool = false) async throws {
         guard id.isPlayable else { throw PlaybackError.notPlayable }
         let data = HearthData.shared
         // 1. Downloading items can't be played (UI offers "cancel download & play").
@@ -31,7 +33,14 @@ extension AudioPlayer {
         let run = UUID()
         runID = run
         busyCount += 1
-        defer { busyCount -= 1 }
+        startingRunID = run
+        pausedDuringStart = false
+        defer {
+            busyCount -= 1
+            if startingRunID == run {
+                startingRunID = nil
+            }
+        }
 
         let item: AnyPlayableItem
         do {
@@ -53,14 +62,14 @@ extension AudioPlayer {
         do {
             media = try await resolveMedia(for: item)
         } catch {
-            if runID == run {
-                let failure = (error as? PlaybackError) ?? .startFailed(error.localizedDescription)
-                lastError = failure
-                runID = UUID()
+            guard runID == run else { throw CancellationError() }
+            let failure = (error as? PlaybackError) ?? .startFailed(error.localizedDescription)
+            lastError = failure
+            runID = UUID()
+            if !chained {
                 resetToIdle()
-                throw failure
             }
-            throw error
+            throw failure
         }
         guard runID == run else {
             Self.closeAbandonedSession(media)
@@ -108,7 +117,12 @@ extension AudioPlayer {
         PlaybackPersistence.lastPlayedItemID = id
         PlaybackPersistence.lastPlayedOrigin = origin
 
-        await activateAndPlay()
+        if pausedDuringStart {
+            // Paused while starting: stay paused at the start position.
+            syncPlayingState()
+        } else {
+            await activateAndPlay()
+        }
         guard runID == run else { throw CancellationError() }
 
         updateNowPlayingInfo()
@@ -270,6 +284,9 @@ extension AudioPlayer {
         }
         reporter = nil
         intendsToPlay = false
+        systemPausedAt = nil
+        stopStallTracking()
+        isListeningClockRunning = false
         cancelPendingChapterSleep()
         teardownPlayer()
         HearthData.shared.downloads.unlock(item.id)
@@ -292,6 +309,9 @@ extension AudioPlayer {
         isBuffering = false
         isPlayingLocalFiles = false
         intendsToPlay = false
+        systemPausedAt = nil
+        stopStallTracking()
+        isListeningClockRunning = false
         timeline = .empty
         streamingHeaders = [:]
         upNext = []

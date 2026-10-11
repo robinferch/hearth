@@ -110,6 +110,8 @@ public final class AudioPlayer {
     @ObservationIgnored var timeObserver: Any?
     @ObservationIgnored var keyValueObservations: [NSKeyValueObservation] = []
     @ObservationIgnored var notificationTokens: [any NSObjectProtocol] = []
+    /// Observers tied to the current `AVQueuePlayer` (removed when the player is recreated).
+    @ObservationIgnored var playerNotificationTokens: [any NSObjectProtocol] = []
 
     /// Identifies the active playback run; async work from stale runs is discarded.
     @ObservationIgnored var runID = UUID()
@@ -124,6 +126,15 @@ public final class AudioPlayer {
     @ObservationIgnored var intendsToPlay = false
     @ObservationIgnored var lastPauseDate: Date?
     @ObservationIgnored var resumeAfterInterruption = false
+    /// When the system paused playback we intended to play (interruption, failed stream). Lets a late
+    /// interruption notification / stream recovery know that audio was playing.
+    @ObservationIgnored var systemPausedAt: Date?
+    /// The start in progress (`startPlayback`) and whether the user paused while it was starting.
+    @ObservationIgnored var startingRunID: UUID?
+    @ObservationIgnored var pausedDuringStart = false
+    /// Whether listening time and the sleep timer are counting (stops during long stalls while `isPlaying` stays on).
+    @ObservationIgnored var isListeningClockRunning = false
+    @ObservationIgnored var stallTask: Task<Void, Never>?
     /// Last automatic stream recovery (rebuild with fresh headers); one retry per minute.
     @ObservationIgnored var lastStreamRecovery: Date?
     @ObservationIgnored var upNextGenerationDisabled = false
@@ -195,7 +206,7 @@ public final class AudioPlayer {
             resume()
             return
         }
-        try await startPlayback(lastPlayedItemID, origin: PlaybackPersistence.lastPlayedOrigin ?? .none, at: nil, resetUpNext: true)
+        try await performResumeLastPlayed(lastPlayedItemID)
     }
 
     // MARK: Transport
@@ -203,7 +214,7 @@ public final class AudioPlayer {
     public func resume() { performResume() }
     public func pause() { performPause() }
     public func togglePlayPause() {
-        if isPlaying || (intendsToPlay && isBuffering) {
+        if isPlaying || (intendsToPlay && isBuffering) || willPlayAfterStart {
             pause()
         } else {
             resume()

@@ -6,6 +6,12 @@ import HearthModel
 /// Play / pause / stop, chapters, rate, skip-tap combining.
 extension AudioPlayer {
     func performResume() {
+        if startingRunID != nil {
+            // A start is in progress: it plays when it's done (undo a pause requested meanwhile).
+            pausedDuringStart = false
+            intendsToPlay = true
+            return
+        }
         guard currentItem != nil else {
             if lastPlayedItemID != nil {
                 Task {
@@ -44,14 +50,38 @@ extension AudioPlayer {
     }
 
     func performPause() {
+        if startingRunID != nil {
+            // Remembered by the start in progress, which would otherwise start playing.
+            pausedDuringStart = true
+        }
         intendsToPlay = false
         resumeAfterInterruption = false
+        systemPausedAt = nil
         player?.pause()
         if lastPauseDate == nil {
             lastPauseDate = .now
         }
         isBuffering = false
         syncPlayingState()
+    }
+
+    /// Whether a start in progress will begin playing (the user didn't pause it).
+    var willPlayAfterStart: Bool {
+        startingRunID != nil && !pausedDuringStart
+    }
+
+    /// Starts the last played item (nothing is loaded). Play-to-extend applies here too: the timer may have
+    /// expired at the end of an item, which leaves the player idle.
+    func performResumeLastPlayed(_ id: ItemIdentifier) async throws {
+        let restoredTimer = restoreSleepTimerOnPlayIfNeeded()
+        do {
+            try await startPlayback(id, origin: PlaybackPersistence.lastPlayedOrigin ?? .none, at: nil, resetUpNext: true)
+        } catch {
+            if restoredTimer, !(error is CancellationError), currentItem == nil {
+                performCancelSleepTimer()
+            }
+            throw error
+        }
     }
 
     func performStop() async {
@@ -144,7 +174,10 @@ extension AudioPlayer {
 
     /// Best-effort final report when the process terminates.
     public func appWillTerminate() {
-        guard currentItem != nil else { return }
-        finalizeCurrentRun(finished: false)
+        if currentItem != nil {
+            finalizeCurrentRun(finished: false)
+        }
+        // Nothing plays once the process is gone: widgets and controls must not show "playing" or a timer.
+        resetSnapshotPlaybackState()
     }
 }

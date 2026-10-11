@@ -15,6 +15,8 @@ extension AudioPlayer {
         guard !didSetup else { return }
         didSetup = true
         lastPlayedItemID = PlaybackPersistence.lastPlayedItemID
+        // A new process plays nothing yet; a previous one may have died without updating the snapshot.
+        resetSnapshotPlaybackState()
         configureAudioSession()
         configureRemoteCommands()
         updateRemoteCommandAvailability()
@@ -114,6 +116,14 @@ extension AudioPlayer {
             snapshot.chapterTitle = entry == nil ? nil : chapterTitle
             snapshot.sleepTimer = sleepTimer
             snapshot.updatedAt = now
+        }
+    }
+
+    /// Marks the snapshot as "not playing, no sleep timer" (process start / termination).
+    func resetSnapshotPlaybackState() {
+        HearthData.shared.snapshot.update { snapshot in
+            snapshot.isPlaying = false
+            snapshot.sleepTimer = nil
         }
     }
 

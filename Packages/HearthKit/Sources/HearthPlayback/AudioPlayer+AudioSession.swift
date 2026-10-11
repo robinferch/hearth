@@ -74,8 +74,10 @@ extension AudioPlayer {
         guard let rawType, let type = AVAudioSession.InterruptionType(rawValue: rawType) else { return }
         switch type {
         case .began:
-            let wasPlaying = isPlaying || intendsToPlay
+            // The player may have reported the system pause already (which cleared `intendsToPlay`).
+            let wasPlaying = InterruptionLogic.wasPlaying(isPlaying: isPlaying, intendsToPlay: intendsToPlay, systemPausedAt: systemPausedAt, now: .now)
             intendsToPlay = false
+            systemPausedAt = nil
             player?.pause()
             if lastPauseDate == nil {
                 lastPauseDate = .now
@@ -97,19 +99,38 @@ extension AudioPlayer {
     func handleRouteChange(reason rawReason: UInt?) {
         updateRoute()
         guard let rawReason, let reason = AVAudioSession.RouteChangeReason(rawValue: rawReason) else { return }
-        if reason == .oldDeviceUnavailable, intendsToPlay || isPlaying {
+        guard reason == .oldDeviceUnavailable else { return }
+        if intendsToPlay || isPlaying {
             // Headphones unplugged: the system pauses; reflect it.
             pause()
         }
+        // Never resume automatically after the output went away.
+        systemPausedAt = nil
+        resumeAfterInterruption = false
     }
 
+    /// All AVFoundation objects are invalid after a reset: recreate the player, reactivate the session and
+    /// continue where playback was.
     func handleMediaServicesReset() {
         logger.warning("Media services were reset")
         let session = AVAudioSession.sharedInstance()
-        try? session.setCategory(.playback, mode: .spokenAudio, policy: .longFormAudio, options: [])
+        do {
+            try session.setCategory(.playback, mode: .spokenAudio, policy: .longFormAudio, options: [])
+        } catch {
+            logger.error("Configuring the audio session failed: \(error.localizedDescription, privacy: .public)")
+        }
+        let wasPlaying = InterruptionLogic.wasPlaying(isPlaying: isPlaying, intendsToPlay: intendsToPlay, systemPausedAt: systemPausedAt, now: .now)
+        destroyPlayer()
         guard currentItem != nil else { return }
+        if !wasPlaying {
+            intendsToPlay = false
+        }
         Task {
-            await rebuildPlayerItems(refreshHeaders: false)
+            if wasPlaying {
+                _ = await activateAudioSession()
+            }
+            await rebuildPlayerItems(refreshHeaders: false, resume: wasPlaying)
+            updateRoute()
         }
     }
 
