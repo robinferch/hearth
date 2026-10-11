@@ -64,6 +64,7 @@ struct OfflineView: View {
         }
         .fullScreenCover(isPresented: $player.isExpanded) {
             NowPlayingView()
+                .sceneAlertHost()
                 .modifier(ZoomTransition(sourceID: PlayerPresentation.transitionSourceID, namespace: playerNamespace))
         }
     }

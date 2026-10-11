@@ -19,12 +19,18 @@ extension APIClient {
 
     func syncSession(_ sessionID: String, currentTime: TimeInterval, duration: TimeInterval, timeListened: TimeInterval) async throws {
         let body = SessionSyncBody(duration: duration, currentTime: currentTime, timeListened: max(0, timeListened))
-        try await perform(APIRequest.post("api", "session", sessionID, "sync").json(body))
+        // Sets the position; a repeated sync at worst adds `timeListened` twice, which beats losing the report.
+        try await perform(APIRequest.post("api", "session", sessionID, "sync").json(body).idempotent())
     }
 
     func closeSession(_ sessionID: String, currentTime: TimeInterval, duration: TimeInterval, timeListened: TimeInterval) async throws {
         let body = SessionSyncBody(duration: duration, currentTime: currentTime, timeListened: max(0, timeListened))
         try await perform(APIRequest.post("api", "session", sessionID, "close").json(body))
+    }
+
+    func closeSession(_ sessionID: String) async throws {
+        // An empty body closes the session without a progress update.
+        try await perform(APIRequest.post("api", "session", sessionID, "close").json(EmptyBody()).idempotent())
     }
 
     func uploadLocalSession(_ session: LocalSessionUpload, device: DeviceInfo) async throws {

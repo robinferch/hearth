@@ -21,9 +21,18 @@ enum Persistence {
         AppGroup.directory("Library/Application Support").appending(path: "Hearth.store")
     }
 
-    /// Creates the container. Corrupt or incompatible stores are deleted and recreated; as a last resort an
-    /// in-memory store is used so the app keeps working.
-    static func makeContainer(inMemory: Bool = false, url: URL? = nil) -> ModelContainer {
+    /// Whether the current process is an app extension (widgets, controls), which share the store with the app.
+    static var isAppExtension: Bool {
+        Bundle.main.bundleURL.pathExtension == "appex"
+    }
+
+    /// Creates the container.
+    ///
+    /// The store is never deleted. A failed open is retried once (transient failures). If it still fails, the app
+    /// moves an unreadable store aside (kept for diagnosis/recovery) and starts with a new one; extensions, and the
+    /// app while the file can't even be read (protected data before first unlock), use an in-memory store for this
+    /// run and leave the file alone.
+    static func makeContainer(inMemory: Bool = false, url: URL? = nil, isAppExtension: Bool = Persistence.isAppExtension) -> ModelContainer {
         let schema = Schema(versionedSchema: HearthSchemaV1.self)
 
         func make(memory: Bool) throws -> ModelContainer {
@@ -43,18 +52,50 @@ enum Persistence {
         do {
             return try make(memory: false)
         } catch {
-            logger.error("Opening the store failed, recreating it: \(error.localizedDescription, privacy: .public)")
-            let base = url ?? storeURL
-            for suffix in ["", "-shm", "-wal"] {
-                try? FileManager.default.removeItem(at: URL(fileURLWithPath: base.path + suffix))
-            }
-            if let container = try? make(memory: false) {
-                return container
-            }
-            logger.fault("Falling back to an in-memory store")
-            // swiftlint:disable:next force_try
-            return try! make(memory: true)
+            logger.error("Opening the store failed, retrying: \(error.localizedDescription, privacy: .public)")
         }
+        do {
+            return try make(memory: false)
+        } catch {
+            logger.error("Opening the store failed again: \(error.localizedDescription, privacy: .public)")
+        }
+
+        let base = url ?? storeURL
+        if !isAppExtension, isReadable(base), moveAside(base), let container = try? make(memory: false) {
+            return container
+        }
+        logger.fault("Falling back to an in-memory store for this run")
+        // swiftlint:disable:next force_try
+        return try! make(memory: true)
+    }
+
+    /// Whether the store file exists and can be read (it can't while protected data is unavailable).
+    private static func isReadable(_ store: URL) -> Bool {
+        guard let handle = try? FileHandle(forReadingFrom: store) else { return false }
+        try? handle.close()
+        return true
+    }
+
+    /// Renames the store and its `-shm`/`-wal` companions to `<name>-unreadable-<timestamp>.<ext>…`.
+    private static func moveAside(_ store: URL) -> Bool {
+        let stamp = Date.now.formatted(.iso8601.year().month().day().time(includingFractionalSeconds: false).timeSeparator(.omitted).dateSeparator(.omitted))
+        let name = store.deletingPathExtension().lastPathComponent
+        let ext = store.pathExtension
+        let directory = store.deletingLastPathComponent()
+        let manager = FileManager.default
+        for suffix in ["", "-shm", "-wal"] {
+            let source = URL(fileURLWithPath: store.path + suffix)
+            guard manager.fileExists(atPath: source.path) else { continue }
+            let target = directory.appending(path: "\(name)-unreadable-\(stamp)\(ext.isEmpty ? "" : ".\(ext)")\(suffix)")
+            do {
+                try manager.moveItem(at: source, to: target)
+            } catch {
+                logger.fault("Moving the unreadable store aside failed: \(error.localizedDescription, privacy: .public)")
+                return false
+            }
+        }
+        logger.error("Moved the unreadable store aside (\(stamp, privacy: .public)) and created a new one")
+        return true
     }
 }
 

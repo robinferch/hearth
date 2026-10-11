@@ -43,6 +43,37 @@ struct ProgressStoreTests {
         #expect(hearth.progress.record(for: remoteBook)?.status == .synced)
     }
 
+    @Test func syncKeepsRecordsOfUnresolvedItems() async {
+        let client = MockClient(connection: Fixtures.connection())
+        let book = Fixtures.bookID("b1", connection: client.connection.id)
+        client.update { $0.authorizeProgress = [Fixtures.progress(book, id: "server", currentTime: 40, lastUpdate: Fixtures.date(0))] }
+        let hearth = makeHearth([client])
+        await hearth.progress.sync()
+        #expect(hearth.progress.record(for: book)?.status == .synced)
+
+        // The item's library lookup failed this time: the entry is missing from the response but not deleted.
+        client.update {
+            $0.authorizeProgress = []
+            $0.authorizeUnresolved = [book.apiItemID]
+        }
+        await hearth.progress.sync()
+        #expect(hearth.progress.progress(for: book)?.currentTime == 40)
+    }
+
+    @Test func syncKeepsRecordsChangedWhileAuthorizing() async throws {
+        let client = MockClient(connection: Fixtures.connection())
+        client.update { $0.authorizeDelay = .milliseconds(300) }
+        let book = Fixtures.bookID("b1", connection: client.connection.id)
+        let hearth = makeHearth([client])
+
+        // A live update arrives while the (older) authorize response is in flight.
+        let sync = Task { await hearth.progress.sync() }
+        await client.waitForAuthorize()
+        await hearth.progress.applyLive(Fixtures.progress(book, id: "server", currentTime: 25, lastUpdate: .now))
+        await sync.value
+        #expect(hearth.progress.progress(for: book)?.currentTime == 25)
+    }
+
     @Test func resetKeepsTombstoneUntilServerDeleteSucceeds() async throws {
         let client = MockClient(connection: Fixtures.connection())
         let book = Fixtures.bookID("b1", connection: client.connection.id)

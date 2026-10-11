@@ -81,13 +81,23 @@ final class Navigator {
         )
     }
 
-    /// Pushes onto the selected tab's stack.
+    /// The tab whose navigation stack is on screen. Offline mode shows a single stack (`OfflineView`, bound to
+    /// `.noLibrary`) regardless of the restored tab selection.
+    var visibleTab: TabValue {
+        HearthData.shared.connections.isOffline ? .noLibrary : selectedTab
+    }
+
+    /// Pushes onto the visible tab's stack. The iPad Settings tab has no item stack, so pushes from there
+    /// (e.g. "Go to…" in the mini player) switch to Listen Now first.
     func push(_ destination: NavigationDestination) {
-        paths[selectedTab, default: []].append(destination)
+        if visibleTab == .settings {
+            selectedTab = .listenNow
+        }
+        paths[visibleTab, default: []].append(destination)
     }
 
     func popToRoot() {
-        paths[selectedTab] = []
+        paths[visibleTab] = []
     }
 
     // MARK: Tabs
@@ -111,8 +121,12 @@ final class Navigator {
         return connections.allLibraries.first
     }
 
+    /// Whether the main UI currently shows the compact tab bar (updated by `validateSelection`).
+    @ObservationIgnored private var isCompactLayout = true
+
     /// Makes sure the selection points at an existing tab.
     func validateSelection(connections: ConnectionStore, pinned: [PinnedTab], compact: Bool) {
+        isCompactLayout = compact
         switch selectedTab {
         case .search, .settings, .listenNow:
             if compact, selectedTab != .search {
@@ -147,8 +161,23 @@ final class Navigator {
     /// Switches to a suitable tab of the item's library and pushes the item.
     func open(_ id: ItemIdentifier, connections: ConnectionStore) {
         let destination: NavigationDestination = .item(id)
+        if connections.isOffline {
+            push(destination)
+            return
+        }
         if case .library(let library, _) = selectedTab, library == id.library {
             push(destination)
+            return
+        }
+        let pinned = HearthData.shared.itemSettings.pinnedTabs
+        if isCompactLayout, isPinnedMode, !pinned.isEmpty {
+            // Only tabs in the pinned tab bar can be selected: prefer one of the item's library, else stay put.
+            if let tab = compactTabs(connections: connections, pinned: pinned).first(where: { $0.library == id.library }) {
+                selectedTab = tab
+                paths[tab] = [destination]
+            } else {
+                push(destination)
+            }
             return
         }
         if let library = connections.library(id.library) {

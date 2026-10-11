@@ -58,6 +58,42 @@ extension NetworkTests {
         #expect(counter.current == 3)
     }
 
+    @Test func doesNotRetryNonIdempotentMutations() async throws {
+        let counter = Counter()
+        let harness = ClientHarness { _ in
+            counter.increment()
+            return MockResponse(error: URLError(.timedOut))
+        }
+        let library = LibraryIdentifier(connectionID: harness.connection.id, libraryID: "lib")
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        let device = DeviceInfo(deviceID: "dev", clientVersion: "1.0", model: "iPhone", osName: "iOS", osVersion: "26.0")
+
+        await #expect(throws: APIError.unreachable) {
+            try await harness.client.createCollection(name: "Mix", library: library, items: [book], playlist: false)
+        }
+        await #expect(throws: APIError.unreachable) {
+            try await harness.client.startSession(book, device: device)
+        }
+        await #expect(throws: APIError.unreachable) {
+            let upload = LocalSessionUpload(itemID: book, startTime: 0, currentTime: 10, duration: 100, timeListened: 10, startedAt: .now, updatedAt: .now)
+            try await harness.client.uploadLocalSession(upload, device: device)
+        }
+        #expect(counter.current == 3)
+    }
+
+    @Test func retriesIdempotentMutations() async throws {
+        let counter = Counter()
+        let harness = ClientHarness { _ in
+            // Every request fails twice before succeeding.
+            counter.increment() % 3 == 0 ? .json("{}") : .status(503)
+        }
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        try await harness.client.batchUpdateProgress([ProgressEntity(id: "p", itemID: book, progress: 0.5, duration: 10, currentTime: 5, startedAt: nil, lastUpdate: .now, finishedAt: nil)])
+        #expect(counter.current == 3)
+        try await harness.client.syncSession("s1", currentTime: 5, duration: 10, timeListened: 1)
+        #expect(counter.current == 6)
+    }
+
     @Test func doesNotRetryNotFound() async throws {
         let counter = Counter()
         let harness = ClientHarness { _ in
@@ -144,6 +180,77 @@ extension NetworkTests {
         #expect(!harness.requests.contains { $0.path == "/auth/refresh" })
     }
 
+    static func jwt(expiresIn seconds: TimeInterval) -> String {
+        func encode(_ json: String) -> String {
+            Data(json.utf8).base64EncodedString().replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "=", with: "")
+        }
+        let exp = Int(Date.now.timeIntervalSince1970 + seconds)
+        return "\(encode(#"{"alg":"HS256","typ":"JWT"}"#)).\(encode(#"{"userId":"usr_1","type":"access","exp":\#(exp)}"#)).signature"
+    }
+
+    static func refreshingServer(refreshes: Counter) -> MockURLProtocol.Handler {
+        { request in
+            if request.path == "/auth/refresh" {
+                refreshes.increment()
+                return .json(#"{"user":{"id":"usr_1","username":"robin","accessToken":"access-2","refreshToken":"refresh-2"}}"#)
+            }
+            return .json("{}")
+        }
+    }
+
+    @Test func parsesJWTExpiry() throws {
+        let expiry = try #require(JWT.expiry(of: Self.jwt(expiresIn: 3600)))
+        #expect(abs(expiry.timeIntervalSinceNow - 3600) < 5)
+        #expect(JWT.expiry(of: "legacy-token") == nil)
+        #expect(JWT.bearerToken(in: "Bearer abc") == "abc")
+        #expect(JWT.bearerToken(in: nil) == nil)
+    }
+
+    @Test func handedOutRequestsRefreshTokensAboutToExpire() async throws {
+        let refreshes = Counter()
+        let harness = ClientHarness(tokens: AuthTokens(accessToken: Self.jwt(expiresIn: 120), refreshToken: "refresh-1"), handler: Self.refreshingServer(refreshes: refreshes))
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+
+        // Downloads may start long after the request was built: a token valid for two more minutes is renewed.
+        let request = try await harness.client.audioFileRequest(for: book, ino: "1")
+        #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer access-2")
+        #expect(try await harness.client.streamingHeaders()["Authorization"] == "Bearer access-2")
+        #expect(refreshes.current == 1)
+    }
+
+    @Test func validTokensAreNotRefreshedEarly() async throws {
+        let refreshes = Counter()
+        let token = Self.jwt(expiresIn: 3600)
+        let harness = ClientHarness(tokens: AuthTokens(accessToken: token, refreshToken: "refresh-1"), handler: Self.refreshingServer(refreshes: refreshes))
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        #expect(try await harness.client.coverRequest(for: book, size: .large).value(forHTTPHeaderField: "Authorization") == "Bearer \(token)")
+        try await harness.client.setFinished(book, finished: true)
+        #expect(refreshes.current == 0)
+    }
+
+    @Test func expiredTokensAreRefreshedBeforeSending() async throws {
+        let refreshes = Counter()
+        let harness = ClientHarness(tokens: AuthTokens(accessToken: Self.jwt(expiresIn: -10), refreshToken: "refresh-1"), handler: Self.refreshingServer(refreshes: refreshes))
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        try await harness.client.setFinished(book, finished: true)
+        #expect(harness.requests.map(\.path) == ["/auth/refresh", "/api/me/progress/li"])
+        #expect(harness.requests.last?.header("Authorization") == "Bearer access-2")
+    }
+
+    @Test func rejectedHandedOutRequestRefreshesOnce() async throws {
+        let refreshes = Counter()
+        let harness = ClientHarness(handler: Self.refreshingServer(refreshes: refreshes))
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        let rejected = try await harness.client.audioFileRequest(for: book, ino: "1")
+        #expect(rejected.value(forHTTPHeaderField: "Authorization") == "Bearer access-1")
+
+        try await harness.client.refreshAuthorization(rejectedRequest: rejected)
+        // A second task rejected with the same old token doesn't refresh again.
+        try await harness.client.refreshAuthorization(rejectedRequest: rejected)
+        #expect(refreshes.current == 1)
+        #expect(try await harness.client.audioFileRequest(for: book, ino: "1").value(forHTTPHeaderField: "Authorization") == "Bearer access-2")
+    }
+
     @Test func deduplicatesIdenticalInFlightGets() async throws {
         let counter = Counter()
         let harness = ClientHarness { _ in
@@ -204,6 +311,21 @@ extension NetworkTests {
         let batch = try #require(harness.requests.first { $0.path == "/api/items/batch/get" })
         let ids = try #require((batch.jsonBody as? [String: Any])?["libraryItemIds"] as? [String])
         #expect(Set(ids) == ["li_book1", "li_pod1", "li_deleted"])
+    }
+
+    @Test func authorizeReportsItemsThatCouldNotBeLookedUp() async throws {
+        let harness = ClientHarness { request in
+            switch request.path {
+            case "/api/authorize": .fixture("authorize")
+            case "/api/items/li_pod1": .fixture("item-podcast-expanded")
+            case "/api/items/li_deleted": .status(404)
+            default: .status(500)
+            }
+        }
+        let response = try await harness.client.authorize()
+        // li_book1 failed (server error): still on the server, must not be treated as deleted. li_deleted is gone.
+        #expect(response.unresolvedItemIDs == ["li_book1"])
+        #expect(response.progress.map(\.id) == ["mp_ep1"])
     }
 
     @Test func startSessionSendsDeviceInfoAndReturnsAbsoluteTracks() async throws {
@@ -270,6 +392,54 @@ extension NetworkTests {
         #expect(batch.first?["episodeId"] as? String == "ep")
         #expect(batch.first?["isFinished"] as? Bool == true)
         #expect(batch.first?["finishedAt"] as? Int == 2000)
+    }
+
+    /// Server (2.37) behaviour: bookmarks are matched on their exact stored time, `…/bookmark/123` doesn't find 123.6.
+    static func fractionalBookmarkServer(_ request: RecordedRequest) -> MockResponse {
+        let bookmarks = #"[{"libraryItemId":"li_1","time":123.6,"title":"Quote","createdAt":1700000000000}]"#
+        switch (request.method, request.path) {
+        case ("POST", "/api/authorize"):
+            return .json(#"{"user":{"id":"usr_1","username":"robin","mediaProgress":[],"bookmarks":\#(bookmarks)}}"#)
+        case ("GET", "/api/me"):
+            return .json(#"{"id":"usr_1","username":"robin","mediaProgress":[],"bookmarks":\#(bookmarks)}"#)
+        case ("DELETE", "/api/me/item/li_1/bookmark/123.6"):
+            return .json("{}")
+        case ("PATCH", "/api/me/item/li_1/bookmark"):
+            return (request.jsonBody as? [String: Any])?["time"] as? Double == 123.6 ? .json("{}") : .status(404)
+        default:
+            return .status(404)
+        }
+    }
+
+    @Test func bookmarkMutationsUseExactServerTime() async throws {
+        let harness = ClientHarness(handler: Self.fractionalBookmarkServer)
+        let id = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li_1")
+        _ = try await harness.client.authorize()
+
+        try await harness.client.updateBookmark(id, time: 123, note: "Edited")
+        let patch = try #require(harness.requests.last)
+        #expect(patch.method == "PATCH")
+        #expect((patch.jsonBody as? [String: Any])?["time"] as? Double == 123.6)
+        #expect(harness.requests.filter { $0.method == "PATCH" }.count == 1)
+
+        try await harness.client.deleteBookmark(id, time: 123)
+        #expect(harness.requests.last?.path == "/api/me/item/li_1/bookmark/123.6")
+    }
+
+    @Test func bookmarkMutationResolvesUnknownFractionalTime() async throws {
+        let harness = ClientHarness(handler: Self.fractionalBookmarkServer)
+        let id = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li_1")
+        try await harness.client.deleteBookmark(id, time: 123)
+        #expect(harness.requests.map { "\($0.method) \($0.path)" } == [
+            "DELETE /api/me/item/li_1/bookmark/123",
+            "GET /api/me",
+            "DELETE /api/me/item/li_1/bookmark/123.6",
+        ])
+
+        // A bookmark that really doesn't exist still reports 404.
+        await #expect(throws: APIError.notFound) {
+            try await harness.client.deleteBookmark(id, time: 7)
+        }
     }
 
     @Test func collectionMutations() async throws {

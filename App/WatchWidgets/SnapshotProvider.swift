@@ -32,13 +32,14 @@ struct SnapshotEntry: TimelineEntry, Sendable {
 
     var tint: Color { snapshot.tint.color }
 
-    /// Opens the player for the playing item, else the item's detail.
+    /// Opens the player while playing, else the item (the watch shows the player if the item is loaded there,
+    /// its detail otherwise). A paused or stale "now playing" item may no longer be in the player.
     var url: URL? {
         guard let item else { return URL(string: "hearth://home") }
-        if isNowPlaying {
-            return URL(string: "hearth://nowplaying")
-        }
         let encoded = item.id.description.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? item.id.description
+        if isPlaying {
+            return URL(string: "hearth://nowplaying/\(encoded)")
+        }
         return URL(string: "hearth://item/\(encoded)")
     }
 

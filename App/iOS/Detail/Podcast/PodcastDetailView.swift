@@ -51,18 +51,20 @@ private struct PodcastDetailContent: View {
     @Environment(PlayerPresentation.self) private var presentation
 
     @State private var dominantColor: HearthRGBColor?
-    @State private var settings: EpisodeListSettings
     @State private var isConfiguring = false
 
     private static let previewCount = 15
 
-    init(content: PodcastContent, refresh: @escaping @MainActor () async -> Void) {
-        self.content = content
-        self.refresh = refresh
-        _settings = State(initialValue: HearthData.shared.itemSettings.episodeListSettings(for: content.podcast))
-    }
-
     private var podcast: Podcast { content.podcast }
+    /// Read and written through the store (not copied into state): All Episodes edits the same settings.
+    private var settings: EpisodeListSettings { HearthData.shared.itemSettings.episodeListSettings(for: podcast) }
+    private var settingsBinding: Binding<EpisodeListSettings> {
+        let podcast = podcast
+        return Binding(
+            get: { HearthData.shared.itemSettings.episodeListSettings(for: podcast) },
+            set: { HearthData.shared.itemSettings.setEpisodeListSettings($0, for: podcast.id) }
+        )
+    }
     private var seasons: [String] { HearthData.shared.itemSettings.seasons(in: content.episodes) }
     private var filtered: [Episode] { HearthData.shared.itemSettings.apply(settings, to: content.episodes) }
 
@@ -88,7 +90,7 @@ private struct PodcastDetailContent: View {
                         DetailSectionTitle(title: String(localized: "Episodes", table: "Detail"))
                         Spacer()
                         if seasons.count >= 2 {
-                            SeasonMenu(seasons: seasons, selection: $settings.season)
+                            SeasonMenu(seasons: seasons, selection: settingsBinding.season)
                         }
                     }
                 }
@@ -130,9 +132,6 @@ private struct PodcastDetailContent: View {
             let color = await HearthData.shared.images.dominantColor(for: podcast.id)
             withAnimation(.smooth) { dominantColor = color }
         }
-        .onChange(of: settings) { _, value in
-            HearthData.shared.itemSettings.setEpisodeListSettings(value, for: podcast.id)
-        }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 Button {
@@ -140,7 +139,7 @@ private struct PodcastDetailContent: View {
                 } label: {
                     Label(String(localized: "Configure", table: "Detail"), systemImage: "slider.horizontal.3")
                 }
-                EpisodeListOptionsButton(settings: $settings)
+                EpisodeListOptionsButton(settings: settingsBinding)
             }
         }
         .sheet(isPresented: $isConfiguring) {

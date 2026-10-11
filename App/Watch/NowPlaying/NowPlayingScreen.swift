@@ -155,17 +155,11 @@ private struct TransportControls: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            Button {
-                Task { await player.skipBackward() }
-            } label: {
-                Image(systemName: Self.symbol("gobackward", seconds: player.skipBackwardInterval))
-                    .font(.title3)
-                    .frame(maxWidth: .infinity, minHeight: 44)
+            SkipButton(symbol: Self.symbol("gobackward", seconds: player.skipBackwardInterval)) {
+                await player.skipBackward()
+            } longPress: {
+                await player.previousChapter()
             }
-            .buttonStyle(.plain)
-            .simultaneousGesture(LongPressGesture().onEnded { _ in
-                Task { await player.previousChapter() }
-            })
             .accessibilityLabel("Skip back \(player.skipBackwardInterval) seconds")
 
             Button {
@@ -188,18 +182,47 @@ private struct TransportControls: View {
             .handGestureShortcut(.primaryAction)
             .accessibilityLabel(player.isPlaying ? "Pause" : "Play")
 
+            SkipButton(symbol: Self.symbol("goforward", seconds: player.skipForwardInterval)) {
+                await player.skipForward()
+            } longPress: {
+                await player.nextChapter()
+            }
+            .accessibilityLabel("Skip forward \(player.skipForwardInterval) seconds")
+        }
+    }
+
+    /// Tap skips, long press jumps chapters. Releasing a long press also triggers the button, so its tap is
+    /// ignored; the flag resets when the next touch begins so it can't swallow a later tap.
+    private struct SkipButton: View {
+        let symbol: String
+        let tap: @MainActor () async -> Void
+        let longPress: @MainActor () async -> Void
+
+        @State private var didLongPress = false
+
+        var body: some View {
             Button {
-                Task { await player.skipForward() }
+                if didLongPress {
+                    didLongPress = false
+                    return
+                }
+                Task { await tap() }
             } label: {
-                Image(systemName: Self.symbol("goforward", seconds: player.skipForwardInterval))
+                Image(systemName: symbol)
                     .font(.title3)
                     .frame(maxWidth: .infinity, minHeight: 44)
             }
             .buttonStyle(.plain)
-            .simultaneousGesture(LongPressGesture().onEnded { _ in
-                Task { await player.nextChapter() }
-            })
-            .accessibilityLabel("Skip forward \(player.skipForwardInterval) seconds")
+            .simultaneousGesture(
+                LongPressGesture()
+                    .onChanged { _ in
+                        didLongPress = false
+                    }
+                    .onEnded { _ in
+                        didLongPress = true
+                        Task { await longPress() }
+                    }
+            )
         }
     }
 

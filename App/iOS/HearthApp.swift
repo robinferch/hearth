@@ -56,23 +56,20 @@ struct ItemWindowView: View {
         .onAppear {
             navigator.selectedTab = .noLibrary
         }
-        .alert(alerts.alert?.title ?? "", isPresented: Binding(get: { alerts.alert != nil }, set: { if !$0 { alerts.alert = nil } }), presenting: alerts.alert) { alert in
-            ForEach(alert.actions) { action in
-                Button(action.title, role: action.role == .cancel ? .cancel : (action.role == .destructive ? .destructive : nil)) {
-                    Task { await action.perform() }
-                }
-            }
-        } message: { alert in
-            if let message = alert.message {
-                Text(message)
-            }
+        // Like the main window: scene sheets (Add to…), the full player and (via the scene environment) alerts
+        // and the bookmark prompt.
+        .sceneSheets(navigator: navigator, alerts: alerts, player: player, handler: handler)
+        .fullScreenCover(isPresented: $player.isExpanded) {
+            NowPlayingView()
+                .sceneAlertHost()
         }
-        .hearthSceneEnvironment(
-            navigator: navigator,
-            alerts: alerts,
-            player: player,
-            handler: AppItemActions.handler(navigator: navigator, alerts: alerts, player: player, openWindow: nil)
-        )
+        .sensoryFeedback(.success, trigger: alerts.successTrigger)
+        .sensoryFeedback(.error, trigger: alerts.errorTrigger)
+        .hearthSceneEnvironment(navigator: navigator, alerts: alerts, player: player, handler: handler)
         .focusedSceneValue(\.navigator, navigator)
+    }
+
+    private var handler: ItemActionHandler {
+        AppItemActions.handler(navigator: navigator, alerts: alerts, player: player, openWindow: nil)
     }
 }

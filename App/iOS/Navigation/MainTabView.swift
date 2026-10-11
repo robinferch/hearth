@@ -41,12 +41,15 @@ struct MainTabView: View {
         .modifier(MiniPlayerAccessory())
         .fullScreenCover(isPresented: $player.isExpanded) {
             NowPlayingView()
+                .sceneAlertHost()
                 .modifier(ZoomTransition(sourceID: PlayerPresentation.transitionSourceID, namespace: playerNamespace))
         }
         .onAppear(perform: validate)
         .onChange(of: connections.allLibraries) { validate() }
         .onChange(of: isCompact) { validate() }
         .onChange(of: navigator.isPinnedMode) { validate() }
+        // Customized / pinned / iCloud-synced tab bars may drop the selected tab.
+        .onChange(of: isCompact ? navigator.compactTabs(connections: connections, pinned: pinned) : []) { validate() }
     }
 
     private func validate() {
@@ -203,8 +206,8 @@ struct NoLibraryView: View {
 
     var body: some View {
         Group {
-            if connections.connections.contains(where: { connections.status[$0.id] == .offline }) {
-                ConnectionFailureView(connectionID: connections.connections.first?.id)
+            if let failed = connections.connections.first(where: { connections.status[$0.id] == .offline }) {
+                ConnectionFailureView(connectionID: failed.id)
             } else if connections.connections.allSatisfy({ connections.status[$0.id] == .online }) {
                 ContentUnavailableView {
                     Label("No Libraries", systemImage: "books.vertical")

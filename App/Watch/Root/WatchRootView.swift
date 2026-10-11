@@ -84,17 +84,25 @@ struct WatchRootView: View {
         path = [.nowPlaying]
     }
 
-    /// `hearth://nowplaying`, `hearth://item/<identifier>` (complications).
+    /// `hearth://nowplaying[/<identifier>]`, `hearth://item/<identifier>`, `hearth://home` (complications).
     private func open(_ url: URL) {
         guard url.scheme == "hearth" else { return }
+        let value = url.path().trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let id = value.isEmpty ? nil : ItemIdentifier(value.removingPercentEncoding ?? value)
         switch url.host() {
         case "nowplaying":
-            path = player.isActive ? [.nowPlaying] : []
+            // The complication's item may no longer be in the player (stopped, app relaunched): show its detail.
+            if player.isActive {
+                path = [.nowPlaying]
+            } else {
+                path = id.map { [.item($0)] } ?? []
+            }
         case "item":
-            let value = url.path().trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-            if let id = ItemIdentifier(value.removingPercentEncoding ?? value) {
+            if let id {
                 path = player.itemID == id ? [.nowPlaying] : [.item(id)]
             }
+        case "home":
+            path = []
         default:
             break
         }

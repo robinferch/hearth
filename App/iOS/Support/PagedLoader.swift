@@ -1,3 +1,4 @@
+import Foundation
 import HearthAPI
 import HearthData
 import HearthModel
@@ -16,9 +17,11 @@ final class PagedLoader<Element: Identifiable & Sendable> {
     private(set) var hasLoaded = false
 
     let pageSize: Int
-    private var fetch: Fetch
-    private var nextPage = 0
-    private var generation = 0
+    @ObservationIgnored private var fetch: Fetch
+    @ObservationIgnored private var nextPage = 0
+    @ObservationIgnored private var generation = 0
+    /// Identifies the query (sort, filter, …) the current items belong to.
+    @ObservationIgnored private var queryKey: AnyHashable?
 
     init(pageSize: Int = 100, fetch: @escaping Fetch) {
         self.pageSize = pageSize
@@ -30,9 +33,16 @@ final class PagedLoader<Element: Identifiable & Sendable> {
         return items.count < total
     }
 
-    /// Replaces the fetch closure (e.g. new sort/filter) and reloads from the first page.
-    func reset(fetch: @escaping Fetch) async {
+    /// Sets the fetch closure for a query (sort, filter, …) and loads its first page – unless that query's items
+    /// are already loaded: a view reappearing after a pop keeps its pages (and scroll position). Pull to refresh
+    /// uses `reload()`.
+    func load(key: some Hashable, fetch: @escaping Fetch) async {
         self.fetch = fetch
+        let key = AnyHashable(key)
+        if key == queryKey, hasLoaded, error == nil {
+            return
+        }
+        queryKey = key
         await reload()
     }
 
@@ -58,6 +68,13 @@ final class PagedLoader<Element: Identifiable & Sendable> {
         await loadNextPage(replacing: false)
     }
 
+    /// Retries the page that failed (the list footer's "Try Again").
+    func retryNextPage() async {
+        guard error != nil, !isLoading else { return }
+        error = nil
+        await loadNextPage(replacing: items.isEmpty)
+    }
+
     private func loadNextPage(replacing: Bool) async {
         guard !isLoading else { return }
         isLoading = true
@@ -71,7 +88,12 @@ final class PagedLoader<Element: Identifiable & Sendable> {
         do {
             let result = try await fetch(page, pageSize)
             guard token == generation else { return }
-            items = replacing ? result.items : items + result.items
+            if replacing {
+                items = Self.unique(result.items, excluding: [])
+            } else {
+                // Pages shift when items are added or removed on the server meanwhile; drop repeated ids.
+                items += Self.unique(result.items, excluding: Set(items.map(\.id)))
+            }
             total = result.total
             nextPage = page + 1
             hasLoaded = true
@@ -80,12 +102,31 @@ final class PagedLoader<Element: Identifiable & Sendable> {
             }
         } catch {
             guard token == generation else { return }
+            if Self.isCancellation(error) {
+                // The view went away mid-request (task cancelled); the next appearance loads again.
+                if replacing {
+                    queryKey = nil
+                }
+                return
+            }
             if replacing {
                 items = []
             }
             self.error = error
             hasLoaded = true
         }
+    }
+
+    private static func unique(_ elements: [Element], excluding existing: Set<Element.ID>) -> [Element] {
+        var seen = existing
+        return elements.filter { seen.insert($0.id).inserted }
+    }
+
+    private static func isCancellation(_ error: any Error) -> Bool {
+        if error is CancellationError || (error as? APIError) == .cancelled {
+            return true
+        }
+        return (error as? URLError)?.code == .cancelled
     }
 }
 

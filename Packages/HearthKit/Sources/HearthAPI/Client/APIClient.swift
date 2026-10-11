@@ -11,6 +11,7 @@ final class APIClient: AudiobookshelfClient {
     let executor: RequestExecutor
     let converter: PayloadConverter
     let resolver: LibraryResolver
+    let bookmarkTimes = BookmarkTimeDirectory()
     let broadcaster = EventBroadcaster<ServerEvent>()
     let socket: SocketIOClient
 
@@ -80,19 +81,22 @@ final class APIClient: AudiobookshelfClient {
     }
 
     func authorize() async throws -> AuthorizeResponse {
-        var request = APIRequest.post("api", "authorize")
+        // Read-only despite being a POST.
+        var request = APIRequest.post("api", "authorize").idempotent()
         request.bypassesLimiter = true
         let user = try await fetch(UserResponsePayload.self, request).user
 
-        await resolver.resolve(user.mediaProgress.map(\.libraryItemID) + user.bookmarks.map(\.libraryItemID))
+        let unresolved = await resolver.resolve(user.mediaProgress.map(\.libraryItemID) + user.bookmarks.map(\.libraryItemID))
+
+        bookmarkTimes.register(user.bookmarks)
 
         let progress = user.mediaProgress.compactMap(converter.progress)
         let bookmarks = user.bookmarks.compactMap(converter.bookmark)
         let dropped = user.mediaProgress.count - progress.count + user.bookmarks.count - bookmarks.count
         if dropped > 0 {
-            logger.info("Skipped \(dropped) progress/bookmark entries of items that no longer exist")
+            logger.info("Skipped \(dropped) progress/bookmark entries (\(unresolved.count) items couldn't be looked up, the others no longer exist)")
         }
-        return AuthorizeResponse(userID: user.id, username: user.username, progress: progress, bookmarks: bookmarks)
+        return AuthorizeResponse(userID: user.id, username: user.username, progress: progress, bookmarks: bookmarks, unresolvedItemIDs: unresolved)
     }
 
     // MARK: Live updates
@@ -117,37 +121,61 @@ struct LibraryResolver: Sendable {
     let directory: LibraryItemDirectory
     private static let batchSize = 50
 
-    func resolve(_ itemIDs: [String]) async {
+    /// Looks up unknown ids. Returns the ids that couldn't be resolved because a request failed; ids the server
+    /// reports as missing (absent from the batch response, 404) are not included.
+    @discardableResult
+    func resolve(_ itemIDs: [String]) async -> Set<String> {
         let unknown = directory.unknown(itemIDs)
-        guard !unknown.isEmpty else { return }
+        guard !unknown.isEmpty else { return [] }
 
+        var failed = Set<String>()
         for start in stride(from: 0, to: unknown.count, by: Self.batchSize) {
             let chunk = Array(unknown[start ..< min(start + Self.batchSize, unknown.count)])
             do {
-                let request = try APIRequest.post("api", "items", "batch", "get").json(BatchGetBody(libraryItemIds: chunk))
+                let request = try APIRequest.post("api", "items", "batch", "get").json(BatchGetBody(libraryItemIds: chunk)).idempotent()
                 let data = try await executor.data(for: request)
                 let payload = try JSONDecoder.api.decode(BatchItemsPayload.self, from: data)
                 register(payload.libraryItems)
             } catch {
                 // The batch fails as a whole if a single item is inaccessible; fall back to individual lookups.
-                await resolveIndividually(chunk)
+                failed.formUnion(await resolveIndividually(chunk))
             }
         }
+        return failed
     }
 
-    private func resolveIndividually(_ itemIDs: [String]) async {
-        await withTaskGroup(of: LibraryItemPayload?.self) { group in
+    private func resolveIndividually(_ itemIDs: [String]) async -> Set<String> {
+        enum Outcome {
+            case found(LibraryItemPayload)
+            case missing
+            case failed(String)
+        }
+        return await withTaskGroup(of: Outcome.self) { group in
             for itemID in itemIDs {
                 group.addTask {
-                    guard let data = try? await executor.data(for: .get("api", "items", itemID)) else { return nil }
-                    return try? JSONDecoder.api.decode(LibraryItemPayload.self, from: data)
+                    do {
+                        let data = try await executor.data(for: .get("api", "items", itemID))
+                        guard let item = try? JSONDecoder.api.decode(LibraryItemPayload.self, from: data) else { return .failed(itemID) }
+                        return .found(item)
+                    } catch APIError.notFound {
+                        return .missing
+                    } catch {
+                        return .failed(itemID)
+                    }
                 }
             }
-            for await item in group {
-                if let item {
+            var failed = Set<String>()
+            for await outcome in group {
+                switch outcome {
+                case .found(let item):
                     register([item])
+                case .missing:
+                    break
+                case .failed(let itemID):
+                    failed.insert(itemID)
                 }
             }
+            return failed
         }
     }
 
