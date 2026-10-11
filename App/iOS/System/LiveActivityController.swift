@@ -35,6 +35,7 @@ final class LiveActivityController {
         didStart = true
         endStaleActivities()
         observe()
+        scheduleUpdate()
     }
 
     private func endStaleActivities() {

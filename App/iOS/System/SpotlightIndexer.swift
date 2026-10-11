@@ -108,6 +108,7 @@ final class SpotlightIndexer {
         var count = 0
         do {
             try await index.deleteAllSearchableItems()
+            Self.logger.debug("Cleared the index in \(Date.now.timeIntervalSince(started), format: .fixed(precision: 2)) s")
             for library in data.connections.allLibraries {
                 guard !Task.isCancelled, let client = try? data.connections.client(for: library.connectionID) else { continue }
                 do {
@@ -129,7 +130,9 @@ final class SpotlightIndexer {
                             items = await searchableItems(podcasts: result.items)
                             (received, total) = (result.items.count, result.total)
                         }
+                        let indexStart = Date.now
                         try await index.indexSearchableItems(items)
+                        Self.logger.debug("Indexed page \(page) of \(library.name, privacy: .public) (\(items.count) items) in \(Date.now.timeIntervalSince(indexStart), format: .fixed(precision: 2)) s")
                         count += items.count
                         page += 1
                         if received < Self.pageSize || page * Self.pageSize >= total {

@@ -6,13 +6,20 @@ import HearthModel
 import OSLog
 
 /// DEBUG-only: `-HearthDebugLogin <url> <user> <password>` signs in without UI (simulator checks, screenshots).
-/// Skipped when the connection already exists.
+/// Skipped when the connection already exists. `-HearthDebugReindexSpotlight` forces a full Spotlight index.
 @MainActor
 enum DebugLogin {
     private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Hearth", category: "DebugLogin")
 
     static func runIfRequested() {
         let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-HearthDebugReindexSpotlight") {
+            // Forces a full Spotlight index after bootstrap.
+            Task {
+                await HearthData.shared.bootstrap()
+                await SpotlightIndexer.shared.indexAll()
+            }
+        }
         guard let index = arguments.firstIndex(of: "-HearthDebugLogin"), arguments.count > index + 3,
               let host = Connection.normalizedHost(arguments[index + 1]) else { return }
         let username = arguments[index + 2]
