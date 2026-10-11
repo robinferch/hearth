@@ -34,6 +34,8 @@ final class MockClient: AudiobookshelfClient {
         var closedSessions: [String] = []
         var closedSessionsWithoutProgress: [String] = []
         var authorizationRefreshes = 0
+        var uploadDelay: Duration?
+        var uploadCount = 0
         /// Order of `authorize` / `close` calls.
         var calls: [String] = []
         var searchedLibraries: [LibraryIdentifier] = []
@@ -198,6 +200,13 @@ final class MockClient: AudiobookshelfClient {
 
     func uploadLocalSession(_ session: LocalSessionUpload, device: DeviceInfo) async throws {
         try check()
+        let delay = state.withLock {
+            $0.uploadCount += 1
+            return $0.uploadDelay
+        }
+        if let delay {
+            try await Task.sleep(for: delay)
+        }
         state.withLock { $0.uploadedSessions.append(session) }
     }
 

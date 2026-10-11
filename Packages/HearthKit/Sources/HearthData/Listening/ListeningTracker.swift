@@ -234,11 +234,24 @@ public final class ListeningTracker {
         let device = deviceInfo
         let now = Date.now
         let candidates = localSessions.values.filter { $0.isClosed || now.timeIntervalSince($0.updatedAt) > Self.staleLocalSessionInterval }
-        for session in candidates.sorted(by: { $0.startedAt < $1.startedAt }) {
+        for candidate in candidates.sorted(by: { $0.startedAt < $1.startedAt }) {
+            // Re-read: listening may have been recorded while an earlier upload was in flight.
+            guard var session = localSessions[candidate.id] else { continue }
             guard hearth.connections.isAvailable(session.itemID.connectionID), let client = try? hearth.connections.client(for: session.itemID.connectionID) else { continue }
             guard session.timeListened > 0 else {
                 await deleteLocalSession(session.id)
                 continue
+            }
+            if !session.isClosed {
+                // Close an abandoned session before uploading it: listening recorded during the upload then goes
+                // into a new session instead of being deleted together with this one.
+                session.isClosed = true
+                localSessions[session.id] = session
+                if openLocal[session.itemID.storageKey] == session.id {
+                    openLocal[session.itemID.storageKey] = nil
+                }
+                let closed = session
+                await environment.store.perform { $0.upsertLocalSession(closed) }
             }
             do {
                 try await client.uploadLocalSession(session.upload, device: device)
