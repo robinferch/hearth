@@ -63,6 +63,7 @@ final class AppLifecycle {
         guard !didLaunch else { return }
         didLaunch = true
         AudioPlayer.shared.setup()
+        WatchBridge.shared.activate()
         Task {
             await HearthData.shared.bootstrap()
             AppEvents.shared.bootstrapFinished = true
