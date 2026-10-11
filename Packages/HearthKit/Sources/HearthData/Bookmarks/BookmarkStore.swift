@@ -35,6 +35,10 @@ public final class BookmarkStore {
         byItem[id.storageKey] ?? []
     }
 
+    func record(for id: ItemIdentifier, time: Int) -> BookmarkRecord? {
+        records[BookmarkRecord.key(id, time: time)]
+    }
+
     /// Item ids (audiobooks) with at least one bookmark, with counts.
     ///
     /// Bookmarks created on other devices arrive without a library id; they are listed for every library of their
@@ -167,8 +171,11 @@ public final class BookmarkStore {
         }
     }
 
+    /// Marks the record synced if it still has the pushed content. The status may differ from the pushed one: the
+    /// reconcile pushes a local `pendingUpdate` without remote copy as a create and vice versa. A record deleted
+    /// meanwhile stays deleted.
     private func markSynced(_ pushed: BookmarkRecord, created: Date?) async {
-        guard var current = records[pushed.key], current.status == pushed.status, current.bookmark.note == pushed.bookmark.note else { return }
+        guard var current = records[pushed.key], current.status == .pendingCreate || current.status == .pendingUpdate, current.bookmark.note == pushed.bookmark.note else { return }
         current.status = .synced
         if let created {
             current.bookmark.created = created

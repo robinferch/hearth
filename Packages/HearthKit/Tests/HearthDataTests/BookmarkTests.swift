@@ -106,6 +106,26 @@ struct BookmarkStoreTests {
         #expect(hearth.bookmarks.bookmarks(for: book).isEmpty)
     }
 
+    @Test func reconcilePushesAreMarkedSynced() async throws {
+        let client = MockClient(connection: Fixtures.connection())
+        client.update { $0.failBookmarkWrites = true }
+        let book = Fixtures.bookID("b1", connection: client.connection.id)
+        let hearth = makeHearth([client])
+
+        // Offline edit of a bookmark that the server doesn't have (anymore): pendingUpdate, pushed as a create.
+        let original = Bookmark(itemID: book, time: 12, note: "old", created: Fixtures.date(0))
+        try await hearth.bookmarks.update(original, note: "edited")
+        client.update { $0.failBookmarkWrites = false }
+        await hearth.bookmarks.sync()
+        #expect(client.read { $0.createdBookmarks.map(\.note) } == ["edited"])
+        #expect(hearth.bookmarks.record(for: book, time: 12)?.status == .synced)
+
+        // Synced now: the next reconcile with the server copy pushes nothing.
+        client.update { $0.authorizeBookmarks = $0.createdBookmarks }
+        await hearth.bookmarks.sync()
+        #expect(client.read { $0.createdBookmarks.count + $0.updatedBookmarks.count } == 1)
+    }
+
     @Test func bookmarkCreatedDuringSyncIsKept() async throws {
         let client = MockClient(connection: Fixtures.connection())
         client.update { $0.authorizeDelay = .milliseconds(300) }
