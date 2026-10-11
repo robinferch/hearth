@@ -308,6 +308,54 @@ extension NetworkTests {
         #expect(batch.first?["finishedAt"] as? Int == 2000)
     }
 
+    /// Server (2.37) behaviour: bookmarks are matched on their exact stored time, `…/bookmark/123` doesn't find 123.6.
+    static func fractionalBookmarkServer(_ request: RecordedRequest) -> MockResponse {
+        let bookmarks = #"[{"libraryItemId":"li_1","time":123.6,"title":"Quote","createdAt":1700000000000}]"#
+        switch (request.method, request.path) {
+        case ("POST", "/api/authorize"):
+            return .json(#"{"user":{"id":"usr_1","username":"robin","mediaProgress":[],"bookmarks":\#(bookmarks)}}"#)
+        case ("GET", "/api/me"):
+            return .json(#"{"id":"usr_1","username":"robin","mediaProgress":[],"bookmarks":\#(bookmarks)}"#)
+        case ("DELETE", "/api/me/item/li_1/bookmark/123.6"):
+            return .json("{}")
+        case ("PATCH", "/api/me/item/li_1/bookmark"):
+            return (request.jsonBody as? [String: Any])?["time"] as? Double == 123.6 ? .json("{}") : .status(404)
+        default:
+            return .status(404)
+        }
+    }
+
+    @Test func bookmarkMutationsUseExactServerTime() async throws {
+        let harness = ClientHarness(handler: Self.fractionalBookmarkServer)
+        let id = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li_1")
+        _ = try await harness.client.authorize()
+
+        try await harness.client.updateBookmark(id, time: 123, note: "Edited")
+        let patch = try #require(harness.requests.last)
+        #expect(patch.method == "PATCH")
+        #expect((patch.jsonBody as? [String: Any])?["time"] as? Double == 123.6)
+        #expect(harness.requests.filter { $0.method == "PATCH" }.count == 1)
+
+        try await harness.client.deleteBookmark(id, time: 123)
+        #expect(harness.requests.last?.path == "/api/me/item/li_1/bookmark/123.6")
+    }
+
+    @Test func bookmarkMutationResolvesUnknownFractionalTime() async throws {
+        let harness = ClientHarness(handler: Self.fractionalBookmarkServer)
+        let id = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li_1")
+        try await harness.client.deleteBookmark(id, time: 123)
+        #expect(harness.requests.map { "\($0.method) \($0.path)" } == [
+            "DELETE /api/me/item/li_1/bookmark/123",
+            "GET /api/me",
+            "DELETE /api/me/item/li_1/bookmark/123.6",
+        ])
+
+        // A bookmark that really doesn't exist still reports 404.
+        await #expect(throws: APIError.notFound) {
+            try await harness.client.deleteBookmark(id, time: 7)
+        }
+    }
+
     @Test func collectionMutations() async throws {
         let harness = ClientHarness { request in
             request.method == "POST" && request.path.hasSuffix("playlists") ? .json(#"{"id":"pl_new"}"#) : .json("{}")

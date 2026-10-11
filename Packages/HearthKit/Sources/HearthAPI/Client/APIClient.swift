@@ -11,6 +11,7 @@ final class APIClient: AudiobookshelfClient {
     let executor: RequestExecutor
     let converter: PayloadConverter
     let resolver: LibraryResolver
+    let bookmarkTimes = BookmarkTimeDirectory()
     let broadcaster = EventBroadcaster<ServerEvent>()
     let socket: SocketIOClient
 
@@ -86,6 +87,8 @@ final class APIClient: AudiobookshelfClient {
         let user = try await fetch(UserResponsePayload.self, request).user
 
         await resolver.resolve(user.mediaProgress.map(\.libraryItemID) + user.bookmarks.map(\.libraryItemID))
+
+        bookmarkTimes.register(user.bookmarks)
 
         let progress = user.mediaProgress.compactMap(converter.progress)
         let bookmarks = user.bookmarks.compactMap(converter.bookmark)
