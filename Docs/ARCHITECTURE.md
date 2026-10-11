@@ -51,3 +51,5 @@ xcodebuild -project Hearth.xcodeproj -scheme Hearth -destination 'generic/platfo
 xcodebuild -project Hearth.xcodeproj -scheme HearthWatch -destination 'generic/platform=watchOS Simulator' CODE_SIGNING_ALLOWED=NO build
 cd Packages/HearthKit && swift build && swift test
 ```
+
+`CODE_SIGNING_ALLOWED=NO` is fine for compile checks, but apps built that way have no keychain access in the simulator (connections are not persisted). For running in the simulator, build normally (ad-hoc signing works without a team).
