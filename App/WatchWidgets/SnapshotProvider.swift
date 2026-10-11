@@ -17,7 +17,11 @@ struct SnapshotEntry: TimelineEntry, Sendable {
     /// The item to show: now playing, else the first Listen Now item.
     var item: SharedSnapshot.Entry? { snapshot.nowPlaying ?? snapshot.listenNow.first }
     var isNowPlaying: Bool { snapshot.nowPlaying != nil }
-    var isPlaying: Bool { snapshot.isPlaying && snapshot.nowPlaying != nil }
+    /// The player rewrites the snapshot at least every 30 s while playing; an older "playing" state is stale
+    /// (e.g. the app was terminated without pausing).
+    var isPlaying: Bool {
+        snapshot.isPlaying && snapshot.nowPlaying != nil && date.timeIntervalSince(snapshot.updatedAt) < 5 * 60
+    }
 
     /// Minutes listened today; 0 when the snapshot is from an earlier day.
     var listenedMinutes: Int {
@@ -68,7 +72,7 @@ struct SnapshotEntry: TimelineEntry, Sendable {
 enum NowPlayingRelevance {
     /// Smart Stack: playing → top, recently played → medium, otherwise low.
     static func score(for snapshot: SharedSnapshot, at date: Date) -> Float {
-        if snapshot.isPlaying, snapshot.nowPlaying != nil {
+        if snapshot.isPlaying, snapshot.nowPlaying != nil, date.timeIntervalSince(snapshot.updatedAt) < 5 * 60 {
             return 100
         }
         if snapshot.nowPlaying != nil, date.timeIntervalSince(snapshot.updatedAt) < 6 * 3600 {
@@ -103,6 +107,14 @@ struct SnapshotProvider: TimelineProvider {
         // Listened today resets at midnight.
         let midnight = Calendar.current.startOfDay(for: now.addingTimeInterval(24 * 3600))
         entries.append(SnapshotEntry(date: midnight, snapshot: snapshot, relevanceScore: relevance(snapshot, midnight)))
+
+        // A "playing" state that isn't refreshed turns stale after 5 minutes.
+        if snapshot.isPlaying {
+            let stale = snapshot.updatedAt.addingTimeInterval(5 * 60 + 1)
+            if stale > now, stale < midnight {
+                entries.insert(SnapshotEntry(date: stale, snapshot: snapshot, relevanceScore: relevance(snapshot, stale)), at: 1)
+            }
+        }
 
         // While playing, the app reloads timelines on changes; refresh periodically as a fallback.
         let refresh = snapshot.isPlaying ? now.addingTimeInterval(15 * 60) : midnight

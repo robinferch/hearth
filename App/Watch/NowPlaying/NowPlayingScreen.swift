@@ -10,7 +10,6 @@ import WatchKit
 /// Layout: title block + volume (Digital Crown), chapter progress, transport, bottom toolbar
 /// (speed, sleep timer, more).
 struct NowPlayingScreen: View {
-
     private var player: WatchPlayer { .shared }
 
     var body: some View {
@@ -55,17 +54,19 @@ struct NowPlayingScreen: View {
                     Text(HearthFormat.rate(player.playbackRate))
                         .font(.footnote.weight(.semibold))
                         .monospacedDigit()
+                        .foregroundStyle(Color.white)
                 }
                 .accessibilityLabel("Playback Speed")
 
                 NavigationLink(value: WatchRoute.sleepTimer) {
                     Image(systemName: player.sleepTimer == nil ? "moon.zzz" : "moon.zzz.fill")
-                        .foregroundStyle(player.sleepTimer == nil ? AnyShapeStyle(.primary) : AnyShapeStyle(.tint))
+                        .foregroundStyle(Color.white)
                 }
                 .accessibilityLabel("Sleep Timer")
 
                 NavigationLink(value: WatchRoute.playerOptions) {
                     Image(systemName: "ellipsis")
+                        .foregroundStyle(Color.white)
                 }
                 .accessibilityLabel("More")
             }
