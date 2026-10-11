@@ -86,6 +86,7 @@ private struct CollectionDetailContent: View {
                     .itemActions(for: item)
                 }
             }
+            .listRowBackground(Color.clear)
         }
         .listStyle(.plain)
         .heroBackground(color: dominantColor, height: 520)

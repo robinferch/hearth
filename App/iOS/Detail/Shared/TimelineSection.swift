@@ -24,6 +24,7 @@ struct TimelineSection: View {
                 content
             }
         }
+        .listRowBackground(Color.clear)
         #if DEBUG
         .onAppear {
             if DebugSupport.expandsSections {

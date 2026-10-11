@@ -87,6 +87,7 @@ private struct EpisodeDetailContent: View {
                 }
                 episodeTypeRow
             }
+            .listRowBackground(Color.clear)
 
             TimelineSection(id: episode.id, released: episode.publishedAt, added: episode.addedAt)
         }

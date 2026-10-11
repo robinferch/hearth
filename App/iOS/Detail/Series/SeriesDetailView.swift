@@ -103,6 +103,7 @@ private struct SeriesDetailContent: View {
                     }
                 }
             }
+            .listRowBackground(Color.clear)
         }
         .listStyle(.plain)
         .heroBackground(color: dominantColor, height: 560)

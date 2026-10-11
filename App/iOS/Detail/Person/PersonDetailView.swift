@@ -100,6 +100,7 @@ private struct PersonDetailContent: View {
                     .scrollIndicators(.hidden)
                     .detailPlainRow(insets: EdgeInsets(top: 4, leading: 0, bottom: 16, trailing: 0))
                 }
+                .listRowBackground(Color.clear)
             }
 
             Section {
@@ -131,6 +132,7 @@ private struct PersonDetailContent: View {
                     }
                 }
             }
+            .listRowBackground(Color.clear)
         }
         .listStyle(.plain)
         .heroBackground(color: nil, height: 420)

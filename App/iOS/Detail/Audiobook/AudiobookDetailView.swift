@@ -405,6 +405,7 @@ struct BookmarksSection: View {
                     }
                 }
             }
+            .listRowBackground(Color.clear)
             .alert(String(localized: "Edit Note", table: "Detail"), isPresented: Binding(get: { editing != nil }, set: { if !$0 { editing = nil } })) {
                 TextField(String(localized: "Note", table: "Detail"), text: $note)
                 Button(String(localized: "Save", table: "Detail")) {
@@ -516,6 +517,7 @@ struct ChaptersSection: View {
                 }
             }
         }
+        .listRowBackground(Color.clear)
     }
 
     /// Playback position: live while the item is playing, else the stored progress.
@@ -561,6 +563,7 @@ private struct DocumentsSection: View {
                 }
             }
         }
+        .listRowBackground(Color.clear)
         .fullScreenCover(item: $presented) { pdf in
             PDFReaderView(itemID: itemID, pdf: pdf)
         }
@@ -612,6 +615,7 @@ private struct AudiobookInfoSection: View {
                 }
             }
         }
+        .listRowBackground(Color.clear)
     }
 }
 

@@ -176,6 +176,7 @@ struct SkipButton: View {
             }
             tapTrigger += 1
             player.registerSkipTap(forward: forward)
+            Task { await SkipLongPressTip.skipTapped.donate() }
         } label: {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .medium))
@@ -416,6 +417,13 @@ enum PlayerTips {
 }
 
 struct SkipLongPressTip: Tip {
+    /// Donated on every skip tap; the tip appears once the user skipped a few times.
+    static let skipTapped = Tips.Event(id: "skipTapped")
+
+    var rules: [Rule] {
+        #Rule(Self.skipTapped) { $0.donations.count >= 4 }
+    }
+
     var title: Text { Text("Jump Between Chapters", tableName: "Player") }
     var message: Text? { Text("Touch and hold the skip buttons to go to the start of the chapter or the next chapter.", tableName: "Player") }
     var image: Image? { Image(systemName: "hand.tap") }
@@ -423,6 +431,13 @@ struct SkipLongPressTip: Tip {
 }
 
 struct BookmarkLongPressTip: Tip {
+    /// Donated when a bookmark is created through the note prompt.
+    static let notePromptUsed = Tips.Event(id: "bookmarkNotePromptUsed")
+
+    var rules: [Rule] {
+        #Rule(Self.notePromptUsed) { $0.donations.count >= 2 }
+    }
+
     var title: Text { Text("Quick Bookmarks", tableName: "Player") }
     var message: Text? { Text("Touch and hold the bookmark button to save a bookmark without a note.", tableName: "Player") }
     var image: Image? { Image(systemName: "bookmark") }

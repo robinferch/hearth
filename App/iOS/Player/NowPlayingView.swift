@@ -42,11 +42,11 @@ struct NowPlayingView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .environment(\.colorScheme, .dark)
-        .tint(.white)
         .overlay(alignment: .top) {
             grabber
         }
+        .environment(\.colorScheme, .dark)
+        .tint(.white)
         .task(id: itemID) {
             PlayerTips.configureIfNeeded()
             if let itemID {
@@ -67,6 +67,7 @@ struct NowPlayingView: View {
             Button(String(localized: "Create", table: "Player")) {
                 let note = bookmarkNote
                 bookmarkNote = ""
+                Task { await BookmarkLongPressTip.notePromptUsed.donate() }
                 createBookmark(note: note)
             }
             Button(String(localized: "Cancel", table: "Player"), role: .cancel) {
@@ -87,6 +88,12 @@ struct NowPlayingView: View {
                 showsPanel = true
                 panelPage = panel == "queue" ? .queue : .chapters
             }
+            if UserDefaults.standard.bool(forKey: "HearthDebugCollapsePlayer") {
+                Task {
+                    try? await Task.sleep(for: .seconds(2))
+                    presentation.collapse()
+                }
+            }
         }
         #endif
     }
@@ -97,7 +104,7 @@ struct NowPlayingView: View {
         VStack(spacing: 0) {
             if showsPanel {
                 compactHeader
-                    .padding(.top, 28)
+                    .padding(.top, 60)
                 PlayerPanel(page: $panelPage, onError: show)
                     .padding(.top, 14)
                     .transition(.opacity.combined(with: .move(edge: .bottom)))

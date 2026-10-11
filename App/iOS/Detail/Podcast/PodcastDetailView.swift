@@ -104,6 +104,7 @@ private struct PodcastDetailContent: View {
                             EpisodeRow(episode: episode, showsCover: false, descriptionLines: 2, context: .podcastPage)
                         }
                         .itemActions(for: .episode(episode), context: .podcastPage)
+                        .listRowBackground(Color.clear)
                     }
                 }
                 NavigationLink(value: NavigationDestination.allEpisodes(podcast: podcast.id)) {
@@ -116,6 +117,7 @@ private struct PodcastDetailContent: View {
                     }
                 }
             }
+            .listRowBackground(Color.clear)
 
             PodcastInfoSection(podcast: podcast)
         }
@@ -253,5 +255,6 @@ private struct PodcastInfoSection: View {
                 }
             }
         }
+        .listRowBackground(Color.clear)
     }
 }
