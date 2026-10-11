@@ -25,12 +25,13 @@
 		6C8774FF55442F7C87B03ABA /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0CC3DD11F9E73531316A08E2 /* HearthUI */; };
 		6F9331C40E1F342B3ADFB46B /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0E034A64BF18762E0AF8E8B8 /* HearthUI */; };
 		7390DB5E47CA7E7057A34860 /* HearthPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = EB4A4ECE7282259E0EE32660 /* HearthPlayback */; };
-		7ADB10AAC7360FA941268B93 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 9B0CA85FF8D51EFF510317C6 /* .gitkeep */; };
+		770317BC1D7E64384FB9D039 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = ED93A1B6C40896FAA3001AF9 /* Localizable.xcstrings */; };
 		957E2ECF18CFB4E7D52F0E20 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800055FB67C9CFB7975A6C82 /* WidgetKit.framework */; };
 		A6B5FF1764F47237536FB880 /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = D092E9BD1C2DBB96E5F1559F /* HearthUI */; };
 		B80F05E04CBC30172A5B8CE0 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BCD6EB16AD03C9166C2C711 /* SwiftUI.framework */; };
 		BBD8E34BF0DE6211B0CF77AB /* HearthModel in Frameworks */ = {isa = PBXBuildFile; productRef = 4AEB82FCF993E78B84059D3C /* HearthModel */; };
 		BC0733B346350EEA545E4BDA /* HearthData in Frameworks */ = {isa = PBXBuildFile; productRef = 39E1BB5823EF4CE0A49AB908 /* HearthData */; };
+		BC11E766BCDE47D048A3C22B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6586AEF0CD22E5C65D5B6297 /* Localizable.xcstrings */; };
 		BC56727628CA036AED5D97B9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BCD6EB16AD03C9166C2C711 /* SwiftUI.framework */; };
 		C257F15B66E8DCB6EDE7916B /* HearthWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B349A8BC691ED2A295408123 /* HearthWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C45CECA183E5271ED6EB786C /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 6E3C22BDF9540004102FF894 /* .gitkeep */; };
@@ -105,17 +106,18 @@
 		0E640205FB678F9D0CE79BDA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		306A17FFAC21B997C600DA70 /* HearthWatchWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HearthWatchWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		59FFE3ACA488E3855A0E8581 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6586AEF0CD22E5C65D5B6297 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		6BCD6EB16AD03C9166C2C711 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		6E3C22BDF9540004102FF894 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		800055FB67C9CFB7975A6C82 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		8377C12B539FBB513F3B517A /* HearthWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = HearthWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		847217928D1BE8394CF58D61 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		8925C3D766B1346CA4B5AB52 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
-		9B0CA85FF8D51EFF510317C6 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		B349A8BC691ED2A295408123 /* HearthWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HearthWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BBB415D370BC05F3121EA073 /* Hearth.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Hearth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D23AFC5AAE01C8AD533525F4 /* HearthKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HearthKit; path = Packages/HearthKit; sourceTree = SOURCE_ROOT; };
 		E2798D2B22C647F62FFF2B0E /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		ED93A1B6C40896FAA3001AF9 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -216,6 +218,7 @@
 			isa = PBXGroup;
 			children = (
 				0E640205FB678F9D0CE79BDA /* Assets.xcassets */,
+				ED93A1B6C40896FAA3001AF9 /* Localizable.xcstrings */,
 			);
 			name = Watch;
 			path = App/Resources/Watch;
@@ -224,7 +227,7 @@
 		2799B7E9BFA9F7516D7C47F6 /* WatchWidgets */ = {
 			isa = PBXGroup;
 			children = (
-				9B0CA85FF8D51EFF510317C6 /* .gitkeep */,
+				6586AEF0CD22E5C65D5B6297 /* Localizable.xcstrings */,
 			);
 			name = WatchWidgets;
 			path = App/Resources/WatchWidgets;
@@ -497,6 +500,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A0E1B16A4F539B33C36F39D /* Assets.xcassets in Resources */,
+				770317BC1D7E64384FB9D039 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -504,7 +508,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7ADB10AAC7360FA941268B93 /* .gitkeep in Resources */,
+				BC11E766BCDE47D048A3C22B /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
