@@ -79,6 +79,7 @@ struct RootView: View {
                 case "listenNow": navigator.sheet = .listenNow
                 default: break
                 }
+                await DebugSupport.performLaunchActions()
             }
             #endif
             .onReceive(NotificationCenter.default.publisher(for: .deviceDidShake)) { _ in
