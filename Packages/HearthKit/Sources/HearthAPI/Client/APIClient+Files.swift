@@ -5,7 +5,12 @@ import HearthModel
 
 extension APIClient {
     func coverRequest(for id: ItemIdentifier, size: ImageSize) async throws -> URLRequest {
-        let query = [URLQueryItem(name: "width", value: String(size.width))]
+        var query = [URLQueryItem(name: "width", value: String(size.width))]
+        #if os(watchOS) && DEBUG
+        // The server answers with WebP when the client accepts it (`*/*`), which the watchOS simulator can't decode.
+        // DEBUG-only (App Store screenshots); verify on a device whether release builds need JPEG as well.
+        query.append(URLQueryItem(name: "format", value: "jpeg"))
+        #endif
         let request: APIRequest
         switch id.kind {
         case .author:

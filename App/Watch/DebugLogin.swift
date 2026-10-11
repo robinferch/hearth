@@ -59,7 +59,8 @@ enum DebugLogin {
         return path
     }
 
-    /// `-HearthDebugPlay book|episode` – starts the first audiobook / episode on the watch after bootstrap.
+    /// `-HearthDebugPlay book|episode|<item identifier>` – starts the first audiobook / episode (or the given item)
+    /// on the watch after bootstrap.
     /// `-HearthDebugDownload book|episode` – downloads it to the watch.
     static func runActions() async {
         if let kind = value(after: "-HearthDebugPlay"), let id = await firstPlayable(kind) {
@@ -113,6 +114,10 @@ enum DebugLogin {
     }
 
     private static func firstPlayable(_ kind: String) async -> ItemIdentifier? {
+        // A full item identifier (`audiobook::<connection>::<library>::<item>`) picks a specific item (screenshots).
+        if let id = ItemIdentifier(kind), id.kind.isPlayable {
+            return id
+        }
         if kind == "episode" {
             guard let library = library(.podcasts), let client = try? WatchClient.for(library.connectionID),
                   let podcast = try? await client.podcasts(library: library, sort: .title, direction: .ascending, page: 0, limit: 1).items.first,
