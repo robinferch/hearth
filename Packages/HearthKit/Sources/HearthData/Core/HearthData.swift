@@ -206,10 +206,8 @@ public final class HearthData {
 
     func offlineModeChanged() {
         if connections.isOffline {
-            for task in liveUpdateTasks.values {
-                task.cancel()
-            }
-            liveUpdateTasks.removeAll()
+            // Disconnect too: cancelling the consumers alone leaves the sockets reconnecting.
+            disconnectSockets()
         } else if wantsLiveUpdates {
             startLiveUpdates()
         }

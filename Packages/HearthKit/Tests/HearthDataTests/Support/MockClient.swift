@@ -35,6 +35,8 @@ final class MockClient: AudiobookshelfClient {
         var closedSessionsWithoutProgress: [String] = []
         var authorizationRefreshes = 0
         var uploadDelay: Duration?
+        var socketConnects = 0
+        var socketDisconnects = 0
         var uploadCount = 0
         /// Order of `authorize` / `close` calls.
         var calls: [String] = []
@@ -297,6 +299,11 @@ final class MockClient: AudiobookshelfClient {
     // MARK: Live updates
 
     func events() -> AsyncStream<ServerEvent> { AsyncStream { $0.finish() } }
-    func connectSocket() async {}
-    func disconnectSocket() async {}
+    func connectSocket() async {
+        state.withLock { $0.socketConnects += 1 }
+    }
+
+    func disconnectSocket() async {
+        state.withLock { $0.socketDisconnects += 1 }
+    }
 }
