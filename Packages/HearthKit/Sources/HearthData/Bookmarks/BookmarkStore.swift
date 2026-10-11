@@ -13,6 +13,9 @@ public final class BookmarkStore {
     private var byItem: [String: [Bookmark]] = [:]
 
     @ObservationIgnored private var records: [String: BookmarkRecord] = [:]
+    /// Monotonic change counter and its value at each record's last change (see `ProgressStore.changeMark`).
+    @ObservationIgnored private var changeCounter: UInt64 = 0
+    @ObservationIgnored private var changeStamps: [String: UInt64] = [:]
     @ObservationIgnored let environment: DataEnvironment
     @ObservationIgnored weak var hearth: HearthData?
     @ObservationIgnored private let logger = Logger(category: "BookmarkStore")
@@ -30,6 +33,10 @@ public final class BookmarkStore {
 
     public func bookmarks(for id: ItemIdentifier) -> [Bookmark] {
         byItem[id.storageKey] ?? []
+    }
+
+    func record(for id: ItemIdentifier, time: Int) -> BookmarkRecord? {
+        records[BookmarkRecord.key(id, time: time)]
     }
 
     /// Item ids (audiobooks) with at least one bookmark, with counts.
@@ -66,6 +73,10 @@ public final class BookmarkStore {
 
     private func commit(_ changed: [BookmarkRecord], removed: [String] = []) async {
         var affected = Set<String>()
+        changeCounter &+= 1
+        for key in changed.map(\.key) + removed {
+            changeStamps[key] = changeCounter
+        }
         for record in changed {
             records[record.key] = record
             affected.insert(record.bookmark.itemID.storageKey)
@@ -160,8 +171,11 @@ public final class BookmarkStore {
         }
     }
 
+    /// Marks the record synced if it still has the pushed content. The status may differ from the pushed one: the
+    /// reconcile pushes a local `pendingUpdate` without remote copy as a create and vice versa. A record deleted
+    /// meanwhile stays deleted.
     private func markSynced(_ pushed: BookmarkRecord, created: Date?) async {
-        guard var current = records[pushed.key], current.status == pushed.status, current.bookmark.note == pushed.bookmark.note else { return }
+        guard var current = records[pushed.key], current.status == .pendingCreate || current.status == .pendingUpdate, current.bookmark.note == pushed.bookmark.note else { return }
         current.status = .synced
         if let created {
             current.bookmark.created = created
@@ -171,29 +185,38 @@ public final class BookmarkStore {
 
     // MARK: Sync
 
+    /// Current change counter; records changed after it are skipped by `reconcile(…changedAfter:)`.
+    var changeMark: UInt64 { changeCounter }
+
     public func sync() async {
         guard let hearth, !hearth.connections.isOffline else { return }
         for connection in hearth.connections.connections where hearth.connections.isAvailable(connection.id) {
             guard let client = try? hearth.connections.client(for: connection.id) else { continue }
+            let mark = changeMark
             do {
                 let response = try await client.authorize()
-                await reconcile(connection: connection.id, remote: response.bookmarks, client: client)
+                await reconcile(connection: connection.id, remote: response.bookmarks, client: client, unresolvedItemIDs: response.unresolvedItemIDs, changedAfter: mark)
             } catch {
                 logger.error("Bookmark sync of \(connection.id, privacy: .public) failed: \(String(describing: error), privacy: .public)")
             }
         }
     }
 
-    func reconcile(connection: ConnectionID, remote: [Bookmark], client: any AudiobookshelfClient) async {
-        let local = records.values.filter { $0.bookmark.itemID.connectionID == connection }
+    /// - Parameters:
+    ///   - unresolvedItemIDs: items the server has entries for that couldn't be mapped (never deleted locally).
+    ///   - changedAfter: `changeMark` taken before the server state was fetched; records changed since are left
+    ///     for the next reconcile.
+    func reconcile(connection: ConnectionID, remote: [Bookmark], client: any AudiobookshelfClient, unresolvedItemIDs: Set<String> = [], changedAfter mark: UInt64? = nil) async {
+        let recent: Set<String> = mark.map { mark in Set(changeStamps.compactMap { $0.value > mark ? $0.key : nil }) } ?? []
+        let local = records.values.filter { $0.bookmark.itemID.connectionID == connection && !recent.contains($0.key) }
         // Remote bookmarks don't know our library id; resolve it from local data where possible.
         let remote = remote.map { bookmark in
             if let known = records[BookmarkRecord.key(bookmark.itemID, time: bookmark.time)] {
                 return bookmark.withItemID(known.bookmark.itemID)
             }
             return bookmark
-        }
-        let plan = BookmarkReconciler.plan(local: Array(local), remote: remote)
+        }.filter { !recent.contains(BookmarkRecord.key($0.itemID, time: $0.time)) }
+        let plan = BookmarkReconciler.plan(local: Array(local), remote: remote, unresolvedItemIDs: unresolvedItemIDs)
         await commit(plan.upsertLocal, removed: plan.deleteLocal)
 
         for bookmark in plan.create {

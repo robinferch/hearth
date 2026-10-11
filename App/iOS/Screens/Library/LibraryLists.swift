@@ -75,20 +75,15 @@ struct PodcastLibraryView: View {
             sort.save(key: key)
             let state = sort
             let libraryID = library.id
-            await loader.reset { page, limit in
+            await loader.load(key: state) { page, limit in
                 try await Client.for(libraryID.connectionID).podcasts(library: libraryID, sort: state.sort, direction: state.direction, page: page, limit: limit)
             }
         }
         .onChange(of: displayMode) { _, mode in HearthData.shared.itemSettings.setDisplayMode(mode, for: key) }
     }
 
-    @ViewBuilder
     private var footer: some View {
-        if loader.isLoading {
-            PageLoadingIndicator()
-        } else if let total = loader.total {
-            CountFooter(text: String(localized: "\(total) podcasts"))
-        }
+        PagedFooter(loader: loader) { String(localized: "\($0) podcasts") }
     }
 }
 
@@ -164,20 +159,15 @@ struct SeriesListView: View {
             sort.save(key: key)
             let state = sort
             let libraryID = library.id
-            await loader.reset { page, limit in
+            await loader.load(key: state) { page, limit in
                 try await Client.for(libraryID.connectionID).series(library: libraryID, sort: state.sort, direction: state.direction, filter: nil, page: page, limit: limit)
             }
         }
         .onChange(of: displayMode) { _, mode in HearthData.shared.itemSettings.setDisplayMode(mode, for: key) }
     }
 
-    @ViewBuilder
     private var footer: some View {
-        if loader.isLoading {
-            PageLoadingIndicator()
-        } else if let total = loader.total {
-            CountFooter(text: String(localized: "\(total) series"))
-        }
+        PagedFooter(loader: loader) { String(localized: "\($0) series") }
     }
 }
 
@@ -204,11 +194,7 @@ struct AuthorsListView: View {
                         .onAppear { Task { await loader.loadMore(ifNeededFor: author) } }
                     }
                 } footer: {
-                    if loader.isLoading {
-                        PageLoadingIndicator()
-                    } else if let total = loader.total {
-                        CountFooter(text: String(localized: "\(total) authors"))
-                    }
+                    PagedFooter(loader: loader) { String(localized: "\($0) authors") }
                 }
             }
             .listStyle(.plain)
@@ -234,7 +220,7 @@ struct AuthorsListView: View {
             sort.save(key: key)
             let state = sort
             let libraryID = library.id
-            await loader.reset { page, limit in
+            await loader.load(key: state) { page, limit in
                 try await Client.for(libraryID.connectionID).authors(library: libraryID, sort: state.sort, direction: state.direction, page: page, limit: limit)
             }
         }
@@ -378,9 +364,7 @@ struct CollectionsListView: View {
                         .onAppear { Task { await loader.loadMore(ifNeededFor: collection) } }
                     }
                 } footer: {
-                    if loader.isLoading {
-                        PageLoadingIndicator()
-                    }
+                    PagedFooter(loader: loader)
                 }
             }
             .listStyle(.plain)
@@ -390,7 +374,7 @@ struct CollectionsListView: View {
         .task(id: library.id) {
             let libraryID = library.id
             let kind = kind
-            await loader.reset { page, limit in
+            await loader.load(key: libraryID) { page, limit in
                 let client = try Client.for(libraryID.connectionID)
                 return switch kind {
                 case .collection: try await client.collections(library: libraryID, page: page, limit: limit)

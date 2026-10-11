@@ -18,9 +18,9 @@ extension APIClient {
     func updateCollection(_ id: ItemIdentifier, name: String?, description: String?, items: [ItemIdentifier]?) async throws {
         let request: APIRequest
         if id.kind == .playlist {
-            request = try APIRequest.patch("api", "playlists", id.primaryID).json(UpdatePlaylistBody(name: name, description: description, items: items?.map(PlaylistItemBody.init)))
+            request = try APIRequest.patch("api", "playlists", id.primaryID).json(UpdatePlaylistBody(name: name, description: description, items: items?.map(PlaylistItemBody.init))).idempotent()
         } else {
-            request = try APIRequest.patch("api", "collections", id.primaryID).json(UpdateCollectionBody(name: name, description: description, books: items?.map(\.apiItemID)))
+            request = try APIRequest.patch("api", "collections", id.primaryID).json(UpdateCollectionBody(name: name, description: description, books: items?.map(\.apiItemID))).idempotent()
         }
         try await perform(request)
     }
@@ -45,7 +45,7 @@ extension APIClient {
     }
 
     func deleteCollection(_ id: ItemIdentifier) async throws {
-        try await perform(.delete("api", id.kind == .playlist ? "playlists" : "collections", id.primaryID))
+        try await perform(APIRequest.delete("api", id.kind == .playlist ? "playlists" : "collections", id.primaryID).idempotent())
     }
 
     func createPlaylist(fromCollection id: ItemIdentifier) async throws -> ItemIdentifier {

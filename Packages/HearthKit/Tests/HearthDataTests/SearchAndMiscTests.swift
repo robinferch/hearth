@@ -257,6 +257,20 @@ struct ConnectionAndListeningTests {
         #expect(hearth.listening.listenedToday == 600)
     }
 
+    @Test func offlineModeDisconnectsSockets() async throws {
+        let client = MockClient(connection: Fixtures.connection())
+        let hearth = makeHearth([client])
+        hearth.startLiveUpdates()
+        // Toggled within one main actor turn: `APINetworkPolicy.shared` is process wide.
+        hearth.connections.isOffline = true
+        hearth.connections.isOffline = false
+        for _ in 0 ..< 200 where client.read({ $0.socketDisconnects }) == 0 {
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        #expect(client.read { $0.socketDisconnects } == 1)
+        hearth.stopLiveUpdates()
+    }
+
     @Test func staleServerSessionsAreClosed() async {
         let client = MockClient(connection: Fixtures.connection())
         let book = Fixtures.bookID("b", connection: client.connection.id)
@@ -267,6 +281,6 @@ struct ConnectionAndListeningTests {
         let next = ListeningTracker(environment: first.environment)
         next.hearth = first
         await next.closeStaleSessions()
-        #expect(client.read { $0.closedSessions } == ["old"])
+        #expect(client.read { $0.closedSessionsWithoutProgress } == ["old"])
     }
 }

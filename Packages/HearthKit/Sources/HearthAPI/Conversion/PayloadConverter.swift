@@ -460,7 +460,7 @@ struct PayloadConverter: Sendable {
     }
 
     func bookmark(_ payload: BookmarkPayload, itemID: ItemIdentifier) -> Bookmark {
-        Bookmark(itemID: itemID, time: Int(payload.time.rounded(.down)), note: payload.title, created: payload.createdAt ?? .now)
+        Bookmark(itemID: itemID, time: BookmarkTimeDirectory.second(of: payload.time), note: payload.title, created: payload.createdAt ?? .now)
     }
 
     // MARK: Sessions

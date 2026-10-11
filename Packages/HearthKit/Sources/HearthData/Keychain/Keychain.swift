@@ -86,18 +86,35 @@ struct Keychain: Sendable {
         return result as? Data
     }
 
-    func set(_ data: Data, account: String, synchronizable: Bool) {
-        // Remove any copy with a different synchronizable flag first.
-        delete(account: account)
-        let status = withGroupFallback { useGroup in
-            var query = baseQuery(account: account, synchronizable: synchronizable, useGroup: useGroup)
-            query[kSecValueData as String] = data
-            query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
-            return SecItemAdd(query as CFDictionary, nil)
+    /// Writes `data`. The existing item is updated in place (or added if missing), so a failed write keeps the
+    /// previous value instead of losing it (e.g. rotated tokens).
+    @discardableResult
+    func set(_ data: Data, account: String, synchronizable: Bool) -> Bool {
+        var status = withGroupFallback { useGroup in
+            let query = baseQuery(account: account, synchronizable: synchronizable, useGroup: useGroup)
+            let attributes: [String: Any] = [
+                kSecValueData as String: data,
+                kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
+            ]
+            return SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         }
-        if status != errSecSuccess {
+        if status == errSecItemNotFound {
+            status = withGroupFallback { useGroup in
+                var query = baseQuery(account: account, synchronizable: synchronizable, useGroup: useGroup)
+                query[kSecValueData as String] = data
+                query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+                return SecItemAdd(query as CFDictionary, nil)
+            }
+        }
+        guard status == errSecSuccess else {
             Self.logger.error("Writing \(account, privacy: .public) failed: \(status)")
+            return false
         }
+        // A copy with the other synchronizable flag (the flag can't be changed in place) is obsolete now.
+        _ = withGroupFallback { useGroup in
+            SecItemDelete(baseQuery(account: account, synchronizable: !synchronizable, useGroup: useGroup) as CFDictionary)
+        }
+        return true
     }
 
     func delete(account: String) {

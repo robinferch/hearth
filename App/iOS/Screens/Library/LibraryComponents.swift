@@ -81,7 +81,7 @@ extension ProgressFilter {
 }
 
 /// Persisted sort + direction for a list (stored through `ItemSettingsStore`, synced via iCloud KVS).
-struct SortState<Sort: LibrarySortOption>: Equatable {
+struct SortState<Sort: LibrarySortOption>: Hashable {
     var sort: Sort
     var direction: SortDirection
 
@@ -164,6 +164,33 @@ struct PageLoadingIndicator: View {
         ProgressView()
             .frame(maxWidth: .infinity)
             .padding()
+    }
+}
+
+/// Footer of a paged list: spinner while a page loads, a retry button after a page failed, else the count.
+struct PagedFooter<Element: Identifiable & Sendable>: View {
+    let loader: PagedLoader<Element>
+    var count: ((Int) -> String)?
+
+    var body: some View {
+        if loader.isLoading {
+            PageLoadingIndicator()
+        } else if let error = loader.error, !loader.items.isEmpty {
+            VStack(spacing: 8) {
+                Text(error.userMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                Button("Retry") {
+                    Task { await loader.retryNextPage() }
+                }
+                .buttonStyle(.glass)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+        } else if let count, let total = loader.total {
+            CountFooter(text: count(total))
+        }
     }
 }
 

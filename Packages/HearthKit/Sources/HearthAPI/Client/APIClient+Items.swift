@@ -103,6 +103,6 @@ extension APIClient {
         guard let podcastID = id.groupingID else {
             throw APIError.notFound
         }
-        try await perform(APIRequest.patch("api", "podcasts", podcastID, "episode", id.primaryID).json(EpisodeTypeBody(episodeType: type.rawValue)))
+        try await perform(APIRequest.patch("api", "podcasts", podcastID, "episode", id.primaryID).json(EpisodeTypeBody(episodeType: type.rawValue)).idempotent())
     }
 }

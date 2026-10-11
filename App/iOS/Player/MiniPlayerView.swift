@@ -49,7 +49,8 @@ struct MiniPlayerView: View {
         .accessibilityAction(named: String(localized: "Open Player", table: "Player")) {
             presentation.expand()
         }
-        .task(id: player.lastPlayedItemID) {
+        // Keyed by the idle item (not just `lastPlayedItemID`, which stays the same when playback stops).
+        .task(id: isIdle ? player.lastPlayedItemID : nil) {
             PlayerTips.configureIfNeeded()
             guard player.currentItem == nil, let id = player.lastPlayedItemID else {
                 lastPlayed = nil

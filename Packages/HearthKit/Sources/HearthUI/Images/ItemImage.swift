@@ -14,6 +14,8 @@ public struct ItemImage: View {
     let placeholderSymbol: String?
 
     @State private var image: DecodedImage?
+    /// The item `image` belongs to – the view may be reused for another item (lists, the mini player).
+    @State private var imageID: ItemIdentifier?
 
     /// - Parameters:
     ///   - id: The item; `nil` shows the placeholder.
@@ -26,8 +28,9 @@ public struct ItemImage: View {
         self.cornerRadius = cornerRadius
         self.showsStatus = showsStatus
         self.placeholderSymbol = placeholderSymbol
-        if let id {
-            _image = State(initialValue: DecodedImageCache.shared.image(for: DecodedImageCache.key(for: id, size: size)))
+        if let id, let cached = DecodedImageCache.shared.image(for: DecodedImageCache.key(for: id, size: size)) {
+            _image = State(initialValue: cached)
+            _imageID = State(initialValue: id)
         }
     }
 
@@ -48,7 +51,8 @@ public struct ItemImage: View {
         Color.clear
             .aspectRatio(1, contentMode: .fit)
             .overlay {
-                if let image {
+                // Never show another item's cover while this one loads.
+                if let image, imageID == id {
                     imageContent(image)
                         .transition(.opacity)
                 } else {
@@ -112,22 +116,27 @@ public struct ItemImage: View {
     private func load() async {
         guard let id, id.kind != .narrator else {
             image = nil
+            imageID = nil
             return
         }
         let key = DecodedImageCache.key(for: id, size: effectiveSize)
         if let cached = DecodedImageCache.shared.image(for: key) {
             image = cached
+            imageID = id
             return
         }
-        // Show a smaller cached variant while the requested size loads.
-        if image == nil, let smaller = ImageSize.allCases.reversed().lazy.compactMap({ DecodedImageCache.shared.image(for: DecodedImageCache.key(for: id, size: $0)) }).first {
-            image = smaller
+        // Another item's (or no) image: show a cached variant of this item while the requested size loads,
+        // else the placeholder. The same item's current image stays when only the size changes.
+        if image == nil || imageID != id {
+            image = ImageSize.allCases.reversed().lazy.compactMap({ DecodedImageCache.shared.image(for: DecodedImageCache.key(for: id, size: $0)) }).first
+            imageID = image == nil ? nil : id
         }
         let loaded = await ImageDecoder.load(id, size: effectiveSize)
         guard !Task.isCancelled else { return }
         if let loaded {
             withAnimation(.easeOut(duration: 0.2)) {
                 image = loaded
+                imageID = id
             }
         }
     }

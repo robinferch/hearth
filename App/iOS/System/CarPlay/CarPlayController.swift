@@ -20,6 +20,7 @@ final class CarPlayController {
     private var listenNowTemplate: CPListTemplate?
     private var libraryTemplates: [LibraryIdentifier: CPListTemplate] = [:]
     private var rootSignature: [String] = []
+    private var listenNowSignature: [String] = []
     private var refreshTask: Task<Void, Never>?
     private var isConnected = false
 
@@ -124,8 +125,18 @@ final class CarPlayController {
 
     // MARK: Listen Now
 
+    /// Identifies the Listen Now tab's rows (membership and order, not progress).
+    private var currentListenNowSignature: [String] {
+        let downloads = data.downloads
+        return ["offline:\(data.connections.isOffline)"]
+            + data.progress.inProgress().map(\.itemID.description)
+            + ["downloads"] + downloads.downloadedAudiobooks().map(\.id.description)
+            + ["episodes"] + downloads.downloadedEpisodes().map(\.id.description)
+    }
+
     func refreshListenNow() {
         guard let template = listenNowTemplate else { return }
+        listenNowSignature = currentListenNowSignature
         Task {
             let downloads = data.downloads
             var sections = [CPListSection]()
@@ -283,7 +294,17 @@ final class CarPlayController {
     func showNowPlaying() {
         let template = CPNowPlayingTemplate.shared
         guard interface.topTemplate !== template else { return }
-        push(template)
+        // Already on the stack (e.g. a row in Up Next or the chapter list was tapped): go back to it. Pushing a
+        // template twice fails.
+        if interface.templates.contains(where: { $0 === template }) {
+            interface.pop(to: template, animated: true) { _, error in
+                if let error {
+                    Self.logger.error("Popping to Now Playing failed: \(error.localizedDescription, privacy: .public)")
+                }
+            }
+        } else {
+            push(template)
+        }
     }
 
     /// Tap on an item row: toggles the current item, otherwise starts it and shows Now Playing.
@@ -314,12 +335,12 @@ final class CarPlayController {
 
     // MARK: Refreshing
 
-    /// Rebuilds Listen Now when progress, downloads, connections or CarPlay settings change.
+    /// Rebuilds Listen Now when its items, downloads, connections or CarPlay settings change. Progress alone
+    /// (reported every 30 s while playing) only updates the visible rows.
     private func observeData() {
         guard isConnected else { return }
         withObservationTracking {
-            _ = data.progress.inProgress()
-            _ = data.downloads.downloadedAudiobooks()
+            _ = currentListenNowSignature
             _ = data.connections.connections
             _ = data.connections.libraries
             _ = data.connections.isOffline
@@ -341,8 +362,10 @@ final class CarPlayController {
             guard !Task.isCancelled, isConnected else { return }
             if currentSignature != rootSignature {
                 rebuildRoot()
-            } else {
+            } else if currentListenNowSignature != listenNowSignature {
                 refreshListenNow()
+            } else {
+                rows.updatePlaybackState()
             }
         }
     }

@@ -9,7 +9,8 @@ import UIKit
 /// (when the queue has items), Up Next list, and the album/artist button (chapters or podcast episodes).
 @MainActor
 final class CarPlayNowPlaying: NSObject, CPNowPlayingTemplateObserver {
-    private unowned let controller: CarPlayController
+    /// Weak: the shared Now Playing template (and its button handlers) outlive the controller after a disconnect.
+    private weak var controller: CarPlayController?
     private var template: CPNowPlayingTemplate { .shared }
     private var signature: [Bool] = []
 
@@ -60,7 +61,7 @@ final class CarPlayNowPlaying: NSObject, CPNowPlayingTemplateObserver {
         do {
             try await AudioPlayer.shared.createBookmark()
         } catch {
-            controller.showError(error)
+            controller?.showError(error)
         }
     }
 
@@ -68,12 +69,13 @@ final class CarPlayNowPlaying: NSObject, CPNowPlayingTemplateObserver {
 
     nonisolated func nowPlayingTemplateUpNextButtonTapped(_ nowPlayingTemplate: CPNowPlayingTemplate) {
         MainActor.assumeIsolated {
-            controller.push(upNextTemplate())
+            controller?.push(upNextTemplate())
         }
     }
 
     nonisolated func nowPlayingTemplateAlbumArtistButtonTapped(_ nowPlayingTemplate: CPNowPlayingTemplate) {
         MainActor.assumeIsolated {
+            guard let controller else { return }
             let player = AudioPlayer.shared
             switch player.currentItem {
             case .audiobook(let audiobook):
@@ -93,14 +95,15 @@ final class CarPlayNowPlaying: NSObject, CPNowPlayingTemplateObserver {
     private func upNextTemplate() -> CPListTemplate {
         let player = AudioPlayer.shared
         var sections = [CPListSection]()
+        // The list is a snapshot: rows look their item up when tapped (the queue may have moved on meanwhile).
         if !player.queue.isEmpty {
-            sections.append(CPListSection(items: player.queue.enumerated().map { index, item in
-                queueRow(item) { await AudioPlayer.shared.jumpToQueueItem(at: index) }
+            sections.append(CPListSection(items: player.queue.map { item in
+                queueRow(item) { [weak self] in await self?.playQueued(item.id) }
             }, header: String(localized: "Queue", table: "System"), sectionIndexTitle: nil))
         }
         if !player.upNext.isEmpty {
-            sections.append(CPListSection(items: player.upNext.enumerated().map { index, item in
-                queueRow(item) { await AudioPlayer.shared.jumpToUpNextItem(at: index) }
+            sections.append(CPListSection(items: player.upNext.map { item in
+                queueRow(item) { [weak self] in await self?.playQueued(item.id) }
             }, header: player.upNextSource ?? String(localized: "Up Next", table: "System"), sectionIndexTitle: nil))
         }
         let template = CPListTemplate(title: String(localized: "Up Next", table: "System"), sections: CarPlayController.limited(sections))
@@ -108,10 +111,26 @@ final class CarPlayNowPlaying: NSObject, CPNowPlayingTemplateObserver {
         return template
     }
 
+    /// Jumps to a queue / Up Next item by identity; plays it directly when it left both lists.
+    private func playQueued(_ id: ItemIdentifier) async {
+        let player = AudioPlayer.shared
+        if let index = player.queue.firstIndex(where: { $0.id == id }) {
+            await player.jumpToQueueItem(at: index)
+        } else if let index = player.upNext.firstIndex(where: { $0.id == id }) {
+            await player.jumpToUpNextItem(at: index)
+        } else if !player.isCurrent(id) {
+            do {
+                try await player.play(id)
+            } catch {
+                controller?.showError(error)
+            }
+        }
+    }
+
     private func queueRow(_ item: AnyPlayableItem, action: @escaping @MainActor () async -> Void) -> CPListItem {
         let row = CPListItem(text: item.name, detailText: item.base.subtitleLine ?? item.base.authorLine, image: CarPlayRows.placeholder(for: item.id.kind), accessoryImage: nil, accessoryType: .none)
         row.playbackProgress = CGFloat(HearthData.shared.progress.progress(for: item.id)?.progress ?? 0)
-        controller.rows.loadImage(for: item.id, into: row)
+        controller?.rows.loadImage(for: item.id, into: row)
         row.handler = { [weak controller] _, completion in
             Task {
                 await action()

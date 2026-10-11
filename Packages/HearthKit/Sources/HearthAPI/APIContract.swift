@@ -180,12 +180,17 @@ public struct AuthorizeResponse: Sendable {
     public var username: String
     public var progress: [ProgressEntity]
     public var bookmarks: [Bookmark]
+    /// Library item ids (`ItemIdentifier.apiItemID`) whose progress/bookmarks are missing from `progress` and
+    /// `bookmarks` because their library couldn't be looked up (request failed). The server still has those
+    /// entries, so they must not be treated as deleted remotely.
+    public var unresolvedItemIDs: Set<String>
 
-    public init(userID: String, username: String, progress: [ProgressEntity], bookmarks: [Bookmark]) {
+    public init(userID: String, username: String, progress: [ProgressEntity], bookmarks: [Bookmark], unresolvedItemIDs: Set<String> = []) {
         self.userID = userID
         self.username = username
         self.progress = progress
         self.bookmarks = bookmarks
+        self.unresolvedItemIDs = unresolvedItemIDs
     }
 }
 
@@ -292,6 +297,8 @@ public protocol AudiobookshelfClient: Sendable {
     func startSession(_ id: ItemIdentifier, device: DeviceInfo) async throws -> PlaybackSessionInfo
     func syncSession(_ sessionID: String, currentTime: TimeInterval, duration: TimeInterval, timeListened: TimeInterval) async throws
     func closeSession(_ sessionID: String, currentTime: TimeInterval, duration: TimeInterval, timeListened: TimeInterval) async throws
+    /// Closes a session without reporting a position (the server keeps the progress it has).
+    func closeSession(_ sessionID: String) async throws
     func uploadLocalSession(_ session: LocalSessionUpload, device: DeviceInfo) async throws
     func listeningSessions(page: Int, perPage: Int) async throws -> Page<ListeningSession>
     func listeningSessions(for id: ItemIdentifier, page: Int, perPage: Int) async throws -> Page<ListeningSession>
@@ -314,6 +321,10 @@ public protocol AudiobookshelfClient: Sendable {
     func pdfRequest(for id: ItemIdentifier, ino: String) async throws -> URLRequest
     /// Headers (custom + bearer) for AVURLAsset streaming.
     func streamingHeaders() async throws -> [String: String]
+    /// Call when a request built by `coverRequest`/`audioFileRequest`/`pdfRequest` (or streamed with
+    /// `streamingHeaders`) was answered with 401: refreshes the access token unless it changed since. Afterwards
+    /// build a new request. Throws `.unauthorized` when the user has to sign in again.
+    func refreshAuthorization(rejectedRequest: URLRequest) async throws
     func webURL(for id: ItemIdentifier) -> URL
 
     // MARK: Live updates

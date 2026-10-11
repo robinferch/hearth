@@ -1,4 +1,5 @@
 #if DEBUG
+import BackgroundTasks
 import Foundation
 import HearthAPI
 import HearthData
@@ -9,6 +10,8 @@ import OSLog
 /// Skipped when the connection already exists. `-HearthDebugReset` first removes all connections (UI tests start from
 /// a clean state; combined with `-HearthDebugLogin` only the debug connection remains).
 /// `-HearthDebugReindexSpotlight` forces a full Spotlight index.
+/// `-HearthDebugSimulateSpotlightTask [expire]` launches the Spotlight `BGProcessingTask` the way the system does
+/// (handler on a background queue), optionally expiring it right after the launch.
 @MainActor
 enum DebugLogin {
     private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Hearth", category: "DebugLogin")
@@ -21,6 +24,9 @@ enum DebugLogin {
                 await HearthData.shared.bootstrap()
                 await SpotlightIndexer.shared.indexAll()
             }
+        }
+        if let index = arguments.firstIndex(of: "-HearthDebugSimulateSpotlightTask") {
+            simulateSpotlightTask(expire: arguments.count > index + 1 && arguments[index + 1] == "expire")
         }
         let resets = arguments.contains("-HearthDebugReset")
         let login = arguments.firstIndex(of: "-HearthDebugLogin").flatMap { index -> (host: URL, username: String, password: String)? in
@@ -50,6 +56,41 @@ enum DebugLogin {
             } catch {
                 logger.error("Debug login failed: \(String(describing: error), privacy: .public)")
             }
+        }
+    }
+
+    /// Device: the scheduler's private simulation hooks (the ones the debugger commands use). Simulator (no
+    /// `BGTaskScheduler`): calls the registered launch handler and the expiration handler on background queues.
+    private static func simulateSpotlightTask(expire: Bool) {
+        let identifier = SpotlightIndexer.taskIdentifier
+        DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 5) {
+            let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Hearth", category: "DebugLogin")
+            #if targetEnvironment(simulator)
+            let taskClass: NSObject.Type = BGProcessingTask.self
+            guard let task = taskClass.init() as? BGProcessingTask else { return }
+            logger.notice("Calling the launch handler of \(identifier, privacy: .public) on a background queue")
+            SpotlightIndexer.handleLaunch(task)
+            guard expire else { return }
+            nonisolated(unsafe) let expiring = task
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 0.05) {
+                logger.notice("Calling the expiration handler of \(identifier, privacy: .public) on a background queue")
+                expiring.expirationHandler?()
+            }
+            #else
+            let scheduler = BGTaskScheduler.shared
+            let launch = NSSelectorFromString("_simulateLaunchForTaskWithIdentifier:")
+            guard scheduler.responds(to: launch) else {
+                logger.error("Simulating background tasks isn't available")
+                return
+            }
+            logger.notice("Simulating the launch of \(identifier, privacy: .public)")
+            _ = scheduler.perform(launch, with: identifier)
+            guard expire else { return }
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 3) {
+                logger.notice("Simulating the expiration of \(identifier, privacy: .public)")
+                _ = BGTaskScheduler.shared.perform(NSSelectorFromString("_simulateExpirationForTaskWithIdentifier:"), with: identifier)
+            }
+            #endif
         }
     }
 }

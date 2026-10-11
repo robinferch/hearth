@@ -12,6 +12,7 @@ struct ListenNowView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.itemActionHandler) private var handler
+    @Environment(AlertCenter.self) private var alerts
 
     @State private var state: LoadState<[AnyPlayableItem]> = .loading
 
@@ -77,7 +78,10 @@ struct ListenNowView: View {
             Button {
                 Task {
                     await handler.play(item.id)
-                    dismiss()
+                    // Keep the sheet (which presents it) while a warning or error is shown.
+                    if alerts.alert == nil {
+                        dismiss()
+                    }
                 }
             } label: {
                 CompactItemRow(item: item)

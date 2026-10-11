@@ -22,6 +22,7 @@ struct NowPlayingView: View {
     @State private var isBookmarkPromptPresented = false
     @State private var bookmarkNote = ""
     @State private var bookmarkTrigger = 0
+    @State private var bookmarkLongPressed = false
     @Namespace private var coverNamespace
 
     private var player: AudioPlayer { .shared }
@@ -47,7 +48,8 @@ struct NowPlayingView: View {
         }
         .environment(\.colorScheme, .dark)
         .tint(.white)
-        .task(id: itemID) {
+        // Re-runs when playback stops: `itemID` stays the same, but the idle state needs `lastPlayed`.
+        .task(id: ItemTaskKey(id: itemID, isIdle: player.currentItem == nil)) {
             PlayerTips.configureIfNeeded()
             if let itemID {
                 if player.currentItem == nil {
@@ -96,6 +98,11 @@ struct NowPlayingView: View {
             }
         }
         #endif
+    }
+
+    private struct ItemTaskKey: Hashable {
+        var id: ItemIdentifier?
+        var isIdle: Bool
     }
 
     // MARK: Layouts
@@ -246,6 +253,11 @@ struct NowPlayingView: View {
     private var bookmarkButton: some View {
         if player.canCreateBookmark {
             Button {
+                // Releasing a long press also "taps": the quick bookmark already exists.
+                if bookmarkLongPressed {
+                    bookmarkLongPressed = false
+                    return
+                }
                 isBookmarkPromptPresented = true
             } label: {
                 Image(systemName: "bookmark")
@@ -255,12 +267,10 @@ struct NowPlayingView: View {
             }
             .buttonStyle(.glass)
             .buttonBorderShape(.circle)
-            .simultaneousGesture(
-                LongPressGesture(minimumDuration: 0.5).onEnded { _ in
-                    PlayerTips.bookmarkLongPress.invalidate(reason: .actionPerformed)
-                    createBookmark(note: nil)
-                }
-            )
+            .longPressAction(didLongPress: $bookmarkLongPressed) {
+                PlayerTips.bookmarkLongPress.invalidate(reason: .actionPerformed)
+                createBookmark(note: nil)
+            }
             .popoverTip(PlayerTips.bookmarkLongPress, arrowEdge: .bottom)
             .accessibilityLabel(String(localized: "Add Bookmark", table: "Player"))
             .accessibilityIdentifier("player.bookmark")

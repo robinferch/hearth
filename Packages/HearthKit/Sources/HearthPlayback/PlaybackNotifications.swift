@@ -11,6 +11,8 @@ public extension AudioPlayer {
     nonisolated static let sleepTimerChangedNotification = Notification.Name("HearthPlayback.sleepTimerChanged")
     /// Posted when playback started/paused/stopped.
     nonisolated static let playbackStateChangedNotification = Notification.Name("HearthPlayback.playbackStateChanged")
+    /// Posted after a seek (scrubbing, skips, chapter jumps) finished. `userInfo[itemIDKey]`.
+    nonisolated static let positionChangedNotification = Notification.Name("HearthPlayback.positionChanged")
 
     nonisolated static let itemIDKey = "itemID"
     nonisolated static let sleepTimerExpiredKey = "expired"

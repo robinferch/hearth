@@ -28,8 +28,9 @@ struct APIRequest: Sendable {
     var cacheTTL: Duration?
     /// `false` returns 3xx responses to the caller instead of following them.
     var followsRedirects = true
-    /// Whether failed attempts may be retried.
-    var retryable = true
+    /// Whether failed attempts may be retried. Defaults to `true` for GET only: a timed-out POST/PATCH/DELETE may
+    /// have been applied by the server, so mutations opt in explicitly when repeating them is harmless (`idempotent()`).
+    var retryable: Bool
     var timeout: TimeInterval = 45
 
     init(method: HTTPMethod, path: [String], query: [URLQueryItem] = [], body: Data? = nil) {
@@ -37,6 +38,7 @@ struct APIRequest: Sendable {
         self.path = path
         self.query = query
         self.body = body
+        retryable = method == .get
     }
 
     static func get(_ path: String..., query: [URLQueryItem] = []) -> APIRequest {
@@ -63,6 +65,13 @@ struct APIRequest: Sendable {
         } catch {
             throw .decoding("Encoding request body failed: \(error)")
         }
+        return copy
+    }
+
+    /// Marks a mutation as safe to repeat after a failed attempt (same outcome when applied twice).
+    func idempotent() -> APIRequest {
+        var copy = self
+        copy.retryable = true
         return copy
     }
 

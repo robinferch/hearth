@@ -137,7 +137,7 @@ extension AudioPlayer {
             }
             queueDidChange()
             do {
-                try await startPlayback(next.id, origin: nextOrigin, at: nil, resetUpNext: false)
+                try await startPlayback(next.id, origin: nextOrigin, at: nil, resetUpNext: false, chained: true)
                 return true
             } catch is CancellationError {
                 return true

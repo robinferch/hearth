@@ -24,8 +24,8 @@ extension AudioPlayer {
             lastExpiredSleepTimer = nil
         }
         if case .duration? = state {
-            // While paused the timer doesn't run.
-            sleepTimerPausedAt = isPlaying ? nil : .now
+            // While paused (or stalled) the timer doesn't run.
+            sleepTimerPausedAt = isListeningClockRunning ? nil : .now
             startSleepTimerLoop()
         } else {
             sleepTimerTask?.cancel()
@@ -98,9 +98,12 @@ extension AudioPlayer {
     }
 
     /// Play-to-extend: pressing play shortly after expiry restores & extends the timer.
-    func restoreSleepTimerOnPlayIfNeeded() {
-        guard sleepTimer == nil, AppSettings.shared.playExtendsSleepTimer, isWithinRestoreWindow, let expired = lastExpiredSleepTimer else { return }
+    /// Returns whether the timer was restored.
+    @discardableResult
+    func restoreSleepTimerOnPlayIfNeeded() -> Bool {
+        guard sleepTimer == nil, AppSettings.shared.playExtendsSleepTimer, isWithinRestoreWindow, let expired = lastExpiredSleepTimer else { return false }
         applySleepTimer(SleepTimerMath.restarted(after: expired, configuration: sleepTimerConfiguration, now: .now))
+        return true
     }
 
     /// Saved timer for the item, else for its grouping (collection > series > podcast).

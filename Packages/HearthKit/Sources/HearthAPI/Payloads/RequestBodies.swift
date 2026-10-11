@@ -134,9 +134,13 @@ struct FinishedBody: Encodable, Sendable {
     var isFinished: Bool
 }
 
+/// `{}`.
+struct EmptyBody: Encodable, Sendable {}
+
 struct BookmarkBody: Encodable, Sendable {
     var title: String
-    var time: Int
+    /// Exact server time (whole seconds for bookmarks created by Hearth).
+    var time: Double
 }
 
 struct EpisodeTypeBody: Encodable, Sendable {

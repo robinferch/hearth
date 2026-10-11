@@ -333,8 +333,10 @@ public struct SetPlaybackSpeedIntent: AudioPlaybackIntent {
 
     @MainActor
     public func perform() async throws -> some IntentResult & ProvidesDialog {
+        // The rate is saved per item; without one it would be dropped at the next start.
+        let player = try PlaybackActions.requireActive()
         let rate = Double(min(400, max(25, percent))) / 100
-        PlaybackActions.player.setPlaybackRate(rate)
+        player.setPlaybackRate(rate)
         return .result(dialog: IntentSupport.dialog(IntentSupport.text("Playback speed set to \(rate.formatted(.number.precision(.fractionLength(0...2))))×.")))
     }
 }

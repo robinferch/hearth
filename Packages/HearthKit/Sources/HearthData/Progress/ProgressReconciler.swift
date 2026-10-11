@@ -6,7 +6,7 @@ import HearthModel
 /// | Case | Action |
 /// |---|---|
 /// | local only & dirty | push |
-/// | local only & synced (or tombstone) | delete locally |
+/// | local only & synced (or tombstone) | delete locally (unless the server's entry couldn't be mapped) |
 /// | remote only | insert locally |
 /// | both, local tombstone | DELETE remote |
 /// | both, remote lastUpdate missing or older than local | push local |
@@ -37,7 +37,9 @@ enum ProgressReconciler {
     /// Tolerance when comparing playback positions.
     static let timeTolerance: TimeInterval = 1
 
-    static func plan(local: [ProgressRecord], remote: [ProgressEntity]) -> Plan {
+    /// - Parameter unresolvedItemIDs: library item ids (`apiItemID`) the server has entries for that couldn't be
+    ///   mapped to identifiers. Their local records are never deleted.
+    static func plan(local: [ProgressRecord], remote: [ProgressEntity], unresolvedItemIDs: Set<String> = []) -> Plan {
         var plan = Plan()
 
         // Collapse server duplicates.
@@ -71,7 +73,10 @@ enum ProgressReconciler {
                 case .dirty:
                     plan.push.append(record.entity)
                 case .synced, .tombstone:
-                    plan.deleteLocal.append(record.entity.itemID)
+                    // Without a mapped server entry we can't tell whether it was deleted remotely.
+                    if !unresolvedItemIDs.contains(record.entity.itemID.apiItemID) {
+                        plan.deleteLocal.append(record.entity.itemID)
+                    }
                 }
                 continue
             }

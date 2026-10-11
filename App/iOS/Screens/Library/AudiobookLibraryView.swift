@@ -31,6 +31,7 @@ struct AudiobookLibraryView: View {
     }
 
     private struct QueryKey: Hashable {
+        var library: LibraryIdentifier
         var sort: AudiobookSortOrder
         var direction: SortDirection
         var filter: LibraryItemFilter?
@@ -39,7 +40,7 @@ struct AudiobookLibraryView: View {
     }
 
     private var queryKey: QueryKey {
-        QueryKey(sort: sort.sort, direction: sort.direction, filter: fixedFilter ?? filter, collapse: settings.groupBooksInSeries && !isFiltered, ready: didLoadSettings)
+        QueryKey(library: library.id, sort: sort.sort, direction: sort.direction, filter: fixedFilter ?? filter, collapse: settings.groupBooksInSeries && !isFiltered, ready: didLoadSettings)
     }
 
     var body: some View {
@@ -75,7 +76,7 @@ struct AudiobookLibraryView: View {
         let key = queryKey
         let libraryID = library.id
         let connectionID = library.connectionID
-        await loader.reset { page, limit in
+        await loader.load(key: key) { page, limit in
             try await Client.for(connectionID).audiobooks(library: libraryID, sort: key.sort, direction: key.direction, filter: key.filter, collapseSeries: key.collapse, page: page, limit: limit)
         }
     }
@@ -137,13 +138,8 @@ struct AudiobookLibraryView: View {
         .listStyle(.plain)
     }
 
-    @ViewBuilder
     private var footer: some View {
-        if loader.isLoading {
-            PageLoadingIndicator()
-        } else if let total = loader.total {
-            CountFooter(text: String(localized: "\(total) audiobooks"))
-        }
+        PagedFooter(loader: loader) { String(localized: "\($0) audiobooks") }
     }
 
     @ViewBuilder

@@ -13,6 +13,10 @@ final class MockClient: AudiobookshelfClient {
         var libraries: [Library] = []
         var authorizeProgress: [ProgressEntity] = []
         var authorizeBookmarks: [Bookmark] = []
+        var authorizeUnresolved: Set<String> = []
+        /// Delays `authorize()` (to change local state while the request is in flight).
+        var authorizeDelay: Duration?
+        var authorizeCount = 0
         var audiobooks: [String: Audiobook] = [:]
         var seriesBooks: [String: [Audiobook]] = [:]
         var podcasts: [String: (Podcast, [Episode])] = [:]
@@ -28,6 +32,14 @@ final class MockClient: AudiobookshelfClient {
         var deletedBookmarks: [Bookmark] = []
         var uploadedSessions: [LocalSessionUpload] = []
         var closedSessions: [String] = []
+        var closedSessionsWithoutProgress: [String] = []
+        var authorizationRefreshes = 0
+        var uploadDelay: Duration?
+        var socketConnects = 0
+        var socketDisconnects = 0
+        var uploadCount = 0
+        /// Order of `authorize` / `close` calls.
+        var calls: [String] = []
         var searchedLibraries: [LibraryIdentifier] = []
     }
 
@@ -46,6 +58,13 @@ final class MockClient: AudiobookshelfClient {
         state.withLock { body($0) }
     }
 
+    /// Waits until `authorize()` was called (the request is in flight while `authorizeDelay` is set).
+    func waitForAuthorize() async {
+        while read({ $0.authorizeCount }) == 0 {
+            try? await Task.sleep(for: .milliseconds(5))
+        }
+    }
+
     private func check() throws {
         if state.withLock({ $0.failAll }) {
             throw APIError.unreachable
@@ -61,7 +80,16 @@ final class MockClient: AudiobookshelfClient {
 
     func authorize() async throws -> AuthorizeResponse {
         try check()
-        return state.withLock { AuthorizeResponse(userID: "user", username: connection.username, progress: $0.authorizeProgress, bookmarks: $0.authorizeBookmarks) }
+        // The server state is captured when the request is handled, before the (delayed) response arrives.
+        let response = state.withLock {
+            $0.authorizeCount += 1
+            $0.calls.append("authorize")
+            return AuthorizeResponse(userID: "user", username: connection.username, progress: $0.authorizeProgress, bookmarks: $0.authorizeBookmarks, unresolvedItemIDs: $0.authorizeUnresolved)
+        }
+        if let delay = state.withLock({ $0.authorizeDelay }) {
+            try await Task.sleep(for: delay)
+        }
+        return response
     }
 
     // MARK: Libraries
@@ -164,8 +192,23 @@ final class MockClient: AudiobookshelfClient {
         state.withLock { $0.closedSessions.append(sessionID) }
     }
 
+    func closeSession(_ sessionID: String) async throws {
+        try check()
+        state.withLock {
+            $0.closedSessionsWithoutProgress.append(sessionID)
+            $0.calls.append("close \(sessionID)")
+        }
+    }
+
     func uploadLocalSession(_ session: LocalSessionUpload, device: DeviceInfo) async throws {
         try check()
+        let delay = state.withLock {
+            $0.uploadCount += 1
+            return $0.uploadDelay
+        }
+        if let delay {
+            try await Task.sleep(for: delay)
+        }
         state.withLock { $0.uploadedSessions.append(session) }
     }
 
@@ -246,11 +289,21 @@ final class MockClient: AudiobookshelfClient {
     }
 
     func streamingHeaders() async throws -> [String: String] { [:] }
+
+    func refreshAuthorization(rejectedRequest: URLRequest) async throws {
+        try check()
+        state.withLock { $0.authorizationRefreshes += 1 }
+    }
     func webURL(for id: ItemIdentifier) -> URL { connection.host }
 
     // MARK: Live updates
 
     func events() -> AsyncStream<ServerEvent> { AsyncStream { $0.finish() } }
-    func connectSocket() async {}
-    func disconnectSocket() async {}
+    func connectSocket() async {
+        state.withLock { $0.socketConnects += 1 }
+    }
+
+    func disconnectSocket() async {
+        state.withLock { $0.socketDisconnects += 1 }
+    }
 }
