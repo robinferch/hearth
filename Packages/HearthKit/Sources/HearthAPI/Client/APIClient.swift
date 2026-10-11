@@ -80,7 +80,8 @@ final class APIClient: AudiobookshelfClient {
     }
 
     func authorize() async throws -> AuthorizeResponse {
-        var request = APIRequest.post("api", "authorize")
+        // Read-only despite being a POST.
+        var request = APIRequest.post("api", "authorize").idempotent()
         request.bypassesLimiter = true
         let user = try await fetch(UserResponsePayload.self, request).user
 
@@ -124,7 +125,7 @@ struct LibraryResolver: Sendable {
         for start in stride(from: 0, to: unknown.count, by: Self.batchSize) {
             let chunk = Array(unknown[start ..< min(start + Self.batchSize, unknown.count)])
             do {
-                let request = try APIRequest.post("api", "items", "batch", "get").json(BatchGetBody(libraryItemIds: chunk))
+                let request = try APIRequest.post("api", "items", "batch", "get").json(BatchGetBody(libraryItemIds: chunk)).idempotent()
                 let data = try await executor.data(for: request)
                 let payload = try JSONDecoder.api.decode(BatchItemsPayload.self, from: data)
                 register(payload.libraryItems)

@@ -58,6 +58,42 @@ extension NetworkTests {
         #expect(counter.current == 3)
     }
 
+    @Test func doesNotRetryNonIdempotentMutations() async throws {
+        let counter = Counter()
+        let harness = ClientHarness { _ in
+            counter.increment()
+            return MockResponse(error: URLError(.timedOut))
+        }
+        let library = LibraryIdentifier(connectionID: harness.connection.id, libraryID: "lib")
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        let device = DeviceInfo(deviceID: "dev", clientVersion: "1.0", model: "iPhone", osName: "iOS", osVersion: "26.0")
+
+        await #expect(throws: APIError.unreachable) {
+            try await harness.client.createCollection(name: "Mix", library: library, items: [book], playlist: false)
+        }
+        await #expect(throws: APIError.unreachable) {
+            try await harness.client.startSession(book, device: device)
+        }
+        await #expect(throws: APIError.unreachable) {
+            let upload = LocalSessionUpload(itemID: book, startTime: 0, currentTime: 10, duration: 100, timeListened: 10, startedAt: .now, updatedAt: .now)
+            try await harness.client.uploadLocalSession(upload, device: device)
+        }
+        #expect(counter.current == 3)
+    }
+
+    @Test func retriesIdempotentMutations() async throws {
+        let counter = Counter()
+        let harness = ClientHarness { _ in
+            // Every request fails twice before succeeding.
+            counter.increment() % 3 == 0 ? .json("{}") : .status(503)
+        }
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        try await harness.client.batchUpdateProgress([ProgressEntity(id: "p", itemID: book, progress: 0.5, duration: 10, currentTime: 5, startedAt: nil, lastUpdate: .now, finishedAt: nil)])
+        #expect(counter.current == 3)
+        try await harness.client.syncSession("s1", currentTime: 5, duration: 10, timeListened: 1)
+        #expect(counter.current == 6)
+    }
+
     @Test func doesNotRetryNotFound() async throws {
         let counter = Counter()
         let harness = ClientHarness { _ in

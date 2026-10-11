@@ -6,15 +6,15 @@ import HearthModel
 extension APIClient {
     func batchUpdateProgress(_ entries: [ProgressEntity]) async throws {
         guard !entries.isEmpty else { return }
-        try await perform(APIRequest.patch("api", "me", "progress", "batch", "update").json(entries.map(ProgressUpdateBody.init)))
+        try await perform(APIRequest.patch("api", "me", "progress", "batch", "update").json(entries.map(ProgressUpdateBody.init)).idempotent())
     }
 
     func deleteProgress(id: String) async throws {
-        try await perform(.delete("api", "me", "progress", id))
+        try await perform(APIRequest.delete("api", "me", "progress", id).idempotent())
     }
 
     func setFinished(_ id: ItemIdentifier, finished: Bool) async throws {
-        try await perform(APIRequest(method: .patch, path: Self.progressPath(id)).json(FinishedBody(isFinished: finished)))
+        try await perform(APIRequest(method: .patch, path: Self.progressPath(id)).json(FinishedBody(isFinished: finished)).idempotent())
     }
 
     func hideFromContinueListening(progressID: String) async throws {
