@@ -162,6 +162,7 @@ platform :ios do
   lane :metadata do
     deliver(
       api_key: app_store_connect_key,
+      app_review_information: review_information,
       app_identifier: APP_ID,
       skip_binary_upload: true,
       skip_app_version_update: false,
@@ -186,6 +187,29 @@ platform :ios do
       is_key_content_base64: !content.include?("BEGIN PRIVATE KEY"),
       in_house: false
     )
+  end
+
+  # App Review contact and demo account. They come from the environment so they never end up in the public repo:
+  #   REVIEW_FIRST_NAME, REVIEW_LAST_NAME, REVIEW_PHONE, REVIEW_EMAIL,
+  #   REVIEW_DEMO_SERVER, REVIEW_DEMO_USER, REVIEW_DEMO_PASSWORD
+  # deliver always reads the review details after uploading metadata and fails with "No data" if they don't exist yet.
+  private_lane :review_information do
+    required = %w[REVIEW_FIRST_NAME REVIEW_LAST_NAME REVIEW_PHONE REVIEW_EMAIL REVIEW_DEMO_SERVER REVIEW_DEMO_USER REVIEW_DEMO_PASSWORD]
+    missing = required.reject { |key| ENV[key].to_s.strip.length.positive? }
+    UI.user_error!("Set #{missing.join(', ')} (App Review contact and demo account, see Docs/RELEASING.md)") unless missing.empty?
+
+    # Lanes run inside ./fastlane, actions in the project root.
+    notes_path = ["metadata/review_information/notes.txt", "fastlane/metadata/review_information/notes.txt"].find { |path| File.exist?(path) }
+    notes = File.read(notes_path)
+    {
+      first_name: ENV["REVIEW_FIRST_NAME"],
+      last_name: ENV["REVIEW_LAST_NAME"],
+      phone_number: ENV["REVIEW_PHONE"],
+      email_address: ENV["REVIEW_EMAIL"],
+      demo_user: ENV["REVIEW_DEMO_USER"],
+      demo_password: ENV["REVIEW_DEMO_PASSWORD"],
+      notes: "#{notes.strip}\n\nDEMO SERVER: #{ENV['REVIEW_DEMO_SERVER']}",
+    }
   end
 
   private_lane :testflight_changelog do

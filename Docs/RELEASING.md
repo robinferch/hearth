@@ -72,3 +72,16 @@ You need a paid Apple Developer account.
   - iPad 13": 2752 × 2064.
 - **Screenshots** inside the slides come from the `AppStoreScreenshots` UI test, run against the demo library described in `Marketing/AppStore/assets/demo-library/`.
 - **Uploading** texts and screenshots: `bundle exec fastlane metadata`, with the same environment variables as `beta`.
+
+### App Review information
+
+`fastlane metadata` also sets the contact and demo account for App Review. Without them, deliver fails with "No data" on a new app. Apple's reviewers need a reachable audiobookshelf server with a demo account, so set up a small public demo server (e.g. with the demo library from `Marketing/AppStore/assets/demo-library/`) before submitting. The values come from the environment, never from the repo:
+
+```sh
+export REVIEW_FIRST_NAME=Robin REVIEW_LAST_NAME=Ferch
+export REVIEW_PHONE="+49 …" REVIEW_EMAIL=you@example.com
+export REVIEW_DEMO_SERVER=https://demo.example.com REVIEW_DEMO_USER=review REVIEW_DEMO_PASSWORD='…'
+bundle exec fastlane metadata
+```
+
+The notes for reviewers are in `fastlane/metadata/review_information/notes.txt`.

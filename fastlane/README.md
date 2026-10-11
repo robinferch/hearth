@@ -65,6 +65,16 @@ Fetch signing assets (read-only) for App Store builds
 
 Build a signed App Store archive and upload it to TestFlight
 
+### ios metadata
+
+```sh
+[bundle exec] fastlane ios metadata
+```
+
+Upload App Store metadata (fastlane/metadata) and the screenshots exported to Marketing/AppStore/export
+
+Run Marketing/AppStore/export.sh first. Nothing is submitted for review.
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

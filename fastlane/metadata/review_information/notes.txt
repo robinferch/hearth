@@ -1,0 +1,8 @@
+Hearth is a client for audiobookshelf, a self-hosted audiobook and podcast server. The app does not include or sell any content; people connect it to their own server.
+
+To review the app, use our demo server:
+1. Launch the app and tap "Add Server".
+2. Enter the server address shown at the end of these notes (DEMO SERVER) and tap "Verify".
+3. Sign in with the user name and password from the sign-in information.
+
+The demo library contains public-domain audiobooks and podcasts. Background audio is used for audiobook and podcast playback. Widgets, Siri shortcuts and the Apple Watch app use the same account.
