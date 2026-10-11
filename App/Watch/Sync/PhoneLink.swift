@@ -66,7 +66,9 @@ final class PhoneLink {
             apply(state)
             return nil
         case .context(let context):
-            if let state = context.nowPlaying, let current = self.state, current.capturedAt > state.capturedAt {
+            // Application contexts can arrive late (e.g. at launch). Never let one replace a newer live state –
+            // also not an idle (`nil`) one, which is dated by when the context was sent.
+            if let current = self.state, current.capturedAt > (context.nowPlaying?.capturedAt ?? context.sentAt) {
                 // A live message already delivered something newer.
             } else {
                 apply(context.nowPlaying)
