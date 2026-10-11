@@ -87,6 +87,7 @@ targets:
           - $(PRODUCT_BUNDLE_IDENTIFIER).sync
           - $(PRODUCT_BUNDLE_IDENTIFIER).spotlight
         NSSupportsLiveActivities: true
+        CoreSpotlightContinuation: true
         NSUserActivityTypes:
           - $(PRODUCT_BUNDLE_IDENTIFIER).item
         CFBundleURLTypes:
@@ -124,6 +125,9 @@ targets:
       - path: App/Resources/Widgets
         buildPhase: resources
         optional: true
+      # App Intents strings (HearthIntents) are resolved in the host bundle's `System` table.
+      - path: App/Resources/iOS/System.xcstrings
+        buildPhase: resources
     dependencies:
       - package: HearthKit
         product: HearthModel
