@@ -42,7 +42,7 @@ class HearthUITestCase: XCTestCase {
         waitForMainUI()
         selectLibrary("Audiobooks")
         selectTab("Library")
-        waitFor(itemCell(title), timeout: 30, "\(title) not in library").tap()
+        tapVisible(itemCell(title))
         waitFor(app.buttons["playButton"], timeout: 20, "Detail of \(title) did not load")
     }
 
@@ -103,8 +103,9 @@ class HearthUITestCase: XCTestCase {
         app.buttons.matching(NSPredicate(format: "label ENDSWITH %@ OR label BEGINSWITH %@", ": \(title)", "\(title),")).firstMatch
     }
 
+    /// A button whose label contains `text`, excluding the mini player (it shows the last played item).
     func button(containing text: String) -> XCUIElement {
-        app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", text)).firstMatch
+        app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@ AND identifier != %@", text, "miniPlayer.title")).firstMatch
     }
 
     @discardableResult
@@ -163,6 +164,18 @@ class HearthUITestCase: XCTestCase {
         let tab = app.tabBars.buttons[title]
         waitFor(tab, timeout: 20, "Tab \(title) missing", file: file, line: line)
         tab.tap()
+    }
+
+    /// Scrolls until `element` is clear of the tab bar / mini player at the bottom, then taps it.
+    func tapVisible(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
+        waitFor(element, timeout: 30, file: file, line: line)
+        let limit = app.windows.firstMatch.frame.maxY - 220
+        var swipes = 0
+        while element.frame.midY > limit, swipes < 6 {
+            app.swipeUp(velocity: .slow)
+            swipes += 1
+        }
+        element.tap()
     }
 
     /// Scrolls the frontmost scroll view until `element` is hittable.

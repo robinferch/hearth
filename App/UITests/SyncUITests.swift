@@ -65,7 +65,7 @@ final class SyncUITests: HearthUITestCase {
         selectLibrary("Audiobooks")
         // Series books are grouped in the library grid; open the book from its series.
         selectTab("Series")
-        waitFor(button(containing: "Sherlock Holmes"), timeout: 30).tap()
+        waitFor(itemCell("Sherlock Holmes"), timeout: 30).tap()
         waitFor(button(containing: "Sherlock Holmes 2"), timeout: 20).tap()
         let play = waitFor(app.buttons["playButton"], timeout: 20)
         XCTAssertEqual(play.label, "Resume", "Server progress not shown on launch")

@@ -8,8 +8,7 @@ final class BrowseUITests: HearthUITestCase {
         selectLibrary("Audiobooks")
         selectTab("Library")
 
-        let frankenstein = waitFor(itemCell("Frankenstein"), timeout: 30, "Frankenstein not in library grid")
-        frankenstein.tap()
+        tapVisible(itemCell("Frankenstein"))
 
         waitFor(app.buttons["playButton"], timeout: 20, "Detail did not load")
         let chapters = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Chapters")).firstMatch
@@ -27,13 +26,16 @@ final class BrowseUITests: HearthUITestCase {
         selectLibrary("Audiobooks")
         selectTab("Series")
 
-        let series = waitFor(button(containing: "Sherlock Holmes"), timeout: 30, "Series missing")
+        let series = waitFor(itemCell("Sherlock Holmes"), timeout: 30, "Series missing")
         series.tap()
 
+        waitFor(button(containing: "Sherlock Holmes 1"), timeout: 20, "Series books did not load")
         for number in 1...3 {
             let book = button(containing: "Sherlock Holmes \(number)")
-            scrollTo(book)
-            XCTAssertTrue(book.waitForExistence(timeout: 15), "Book \(number) missing from series")
+            if !book.exists {
+                scrollTo(book)
+            }
+            XCTAssertTrue(book.waitForExistence(timeout: 10), "Book \(number) missing from series")
         }
     }
 

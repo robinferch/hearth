@@ -41,7 +41,7 @@ final class LocalizationScreenshotTests: HearthUITestCase {
         capture("authors")
 
         tab(1).tap()
-        itemCell("Frankenstein").tap()
+        tapVisible(itemCell("Frankenstein"))
         waitFor(app.buttons["playButton"], timeout: 20)
         capture("detail")
         app.swipeUp()
