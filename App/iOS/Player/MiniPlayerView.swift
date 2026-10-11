@@ -45,6 +45,7 @@ struct MiniPlayerView: View {
         }
         .modifier(MatchedSourceModifier(namespace: namespace))
         .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("miniPlayer")
         .accessibilityAction(named: String(localized: "Open Player", table: "Player")) {
             presentation.expand()
         }
@@ -95,6 +96,7 @@ struct MiniPlayerView: View {
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(.isButton)
         .accessibilityHint(String(localized: "Opens the player", table: "Player"))
+        .accessibilityIdentifier("miniPlayer.title")
     }
 
     private func audiobookSecondLine(_ book: Audiobook) -> String? {
@@ -151,6 +153,7 @@ struct MiniPlayerView: View {
                 .buttonStyle(.plain)
                 .sensoryFeedback(.impact(weight: .light), trigger: player.isPlaying)
                 .accessibilityLabel(player.isPlaying ? String(localized: "Pause", table: "Player") : String(localized: "Play", table: "Player"))
+                .accessibilityIdentifier("miniPlayer.playPause")
                 if showsExtendedControls {
                     MiniSkipButton(forward: true)
                     SleepTimerButton(font: .body)

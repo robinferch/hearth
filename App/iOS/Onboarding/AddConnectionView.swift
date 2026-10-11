@@ -60,6 +60,7 @@ struct AddConnectionView: View {
                         Button("Continue", systemImage: "arrow.right") {
                             Task { await model.verify() }
                         }
+                        .accessibilityIdentifier("addServer.continue")
                         .disabled(model.host == nil || model.phase == .verifying)
                     }
                 }
@@ -117,6 +118,7 @@ struct AddConnectionView: View {
                 .submitLabel(.continue)
                 .focused($focusedField, equals: .host)
                 .disabled(isReauthorizing)
+                .accessibilityIdentifier("addServer.host")
                 .onSubmit { Task { await model.verify() } }
                 .onChange(of: model.hostInput) { model.hostChanged() }
 
@@ -144,6 +146,7 @@ struct AddConnectionView: View {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(.green)
                 }
+                .accessibilityIdentifier("addServer.verified")
                 if status.isOutdated {
                     Label {
                         Text("This server is outdated. Update to audiobookshelf \(ServerStatus.minimumRecommendedVersion) or later for secure sign-in tokens.")
@@ -271,11 +274,13 @@ struct AddConnectionView: View {
                         .submitLabel(.next)
                         .focused($focusedField, equals: .username)
                         .onSubmit { focusedField = .password }
+                        .accessibilityIdentifier("addServer.username")
                     SecureField("Password", text: $model.password)
                         .textContentType(.password)
                         .submitLabel(.go)
                         .focused($focusedField, equals: .password)
                         .onSubmit { Task { await signIn() } }
+                        .accessibilityIdentifier("addServer.password")
                 } header: {
                     Text("Account")
                 } footer: {
@@ -289,6 +294,7 @@ struct AddConnectionView: View {
                     }
                     .buttonStyle(.glassProminent)
                     .disabled(!model.canSignIn)
+                    .accessibilityIdentifier("addServer.signIn")
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
                 }

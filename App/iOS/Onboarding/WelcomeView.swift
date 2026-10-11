@@ -54,6 +54,7 @@ struct WelcomeView: View {
                 .buttonStyle(.glassProminent)
                 .controlSize(.large)
                 .keyboardShortcut(.defaultAction)
+                .accessibilityIdentifier("welcome.addServer")
 
                 HStack(spacing: 20) {
                     Link("License", destination: AppLinks.license)

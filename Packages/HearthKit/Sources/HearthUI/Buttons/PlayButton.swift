@@ -50,6 +50,7 @@ public struct PlayButton: View {
         .accessibilityLabel(playing ? loc("Pause") : title)
         .accessibilityValue(detail ?? "")
         .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier(style == .inline ? "playButton.inline" : "playButton")
     }
 
     // MARK: Pill
