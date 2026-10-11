@@ -154,6 +154,24 @@ struct PlayPauseButton: View {
     }
 }
 
+extension View {
+    /// Adds a long-press action to a `Button`. The button still receives the tap when the finger lifts after a
+    /// long press, so its action must return early while `didLongPress` is set. The flag is cleared when the next
+    /// touch begins – a long press whose release doesn't reach the button can't swallow a later tap.
+    func longPressAction(minimumDuration: Double = 0.5, didLongPress: Binding<Bool>, perform action: @escaping () -> Void) -> some View {
+        simultaneousGesture(
+            LongPressGesture(minimumDuration: minimumDuration)
+                .onChanged { _ in
+                    didLongPress.wrappedValue = false
+                }
+                .onEnded { _ in
+                    didLongPress.wrappedValue = true
+                    action()
+                }
+        )
+    }
+}
+
 /// Skip button: taps are combined (`registerSkipTap`), long-press jumps to the chapter start / next chapter.
 struct SkipButton: View {
     let forward: Bool
@@ -185,20 +203,17 @@ struct SkipButton: View {
                 .symbolEffect(.bounce.byLayer, value: tapTrigger)
         }
         .buttonStyle(.plain)
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5).onEnded { _ in
-                longPressed = true
-                chapterTrigger += 1
-                PlayerTips.skipLongPress.invalidate(reason: .actionPerformed)
-                Task {
-                    if forward {
-                        await player.nextChapter()
-                    } else {
-                        await player.previousChapter()
-                    }
+        .longPressAction(didLongPress: $longPressed) {
+            chapterTrigger += 1
+            PlayerTips.skipLongPress.invalidate(reason: .actionPerformed)
+            Task {
+                if forward {
+                    await player.nextChapter()
+                } else {
+                    await player.previousChapter()
                 }
             }
-        )
+        }
         .overlay(alignment: .top) {
             if let total = player.pendingSkipTotal, (total > 0) == forward {
                 Text(verbatim: (total > 0 ? "+" : "−") + HearthFormat.clock(abs(total)))

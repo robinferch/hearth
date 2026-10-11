@@ -27,28 +27,13 @@ struct RootView: View {
     var body: some View {
         content
             .animation(.smooth, value: phase)
-            .sheet(item: Bindable(navigator).sheet) { sheet in
-                sheetContent(sheet)
-                    .hearthSceneEnvironment(navigator: navigator, alerts: alerts, player: player, handler: handler)
-            }
+            .sceneSheets(navigator: navigator, alerts: alerts, player: player, handler: handler)
             .sheet(isPresented: reauthorizationBinding) {
                 if let id = connections.connectionNeedingReauthorization, let connection = connections.connection(id) {
                     ReauthorizationSheet(connection: connection)
                         .hearthSceneEnvironment(navigator: navigator, alerts: alerts, player: player, handler: handler)
                 }
             }
-            .alert(alerts.alert?.title ?? "", isPresented: alertBinding, presenting: alerts.alert) { alert in
-                ForEach(alert.actions) { action in
-                    Button(action.title, role: action.role.buttonRole) {
-                        Task { await action.perform() }
-                    }
-                }
-            } message: { alert in
-                if let message = alert.message {
-                    Text(message)
-                }
-            }
-            .modifier(BookmarkPrompt(isPresented: Bindable(navigator).isBookmarkPromptPresented, alerts: alerts))
             .sensoryFeedback(.success, trigger: alerts.successTrigger)
             .sensoryFeedback(.error, trigger: alerts.errorTrigger)
             .hearthSceneEnvironment(navigator: navigator, alerts: alerts, player: player, handler: handler)
@@ -121,31 +106,6 @@ struct RootView: View {
         }
     }
 
-    @ViewBuilder
-    private func sheetContent(_ sheet: AppSheet) -> some View {
-        switch sheet {
-        case .settings:
-            SettingsView()
-                .presentationSizing(.page)
-        case .listenNow:
-            NavigationStack {
-                ListenNowView()
-                    .hearthNavigationDestinations()
-            }
-            .navigationTransition(.zoom(sourceID: ListenNowView.transitionID, in: listenNowNamespace))
-        case .addConnection:
-            AddConnectionView()
-        case .addTo(let id):
-            AddToSheet(itemID: id)
-        case .customizeTabs(let libraryID):
-            if let library = connections.library(libraryID) {
-                TabCustomizationEditor(library: library)
-            }
-        case .pinnedTabs:
-            PinnedTabsEditor()
-        }
-    }
-
     // MARK: Actions
 
     private var handler: ItemActionHandler {
@@ -179,13 +139,6 @@ struct RootView: View {
             set: { if !$0 { connections.connectionNeedingReauthorization = nil } }
         )
     }
-
-    private var alertBinding: Binding<Bool> {
-        Binding(
-            get: { alerts.alert != nil },
-            set: { if !$0 { alerts.alert = nil } }
-        )
-    }
 }
 
 private extension WarningAlert.Action.Role {
@@ -201,9 +154,57 @@ private extension WarningAlert.Action.Role {
 // MARK: - Scene environment
 
 extension View {
-    /// Tint, color scheme and the scene's observable coordinators. Applied to the root, sheets and item windows.
+    /// Tint, color scheme and the scene's observable coordinators, plus the scene's alerts (when this is the
+    /// topmost presentation). Applied to the root, sheets and item windows.
     func hearthSceneEnvironment(navigator: Navigator, alerts: AlertCenter, player: PlayerPresentation, handler: ItemActionHandler) -> some View {
         modifier(SceneEnvironmentModifier(navigator: navigator, alerts: alerts, player: player, handler: handler))
+    }
+
+    /// Presents the scene's alerts and the bookmark prompt from a full-screen cover (e.g. the player), which
+    /// hides the views below it. Reads the coordinators from the environment.
+    func sceneAlertHost() -> some View {
+        modifier(EnvironmentAlertHost())
+    }
+
+    /// Presents `Navigator.sheet` (main window and item windows).
+    func sceneSheets(navigator: Navigator, alerts: AlertCenter, player: PlayerPresentation, handler: ItemActionHandler) -> some View {
+        sheet(item: Bindable(navigator).sheet) { sheet in
+            SceneSheetContent(sheet: sheet)
+                .hearthSceneEnvironment(navigator: navigator, alerts: alerts, player: player, handler: handler)
+        }
+    }
+}
+
+/// Content of the scene-level sheets.
+private struct SceneSheetContent: View {
+    let sheet: AppSheet
+
+    @Environment(\.listenNowNamespace) private var listenNowNamespace
+
+    private var connections: ConnectionStore { HearthData.shared.connections }
+
+    var body: some View {
+        switch sheet {
+        case .settings:
+            SettingsView()
+                .presentationSizing(.page)
+        case .listenNow:
+            NavigationStack {
+                ListenNowView()
+                    .hearthNavigationDestinations()
+            }
+            .modifier(ZoomTransition(sourceID: ListenNowView.transitionID, namespace: listenNowNamespace))
+        case .addConnection:
+            AddConnectionView()
+        case .addTo(let id):
+            AddToSheet(itemID: id)
+        case .customizeTabs(let libraryID):
+            if let library = connections.library(libraryID) {
+                TabCustomizationEditor(library: library)
+            }
+        case .pinnedTabs:
+            PinnedTabsEditor()
+        }
     }
 }
 
@@ -216,6 +217,7 @@ private struct SceneEnvironmentModifier: ViewModifier {
     func body(content: Content) -> some View {
         let settings = AppSettings.shared
         content
+            .modifier(SceneAlertHost(alerts: alerts, navigator: navigator))
             .tint(settings.tintColor.color)
             .environment(\.hearthAccent, settings.tintColor.accent)
             .preferredColorScheme(settings.colorScheme.colorScheme)
@@ -223,6 +225,57 @@ private struct SceneEnvironmentModifier: ViewModifier {
             .environment(alerts)
             .environment(player)
             .environment(\.itemActionHandler, handler)
+    }
+}
+
+/// The scene's warning alerts and bookmark prompt. Every presentation level (root, sheet, player cover) has a
+/// host; only the topmost presents, so alerts triggered while a sheet or the player is up are visible.
+private struct SceneAlertHost: ViewModifier {
+    let alerts: AlertCenter
+    let navigator: Navigator
+
+    @State private var id = UUID()
+
+    func body(content: Content) -> some View {
+        content
+            .alert(alerts.alert?.title ?? "", isPresented: alertBinding, presenting: alerts.alert) { alert in
+                ForEach(alert.actions) { action in
+                    Button(action.title, role: action.role.buttonRole) {
+                        Task { await action.perform() }
+                    }
+                }
+            } message: { alert in
+                if let message = alert.message {
+                    Text(message)
+                }
+            }
+            .modifier(BookmarkPrompt(isPresented: bookmarkBinding, alerts: alerts))
+            .onAppear { alerts.registerHost(id) }
+            .onDisappear { alerts.unregisterHost(id) }
+    }
+
+    private var alertBinding: Binding<Bool> {
+        Binding(
+            get: { alerts.alert != nil && alerts.isTopmostHost(id) },
+            set: { if !$0, alerts.isTopmostHost(id) { alerts.alert = nil } }
+        )
+    }
+
+    private var bookmarkBinding: Binding<Bool> {
+        Binding(
+            get: { navigator.isBookmarkPromptPresented && alerts.isTopmostHost(id) },
+            set: { if !$0, alerts.isTopmostHost(id) { navigator.isBookmarkPromptPresented = false } }
+        )
+    }
+}
+
+/// `SceneAlertHost` with the coordinators from the environment.
+private struct EnvironmentAlertHost: ViewModifier {
+    @Environment(AlertCenter.self) private var alerts
+    @Environment(Navigator.self) private var navigator
+
+    func body(content: Content) -> some View {
+        content.modifier(SceneAlertHost(alerts: alerts, navigator: navigator))
     }
 }
 

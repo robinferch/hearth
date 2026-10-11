@@ -141,6 +141,13 @@ final class WatchPagedLoader<Element: Identifiable & Sendable> {
         await load(replacing: false)
     }
 
+    /// Retries the page that failed (the "Retry" row at the end of the list).
+    func retryNextPage() async {
+        guard !isLoading else { return }
+        error = nil
+        await load(replacing: items.isEmpty)
+    }
+
     private func load(replacing: Bool) async {
         guard !isLoading else { return }
         isLoading = true
@@ -148,16 +155,34 @@ final class WatchPagedLoader<Element: Identifiable & Sendable> {
         let page = replacing ? 0 : nextPage
         do {
             let result = try await fetch(page, pageSize)
-            items = replacing ? result.items : items + result.items
+            if replacing {
+                items = Self.unique(result.items, excluding: [])
+            } else {
+                // Pages shift when items change on the server meanwhile; drop repeated ids.
+                items += Self.unique(result.items, excluding: Set(items.map(\.id)))
+            }
             total = result.items.isEmpty ? items.count : result.total
             nextPage = page + 1
             error = nil
             hasLoaded = true
         } catch {
-            if !(error is CancellationError) {
+            // A cancelled request (the view went away) is retried on the next appearance.
+            if !Self.isCancellation(error) {
                 self.error = error
             }
         }
+    }
+
+    private static func unique(_ elements: [Element], excluding existing: Set<Element.ID>) -> [Element] {
+        var seen = existing
+        return elements.filter { seen.insert($0.id).inserted }
+    }
+
+    private static func isCancellation(_ error: any Error) -> Bool {
+        if error is CancellationError || (error as? APIError) == .cancelled {
+            return true
+        }
+        return (error as? URLError)?.code == .cancelled
     }
 }
 
@@ -181,12 +206,20 @@ struct PagedList<Element: Identifiable & Sendable, Row: View>: View {
                 List {
                     ForEach(loader.items) { element in
                         row(element)
-                            .task { await loader.loadMore(after: element) }
+                            // Not `.task`: scrolling the row away would cancel the page request.
+                            .onAppear { Task { await loader.loadMore(after: element) } }
                     }
                     if loader.isLoading {
                         ProgressView()
                             .frame(maxWidth: .infinity)
                             .listRowBackground(Color.clear)
+                    } else if loader.error != nil {
+                        Button {
+                            Task { await loader.retryNextPage() }
+                        } label: {
+                            Label("Retry", systemImage: "arrow.clockwise")
+                                .frame(maxWidth: .infinity)
+                        }
                     }
                 }
             }

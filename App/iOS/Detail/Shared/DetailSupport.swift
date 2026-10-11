@@ -20,8 +20,8 @@ enum DetailPlayback {
                 presentation.itemStarted()
             }
         } catch PlaybackError.downloadInProgress {
-            // The shared flow offers "Cancel download & play".
-            await AppItemActions.play(id, alerts: alerts, player: presentation)
+            // The shared flow offers "Cancel download & play" (same origin and start time).
+            await AppItemActions.play(id, origin: origin, at: time, alerts: alerts, player: presentation)
         } catch {
             alerts.fail(error, title: String(localized: "Playback failed", table: "Detail"))
         }
