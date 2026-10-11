@@ -12,6 +12,7 @@ struct HearthApp: App {
     var body: some Scene {
         WindowGroup(id: "main") {
             RootView()
+                .systemIntegrationHandlers()
         }
         .commands {
             HearthCommands()

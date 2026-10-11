@@ -10,6 +10,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         AppLifecycle.shared.launch()
+        SystemIntegration.shared.start()
         return true
     }
 
@@ -63,6 +64,7 @@ final class AppLifecycle {
         guard !didLaunch else { return }
         didLaunch = true
         AudioPlayer.shared.setup()
+        WatchBridge.shared.activate()
         Task {
             await HearthData.shared.bootstrap()
             AppEvents.shared.bootstrapFinished = true

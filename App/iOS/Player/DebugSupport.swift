@@ -1,18 +1,12 @@
 #if DEBUG
-import HearthAPI
 import HearthData
 import HearthModel
 import HearthPlayback
-import OSLog
 import SwiftUI
 
-/// DEBUG-only launch helpers for UI checks without driving the onboarding UI.
-///
-/// `-HearthDebugLogin "http://localhost:13378 root hearth"` signs in and adds the connection at launch (skipped when
-/// it already exists).
+/// DEBUG-only launch helpers for detail / player UI checks (sign-in is handled by `DebugLogin`).
 @MainActor
 enum DebugSupport {
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Hearth", category: "DebugSupport")
     private static var didRun = false
 
     /// `-HearthDebugPlayerPanel chapters|queue` opens the full player with the panel showing.
@@ -23,7 +17,6 @@ enum DebugSupport {
     static func performLaunchActions() async {
         guard !didRun else { return }
         didRun = true
-        await login()
         await performNavigation()
     }
 
@@ -49,33 +42,6 @@ enum DebugSupport {
                 try? await Task.sleep(for: .seconds(4))
                 await AudioPlayer.shared.addToQueue(queue)
             }
-        }
-    }
-
-    private static func login() async {
-        guard let value = UserDefaults.standard.string(forKey: "HearthDebugLogin") else { return }
-        let parts = value.split(separator: " ").map(String.init)
-        guard parts.count == 3, let host = Connection.normalizedHost(parts[0]) else {
-            logger.error("Invalid -HearthDebugLogin value")
-            return
-        }
-        let connections = HearthData.shared.connections
-        while !connections.isLoaded {
-            try? await Task.sleep(for: .milliseconds(100))
-        }
-        let id = Connection.makeID(host: host, username: parts[1])
-        guard connections.connection(id) == nil else {
-            logger.info("Debug connection \(id, privacy: .public) already exists")
-            return
-        }
-        do {
-            let status = try await ServerAuthenticator.status(host: host, headers: [])
-            let result = try await ServerAuthenticator.login(host: host, headers: [], username: parts[1], password: parts[2])
-            let connection = Connection(host: host, username: result.username, userID: result.userID, headers: [], serverVersion: status.serverVersion)
-            await connections.add(connection, tokens: result.tokens)
-            logger.info("Added debug connection \(connection.id, privacy: .public)")
-        } catch {
-            logger.error("Debug login failed: \(String(describing: error), privacy: .public)")
         }
     }
 }
