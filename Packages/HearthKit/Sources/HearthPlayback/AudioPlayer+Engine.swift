@@ -82,12 +82,27 @@ extension AudioPlayer {
         let player = ensurePlayer()
         player.removeAllItems()
         loadedTracks = []
+        itemStatusObservations = []
         guard timeline.tracks.indices.contains(position) else { return }
         for index in position..<timeline.tracks.count {
             let item = makePlayerItem(for: timeline.tracks[index])
             guard player.canInsert(item, after: nil) else { continue }
             player.insert(item, after: nil)
             loadedTracks.append(LoadedTrack(item: item, position: index))
+            itemStatusObservations.append(observeFailure(of: item))
+        }
+    }
+
+    /// `AVQueuePlayer` drops an item that fails to load (e.g. HTTP 401) from its queue without a failure
+    /// notification and before it becomes `currentItem`: watch every item's status.
+    private func observeFailure(of item: AVPlayerItem) -> NSKeyValueObservation {
+        item.observe(\.status, options: [.new]) { [weak self] item, _ in
+            guard item.status == .failed else { return }
+            let identifier = ObjectIdentifier(item)
+            let message = item.error?.localizedDescription
+            Task { @MainActor in
+                self?.handleTrackFailure(identifier, message: message)
+            }
         }
     }
 
@@ -98,6 +113,7 @@ extension AudioPlayer {
         player.volume = 1
         isFading = false
         loadedTracks = []
+        itemStatusObservations = []
     }
 
     /// Releases the player and all its observers (it is recreated on demand, e.g. after a media services reset).
@@ -414,23 +430,60 @@ extension AudioPlayer {
         handleTrackFailure(ObjectIdentifier(item), message: item.error?.localizedDescription)
     }
 
+    /// A player item failed. Streams rejected with 401/403 (expired token) refresh the authorization and continue;
+    /// other failures rebuild once a minute, then give up. A failure is reported twice (notification + status),
+    /// so failures during a recovery are ignored.
     func handleTrackFailure(_ identifier: ObjectIdentifier, message: String?) {
-        guard loadedTracks.contains(where: { ObjectIdentifier($0.item) == identifier }) else { return }
+        guard let failed = loadedTracks.first(where: { ObjectIdentifier($0.item) == identifier }), !isRecoveringStream else { return }
         let reason = message ?? String(localized: "The audio stream failed.")
-        logger.error("Player item failed: \(reason, privacy: .public)")
-        if lastStreamRecovery.map({ Date.now.timeIntervalSince($0) > 60 }) ?? true {
-            lastStreamRecovery = .now
-            // The failure pauses the player (possibly reported before this notification): remember whether it played.
-            let wasPlaying = InterruptionLogic.wasPlaying(isPlaying: isPlaying, intendsToPlay: intendsToPlay, systemPausedAt: systemPausedAt, now: .now)
-            // Busy right away so the pause isn't taken for a system pause before the rebuild starts.
-            busyCount += 1
-            Task {
-                await rebuildPlayerItems(refreshHeaders: true, resume: wasPlaying)
-                busyCount -= 1
-            }
-        } else {
+        let errorEvent = failed.item.errorLog()?.events.last
+        logger.error("Player item failed: \(reason, privacy: .public) (\(errorEvent?.errorStatusCode ?? 0), \(errorEvent?.errorComment ?? "-", privacy: .public))")
+
+        let now = Date.now
+        let isAuthFailure = !isPlayingLocalFiles && StreamingAuth.isAuthorizationFailure(
+            statusCode: errorEvent?.errorStatusCode,
+            error: failed.item.error,
+            texts: [message, errorEvent?.errorComment]
+        )
+        let mayRecoverAuth = isAuthFailure && (lastAuthRecovery.map { now.timeIntervalSince($0) > StreamingAuth.recoveryInterval } ?? true)
+        let mayRecover = lastStreamRecovery.map { now.timeIntervalSince($0) > 60 } ?? true
+        guard mayRecoverAuth || mayRecover else {
             lastError = .startFailed(reason)
             pause()
+            return
+        }
+        if mayRecoverAuth {
+            lastAuthRecovery = now
+        } else {
+            lastStreamRecovery = now
+        }
+        // The failure pauses the player (possibly reported before this notification): remember whether it played.
+        let wasPlaying = InterruptionLogic.wasPlaying(isPlaying: isPlaying, intendsToPlay: intendsToPlay, systemPausedAt: systemPausedAt, now: now)
+        // Busy right away so the pause isn't taken for a system pause before the rebuild starts.
+        busyCount += 1
+        isRecoveringStream = true
+        Task {
+            if mayRecoverAuth {
+                await refreshStreamingAuthorization()
+            }
+            await rebuildPlayerItems(refreshHeaders: true, resume: wasPlaying)
+            isRecoveringStream = false
+            busyCount -= 1
+        }
+    }
+
+    /// Forces a token refresh for the rejected streaming headers (no-op when the token changed meanwhile).
+    func refreshStreamingAuthorization() async {
+        guard let item = currentItem, let url = timeline.tracks.first?.url else { return }
+        logger.notice("Stream authorization was rejected; refreshing the access token")
+        var rejected = URLRequest(url: url)
+        rejected.allHTTPHeaderFields = streamingHeaders
+        do {
+            let client = try HearthData.shared.connections.client(for: item.id.connectionID)
+            try await client.refreshAuthorization(rejectedRequest: rejected)
+        } catch {
+            // The rebuild still fetches the current headers; another rejection ends in the regular failure path.
+            logger.error("Refreshing the stream authorization failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 }

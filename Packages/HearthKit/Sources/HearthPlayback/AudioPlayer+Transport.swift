@@ -37,9 +37,12 @@ extension AudioPlayer {
         updateBuffering()
 
         let needsItems = player?.items().isEmpty ?? true
+        // After a long pause the stream token may have expired: the assets would be rejected, so rebuild them with
+        // fresh headers first.
+        let needsFreshHeaders = !isPlayingLocalFiles && StreamingAuth.needsRefresh(headers: streamingHeaders, now: .now)
         Task {
-            if needsItems {
-                // Items were dropped (failure / media services reset): reload at the current position.
+            if needsItems || needsFreshHeaders {
+                // Items were dropped (failure / media services reset) or need new headers: reload at the current position.
                 await rebuildPlayerItems(refreshHeaders: !isPlayingLocalFiles)
             }
             if rewind > 0 {

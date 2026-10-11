@@ -117,6 +117,8 @@ public final class AudioPlayer {
     @ObservationIgnored var runID = UUID()
     @ObservationIgnored var timeline = PlaybackTimeline.empty
     @ObservationIgnored var loadedTracks: [LoadedTrack] = []
+    /// Status observations of the loaded player items (failure detection).
+    @ObservationIgnored var itemStatusObservations: [NSKeyValueObservation] = []
     @ObservationIgnored var streamingHeaders: [String: String] = [:]
     @ObservationIgnored var reporter: SessionReporter?
     @ObservationIgnored var busyCount = 0 {
@@ -137,6 +139,9 @@ public final class AudioPlayer {
     @ObservationIgnored var stallTask: Task<Void, Never>?
     /// Last automatic stream recovery (rebuild with fresh headers); one retry per minute.
     @ObservationIgnored var lastStreamRecovery: Date?
+    /// Last recovery from a rejected stream token (401/403): token refresh + rebuild.
+    @ObservationIgnored var lastAuthRecovery: Date?
+    @ObservationIgnored var isRecoveringStream = false
     @ObservationIgnored var upNextGenerationDisabled = false
     /// Run whose finish flow is in progress (guards against double handling).
     @ObservationIgnored var finishingRunID: UUID?

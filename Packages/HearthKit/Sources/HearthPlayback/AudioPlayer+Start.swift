@@ -91,10 +91,17 @@ extension AudioPlayer {
 
         self.timeline = timeline
         streamingHeaders = media.headers
+        #if DEBUG
+        if !media.isLocal, ProcessInfo.processInfo.arguments.contains("-HearthDebugRejectStreamToken") {
+            // Simulates an expired stream token: the first load is rejected with 401 and must recover.
+            streamingHeaders["Authorization"] = "Bearer invalid"
+        }
+        #endif
         isPlayingLocalFiles = media.isLocal
         duration = total
         self.chapters = chapters
         lastStreamRecovery = nil
+        lastAuthRecovery = nil
         data.downloads.lock(id)
         reporter = SessionReporter(itemID: id, sessionID: media.session?.id, client: media.client, startTime: start, duration: total)
 
