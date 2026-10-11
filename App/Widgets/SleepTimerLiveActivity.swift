@@ -15,13 +15,13 @@ struct SleepTimerLiveActivity: Widget {
             SleepTimerLockScreenView(attributes: context.attributes, state: context.state)
                 .tint(context.attributes.tint.color)
                 .activityBackgroundTint(nil)
-                .widgetURL(itemURL(context.attributes))
+                .widgetURL(itemURL(context.attributes, state: context.state))
         } dynamicIsland: { context in
             let state = context.state
             let tint = context.attributes.tint.color
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    SleepTimerCover(file: context.attributes.coverFile)
+                    SleepTimerCover(file: context.attributes.coverFile(state))
                         .frame(width: 52, height: 52)
                         .padding(.leading, 4)
                 }
@@ -34,7 +34,7 @@ struct SleepTimerLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.center) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(context.attributes.title)
+                        Text(context.attributes.title(state))
                             .font(.subheadline.weight(.semibold))
                             .lineLimit(1)
                         SleepTimerStatusText(state: state)
@@ -60,14 +60,14 @@ struct SleepTimerLiveActivity: Widget {
                 Image(systemName: "moon.zzz.fill")
                     .foregroundStyle(tint)
             }
-            .widgetURL(itemURL(context.attributes))
+            .widgetURL(itemURL(context.attributes, state: context.state))
             .keylineTint(tint)
         }
         .supplementalActivityFamilies([.small, .medium])
     }
 
-    private func itemURL(_ attributes: SleepTimerActivityAttributes) -> URL? {
-        ItemIdentifier(attributes.itemID).map { WidgetData.url(host: "item", id: $0) }
+    private func itemURL(_ attributes: SleepTimerActivityAttributes, state: SleepTimerState) -> URL? {
+        ItemIdentifier(attributes.itemID(state)).map { WidgetData.url(host: "item", id: $0) }
     }
 }
 
@@ -90,7 +90,7 @@ struct SleepTimerLockScreenView: View {
         } else {
             VStack(spacing: 10) {
                 HStack(spacing: 12) {
-                    SleepTimerCover(file: attributes.coverFile)
+                    SleepTimerCover(file: attributes.coverFile(state))
                         .frame(width: 48, height: 48)
                     VStack(alignment: .leading, spacing: 3) {
                         Label {
@@ -100,7 +100,7 @@ struct SleepTimerLockScreenView: View {
                         }
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.tint)
-                        Text(attributes.title)
+                        Text(attributes.title(state))
                             .font(.subheadline.weight(.semibold))
                             .lineLimit(1)
                     }

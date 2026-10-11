@@ -25,6 +25,14 @@ public enum SleepTimerActions {
     /// Remembers the last duration timer so the control can re-enable it.
     static let lastMinutesKey = "intents.lastSleepTimerMinutes"
 
+    /// Set by the app: brings the sleep timer Live Activity up to date right away. Timer intents call it from
+    /// `perform`, the only moment the app may start a Live Activity while it is in the background.
+    public static var liveActivityUpdater: (@MainActor () async -> Void)?
+
+    static func updateLiveActivity() async {
+        await liveActivityUpdater?()
+    }
+
     /// Called by the app whenever the timer changes (to remember the last used duration).
     public static func remember(_ state: SleepTimerState?) {
         guard case .duration(_, let original)? = state, original > 0 else { return }
@@ -80,6 +88,7 @@ public struct SetSleepTimerIntent: AudioPlaybackIntent {
         }
         let preset = SleepTimerActions.preset(amount: amount, unit: unit)
         player.setSleepTimer(preset)
+        await SleepTimerActions.updateLiveActivity()
         let text = switch preset {
         case .minutes(let minutes): IntentSupport.text("Sleep timer set for \(Duration.seconds(minutes * 60).formatted(.units(allowed: [.hours, .minutes], width: .wide))).")
         case .chapters(1): IntentSupport.text("Playback pauses at the end of the chapter.")
@@ -103,6 +112,7 @@ public struct ExtendSleepTimerIntent: AudioPlaybackIntent {
         if wasExpired, player.sleepTimer != nil, !player.isPlaying {
             player.resume()
         }
+        await SleepTimerActions.updateLiveActivity()
         return .result()
     }
 }
@@ -116,6 +126,7 @@ public struct CancelSleepTimerIntent: AudioPlaybackIntent {
     @MainActor
     public func perform() async throws -> some IntentResult {
         PlaybackActions.player.cancelSleepTimer()
+        await SleepTimerActions.updateLiveActivity()
         return .result()
     }
 }
@@ -137,6 +148,7 @@ public struct AdjustSleepTimerIntent: AudioPlaybackIntent {
     @MainActor
     public func perform() async throws -> some IntentResult {
         PlaybackActions.player.adjustSleepTimer(by: delta)
+        await SleepTimerActions.updateLiveActivity()
         return .result()
     }
 }
@@ -160,11 +172,15 @@ public struct SetSleepTimerEnabledIntent: SetValueIntent, AudioPlaybackIntent {
         } else {
             player.cancelSleepTimer()
         }
+        await SleepTimerActions.updateLiveActivity()
         return .result()
     }
 }
 
 #if os(iOS)
+// Live Activity intents run in the app and may start the sleep timer activity from the background.
+extension SetSleepTimerIntent: LiveActivityIntent {}
+extension SetSleepTimerEnabledIntent: LiveActivityIntent {}
 extension ExtendSleepTimerIntent: LiveActivityIntent {}
 extension CancelSleepTimerIntent: LiveActivityIntent {}
 extension AdjustSleepTimerIntent: LiveActivityIntent {}
