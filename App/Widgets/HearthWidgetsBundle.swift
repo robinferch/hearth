@@ -1,23 +1,27 @@
+import AppIntents
+import HearthIntents
 import SwiftUI
 import WidgetKit
 
 @main
 struct HearthWidgetsBundle: WidgetBundle {
     var body: some Widget {
-        PlaceholderWidget()
+        PlayWidget()
+        ListenNowWidget()
+        ListenedTodayWidget()
+        SleepTimerLiveActivity()
+        PlayPauseControl()
+        SkipBackwardControl()
+        SkipForwardControl()
+        SleepTimerControl()
+        SearchControl()
     }
 }
 
-struct PlaceholderWidget: Widget {
-    var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "placeholder", provider: Provider()) { _ in Text("Hearth") }
+/// Includes the shared HearthIntents types (entities, intents used by buttons and controls) in this extension's
+/// App Intents metadata.
+struct HearthWidgetsIntentsPackage: AppIntentsPackage {
+    static var includedPackages: [any AppIntentsPackage.Type] {
+        [HearthIntentsPackage.self]
     }
-
-    struct Provider: TimelineProvider {
-        func placeholder(in context: Context) -> Entry { Entry(date: .now) }
-        func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) { completion(Entry(date: .now)) }
-        func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) { completion(Timeline(entries: [Entry(date: .now)], policy: .never)) }
-    }
-
-    struct Entry: TimelineEntry { let date: Date }
 }

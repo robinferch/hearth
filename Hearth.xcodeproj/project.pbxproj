@@ -20,20 +20,23 @@
 		47BF835C9A4F4D9E0AB546BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 59FFE3ACA488E3855A0E8581 /* Assets.xcassets */; };
 		4C6EEEAB681136676D0F96AF /* HearthAPI in Frameworks */ = {isa = PBXBuildFile; productRef = 0645C9897C1591FF8D2E90E6 /* HearthAPI */; };
 		576484495970B2532C40FABA /* HearthWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 8377C12B539FBB513F3B517A /* HearthWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5ACE01F686458D3C8F2C8653 /* System.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 22177CB59CA97879076DC968 /* System.xcstrings */; };
 		5D12973A2FDEA3975DC61C2F /* HearthPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = D941176FA99C2FDD33B12644 /* HearthPlayback */; };
 		6917028B924E10993A3F8552 /* HearthPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = A75B2CFD5CC37C9B4D80F143 /* HearthPlayback */; };
 		6C8774FF55442F7C87B03ABA /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0CC3DD11F9E73531316A08E2 /* HearthUI */; };
 		6F9331C40E1F342B3ADFB46B /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0E034A64BF18762E0AF8E8B8 /* HearthUI */; };
 		7390DB5E47CA7E7057A34860 /* HearthPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = EB4A4ECE7282259E0EE32660 /* HearthPlayback */; };
 		7ADB10AAC7360FA941268B93 /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 9B0CA85FF8D51EFF510317C6 /* .gitkeep */; };
+		7ECD73B335B5F93E384EBE47 /* AppShortcuts.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 3DBE4D0080BB04CDE440C950 /* AppShortcuts.xcstrings */; };
+		83FB53702A16B98D4A75169B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 1532A1B870C2C412BAB9FB2B /* Localizable.xcstrings */; };
 		957E2ECF18CFB4E7D52F0E20 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800055FB67C9CFB7975A6C82 /* WidgetKit.framework */; };
 		A6B5FF1764F47237536FB880 /* HearthUI in Frameworks */ = {isa = PBXBuildFile; productRef = D092E9BD1C2DBB96E5F1559F /* HearthUI */; };
+		B49D31E669AF3B2A87148708 /* System.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 22177CB59CA97879076DC968 /* System.xcstrings */; };
 		B80F05E04CBC30172A5B8CE0 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BCD6EB16AD03C9166C2C711 /* SwiftUI.framework */; };
 		BBD8E34BF0DE6211B0CF77AB /* HearthModel in Frameworks */ = {isa = PBXBuildFile; productRef = 4AEB82FCF993E78B84059D3C /* HearthModel */; };
 		BC0733B346350EEA545E4BDA /* HearthData in Frameworks */ = {isa = PBXBuildFile; productRef = 39E1BB5823EF4CE0A49AB908 /* HearthData */; };
 		BC56727628CA036AED5D97B9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BCD6EB16AD03C9166C2C711 /* SwiftUI.framework */; };
 		C257F15B66E8DCB6EDE7916B /* HearthWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = B349A8BC691ED2A295408123 /* HearthWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		C45CECA183E5271ED6EB786C /* .gitkeep in Resources */ = {isa = PBXBuildFile; fileRef = 6E3C22BDF9540004102FF894 /* .gitkeep */; };
 		CCA43209A0F5333C6F4B8B2F /* HearthData in Frameworks */ = {isa = PBXBuildFile; productRef = 2738E88DD81E5297F9EDC116 /* HearthData */; };
 		CF3CAAC0351C1A442C555008 /* HearthData in Frameworks */ = {isa = PBXBuildFile; productRef = 1A85B5B753BE8DAA6FAD4ECD /* HearthData */; };
 		D7DC20C5DEABD0F0FF737DD2 /* HearthIntents in Frameworks */ = {isa = PBXBuildFile; productRef = C17F1303A756F86C4B1AFD18 /* HearthIntents */; };
@@ -103,10 +106,12 @@
 
 /* Begin PBXFileReference section */
 		0E640205FB678F9D0CE79BDA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1532A1B870C2C412BAB9FB2B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		22177CB59CA97879076DC968 /* System.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = System.xcstrings; sourceTree = "<group>"; };
 		306A17FFAC21B997C600DA70 /* HearthWatchWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = HearthWatchWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		3DBE4D0080BB04CDE440C950 /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = AppShortcuts.xcstrings; sourceTree = "<group>"; };
 		59FFE3ACA488E3855A0E8581 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6BCD6EB16AD03C9166C2C711 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
-		6E3C22BDF9540004102FF894 /* .gitkeep */ = {isa = PBXFileReference; path = .gitkeep; sourceTree = "<group>"; };
 		800055FB67C9CFB7975A6C82 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		8377C12B539FBB513F3B517A /* HearthWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = HearthWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		847217928D1BE8394CF58D61 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
@@ -251,7 +256,7 @@
 		3038AAD084866C8B4A2264A2 /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
-				6E3C22BDF9540004102FF894 /* .gitkeep */,
+				1532A1B870C2C412BAB9FB2B /* Localizable.xcstrings */,
 			);
 			name = Widgets;
 			path = App/Resources/Widgets;
@@ -287,9 +292,11 @@
 		CD5B489935078F39E6016771 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
+				3DBE4D0080BB04CDE440C950 /* AppShortcuts.xcstrings */,
 				59FFE3ACA488E3855A0E8581 /* Assets.xcassets */,
 				847217928D1BE8394CF58D61 /* InfoPlist.xcstrings */,
 				E2798D2B22C647F62FFF2B0E /* Localizable.xcstrings */,
+				22177CB59CA97879076DC968 /* System.xcstrings */,
 			);
 			name = iOS;
 			path = App/Resources/iOS;
@@ -478,9 +485,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7ECD73B335B5F93E384EBE47 /* AppShortcuts.xcstrings in Resources */,
 				47BF835C9A4F4D9E0AB546BD /* Assets.xcassets in Resources */,
 				3875E2790DCE5A85D535BF97 /* InfoPlist.xcstrings in Resources */,
 				0FF660591C637EB206B9654D /* Localizable.xcstrings in Resources */,
+				5ACE01F686458D3C8F2C8653 /* System.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -488,7 +497,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C45CECA183E5271ED6EB786C /* .gitkeep in Resources */,
+				83FB53702A16B98D4A75169B /* Localizable.xcstrings in Resources */,
+				B49D31E669AF3B2A87148708 /* System.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

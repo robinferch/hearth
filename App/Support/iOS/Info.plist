@@ -37,6 +37,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CoreSpotlightContinuation</key>
+	<true/>
 	<key>HearthAppGroup</key>
 	<string>$(HEARTH_APP_GROUP)</string>
 	<key>HearthKeychainGroup</key>

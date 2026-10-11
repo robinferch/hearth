@@ -1,0 +1,193 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Bookmark this in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setze ein Lesezeichen in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Continue listening in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiterhören in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Create a bookmark in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erstelle ein Lesezeichen in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Extend the sleep timer in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlängere den Schlaftimer in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Listen to ${audiobook} in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höre ${audiobook} in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Pause ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${applicationName} pausieren"
+          }
+        }
+      }
+    },
+    "Play ${audiobook} in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spiele ${audiobook} in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Play ${podcast} in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spiele ${podcast} in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Play a podcast in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spiele einen Podcast in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Play an audiobook in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spiele ein Hörbuch in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Resume ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${applicationName} fortsetzen"
+          }
+        }
+      }
+    },
+    "Rewind ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${applicationName} zurückspulen"
+          }
+        }
+      }
+    },
+    "Search in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suche in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Set a sleep timer in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stelle einen Schlaftimer in ${applicationName}"
+          }
+        }
+      }
+    },
+    "Skip back in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Springe in ${applicationName} zurück"
+          }
+        }
+      }
+    },
+    "Start a sleep timer in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starte einen Schlaftimer in ${applicationName}"
+          }
+        }
+      }
+    },
+    "What's playing in ${applicationName}" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was läuft in ${applicationName}"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
