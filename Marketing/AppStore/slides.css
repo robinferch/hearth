@@ -1,0 +1,450 @@
+@font-face {
+  font-family: "Literata";
+  src: url("assets/fonts/Literata-normal.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Literata";
+  src: url("assets/fonts/Literata-italic.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: italic;
+}
+
+:root {
+  --night: #1a1424;
+  --soot: #2a2033;
+  --ember: #f28a2e;
+  --flare: #ffb560;
+  --ash: #f1e9e2;
+  --smoke: #b8adbf;
+  --ui: -apple-system, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --serif: "Literata", Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: #0f0b15;
+  color: var(--ash);
+  font-family: var(--ui);
+}
+
+/* Gallery (preview) */
+
+#gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px 32px;
+  padding: 48px;
+}
+
+.preview {
+  margin: 0;
+}
+
+.preview figcaption {
+  margin-top: 12px;
+  color: var(--smoke);
+  font-size: 14px;
+}
+
+.preview a {
+  color: inherit;
+}
+
+.frame-holder {
+  overflow: hidden;
+  border-radius: 18px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.frame-holder > .artboard {
+  transform-origin: 0 0;
+}
+
+.languages {
+  display: flex;
+  gap: 24px;
+  padding: 40px 48px 0;
+  font-size: 17px;
+  color: var(--smoke);
+}
+
+.languages a {
+  color: var(--ash);
+}
+
+/* Single slide for export */
+
+body.export {
+  background: var(--night);
+}
+
+body.export #gallery {
+  display: block;
+  padding: 0;
+}
+
+/* Artboard */
+
+.artboard {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 60% at var(--glow-x, 50%) 108%, rgba(242, 138, 46, 0.55), rgba(242, 138, 46, 0.18) 38%, transparent 70%),
+    radial-gradient(70% 34% at var(--glow-x, 50%) 100%, rgba(255, 181, 96, 0.5), transparent 70%),
+    linear-gradient(180deg, #120d1a 0%, var(--night) 46%, #2b1a22 100%);
+}
+
+/* Fine grain so the gradients read as warm light rather than flat fills. */
+.artboard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+}
+
+.artboard.iphone {
+  width: 1320px;
+  height: 2868px;
+}
+
+.artboard.ipad {
+  width: 2752px;
+  height: 2064px;
+}
+
+.copy {
+  position: absolute;
+  z-index: 5;
+}
+
+.iphone .copy {
+  left: 104px;
+  top: 196px;
+  width: 1112px;
+}
+
+.ipad .copy {
+  left: 150px;
+  top: 190px;
+  width: 1000px;
+}
+
+.copy h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 560;
+  font-variation-settings: "opsz" 72;
+  font-size: 128px;
+  line-height: 1.02;
+  letter-spacing: -0.022em;
+  color: var(--ash);
+  text-wrap: balance;
+}
+
+.copy p {
+  margin: 40px 0 0;
+  max-width: 1060px;
+  font-size: 56px;
+  line-height: 1.28;
+  color: var(--smoke);
+  text-wrap: pretty;
+}
+
+.ipad .copy h1 {
+  font-size: 132px;
+}
+
+.ipad .copy p {
+  font-size: 60px;
+}
+
+/* Everything placed on the artboard */
+
+.layer {
+  position: absolute;
+}
+
+/* iPhone frame */
+
+.phone {
+  width: var(--w);
+  padding: calc(var(--w) * 0.0062);
+  border-radius: calc(var(--w) * 0.152);
+  background: linear-gradient(150deg, #6c6672 0%, #2a2630 24%, #19161d 52%, #4a4450 82%, #24212a 100%);
+  box-shadow:
+    0 calc(var(--w) * 0.06) calc(var(--w) * 0.12) rgba(6, 3, 10, 0.6),
+    0 0 calc(var(--w) * 0.2) rgba(242, 138, 46, 0.14);
+}
+
+.phone .bezel {
+  position: relative;
+  padding: calc(var(--w) * 0.021);
+  border-radius: calc(var(--w) * 0.146);
+  background: #050406;
+}
+
+.phone img.screen {
+  display: block;
+  width: 100%;
+  border-radius: calc(var(--w) * 0.126);
+}
+
+.phone .island {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--w) * 0.044);
+  width: calc(var(--w) * 0.29);
+  height: calc(var(--w) * 0.082);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #000;
+}
+
+/* iPad frame (landscape) */
+
+.tablet {
+  width: var(--w);
+  padding: calc(var(--w) * 0.0035);
+  border-radius: calc(var(--w) * 0.05);
+  background: linear-gradient(150deg, #8b8790 0%, #3a3640 30%, #26232b 60%, #6a6570 100%);
+  box-shadow:
+    0 calc(var(--w) * 0.03) calc(var(--w) * 0.07) rgba(6, 3, 10, 0.6),
+    0 0 calc(var(--w) * 0.12) rgba(242, 138, 46, 0.12);
+}
+
+.tablet .bezel {
+  padding: calc(var(--w) * 0.016);
+  border-radius: calc(var(--w) * 0.047);
+  background: #050406;
+}
+
+.tablet img.screen {
+  display: block;
+  width: 100%;
+  border-radius: calc(var(--w) * 0.032);
+}
+
+/* Apple Watch */
+
+.watch {
+  width: var(--w);
+  position: relative;
+}
+
+.watch .case {
+  position: relative;
+  padding: calc(var(--w) * 0.075) calc(var(--w) * 0.07);
+  border-radius: calc(var(--w) * 0.31);
+  background: linear-gradient(160deg, #75707b 0%, #2b2730 30%, #141117 60%, #4d4853 100%);
+  box-shadow:
+    0 calc(var(--w) * 0.08) calc(var(--w) * 0.16) rgba(6, 3, 10, 0.65),
+    inset 0 0 0 calc(var(--w) * 0.006) rgba(255, 255, 255, 0.08);
+}
+
+.watch .glass {
+  padding: calc(var(--w) * 0.035);
+  border-radius: calc(var(--w) * 0.25);
+  background: #000;
+}
+
+.watch img.screen {
+  display: block;
+  width: 100%;
+  border-radius: calc(var(--w) * 0.2);
+}
+
+.watch .crown {
+  position: absolute;
+  right: calc(var(--w) * -0.045);
+  top: 27%;
+  width: calc(var(--w) * 0.07);
+  height: calc(var(--w) * 0.2);
+  border-radius: calc(var(--w) * 0.03);
+  background: linear-gradient(90deg, #2a262e, #8a8590 60%, #3c3842);
+}
+
+.watch .button {
+  position: absolute;
+  right: calc(var(--w) * -0.03);
+  top: 55%;
+  width: calc(var(--w) * 0.04);
+  height: calc(var(--w) * 0.2);
+  border-radius: calc(var(--w) * 0.02);
+  background: linear-gradient(90deg, #2a262e, #6e6973);
+}
+
+/* A cropped fragment of a real screenshot, floating above the device */
+
+.crop {
+  border-radius: var(--r, 44px);
+  background-repeat: no-repeat;
+  box-shadow:
+    0 40px 90px rgba(6, 3, 10, 0.55),
+    0 0 0 1.5px rgba(255, 255, 255, 0.07);
+}
+
+/* Native-looking mocks built in HTML (Live Activity, widgets, controls) */
+
+.live-activity {
+  width: 1120px;
+  padding: 44px 52px;
+  border-radius: 64px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  background: rgba(16, 13, 20, 0.92);
+  backdrop-filter: blur(40px);
+  box-shadow: 0 40px 90px rgba(6, 3, 10, 0.55), 0 0 0 1.5px rgba(255, 255, 255, 0.07);
+  font-family: var(--ui);
+}
+
+.live-activity .cover {
+  width: 132px;
+  height: 132px;
+  border-radius: 26px;
+  object-fit: cover;
+}
+
+.live-activity .meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.live-activity .meta strong {
+  display: block;
+  font-size: 40px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.live-activity .meta span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 34px;
+  color: #a39caa;
+}
+
+.live-activity .countdown {
+  font-size: 96px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--flare);
+}
+
+.live-activity .round {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.widget {
+  border-radius: 70px;
+  background: #fff;
+  color: #1c1820;
+  box-shadow: 0 40px 90px rgba(6, 3, 10, 0.55);
+  font-family: var(--ui);
+}
+
+.widget.dark {
+  background: #1d1922;
+  color: #fff;
+}
+
+.widget.small {
+  width: 470px;
+  height: 470px;
+  padding: 46px;
+}
+
+.widget.medium {
+  width: 1000px;
+  height: 470px;
+  padding: 46px;
+}
+
+.gauge {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.gauge svg {
+  display: block;
+}
+
+.gauge .value {
+  position: absolute;
+  text-align: center;
+  line-height: 1.05;
+}
+
+.control {
+  width: 230px;
+  height: 230px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(30px);
+  box-shadow: 0 30px 70px rgba(6, 3, 10, 0.45), 0 0 0 1.5px rgba(255, 255, 255, 0.08);
+}
+
+.control.on {
+  background: var(--ember);
+}
+
+.bubble {
+  padding: 40px 56px;
+  border-radius: 64px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #1c1820;
+  font-size: 46px;
+  font-weight: 500;
+  box-shadow: 0 40px 90px rgba(6, 3, 10, 0.5);
+}
+
+.cover-tile {
+  border-radius: 28px;
+  object-fit: cover;
+  box-shadow: 0 30px 70px rgba(6, 3, 10, 0.55);
+}
+
+.app-icon {
+  width: var(--w);
+  height: var(--w);
+  border-radius: calc(var(--w) * 0.225);
+  display: grid;
+  place-items: center;
+  background: linear-gradient(160deg, #ffae45 0%, #f7840a 45%, #e2560f 100%);
+  box-shadow:
+    0 calc(var(--w) * 0.1) calc(var(--w) * 0.24) rgba(226, 86, 15, 0.45),
+    0 calc(var(--w) * 0.04) calc(var(--w) * 0.08) rgba(6, 3, 10, 0.5),
+    inset 0 calc(var(--w) * 0.012) 0 rgba(255, 255, 255, 0.35);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .preview a:focus-visible .frame-holder {
+    outline: 3px solid var(--ember);
+    outline-offset: 4px;
+  }
+}

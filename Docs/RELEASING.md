@@ -11,6 +11,7 @@ The pipeline uses [fastlane](https://fastlane.tools):
 | `fastlane bootstrap` | **One-time, local**: registers bundle IDs, capabilities, the app group and the App Store Connect app, and creates signing certificates/profiles with `match` |
 | `fastlane certificates` | Installs the signing assets read-only (used by CI) |
 | `fastlane beta` | Builds, signs and uploads to TestFlight |
+| `fastlane metadata` | Uploads the App Store texts (`fastlane/metadata/<locale>`) and the screenshots rendered by `Marketing/AppStore/export.sh` (not submitted for review) |
 
 ## One-time setup
 
@@ -61,3 +62,13 @@ You need a paid Apple Developer account.
 ## Versioning
 
 `MARKETING_VERSION` lives in `Configuration/Base.xcconfig`; bump it for a new release. CI sets `CURRENT_PROJECT_VERSION` automatically.
+
+## App Store page
+
+- **Texts** (name, subtitle, description, keywords, promotional text, URLs) are in `fastlane/metadata/en-US` and `fastlane/metadata/de-DE`.
+- **Slides** are an HTML page. Open `Marketing/AppStore/index.html` to preview them, with a language switch for English and German.
+- **Exporting** with `Marketing/AppStore/export.sh` renders the PNGs to `Marketing/AppStore/export/<locale>/`, using headless Chrome:
+  - iPhone 6.9": 1320 × 2868;
+  - iPad 13": 2752 × 2064.
+- **Screenshots** inside the slides come from the `AppStoreScreenshots` UI test, run against the demo library described in `Marketing/AppStore/assets/demo-library/`.
+- **Uploading** texts and screenshots: `bundle exec fastlane metadata`, with the same environment variables as `beta`.

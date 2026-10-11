@@ -1,0 +1,55 @@
+Hearth ist ein nativer Player für audiobookshelf, den selbst gehosteten Server für Hörbücher und Podcasts. Verbinde deinen Server und hab deine ganze Bibliothek auf iPhone, iPad, Apple Watch und im Auto dabei, mit synchronem Hörfortschritt auf allen Geräten.
+
+Hearth enthält keine Hörbücher oder Podcasts. Du brauchst Zugang zu einem audiobookshelf-Server, deinem eigenen oder einem, den jemand mit dir teilt.
+
+DEINE BIBLIOTHEK, SO WIE DU SIE ORDNEST
+• Stöbere in Hörbüchern, Podcasts, Reihen, Autoren, Sprechern, Sammlungen und Playlists
+• „Weiterhören“ und persönliche Regale von deinem Server
+• Durchsuche alle Bibliotheken auf einmal, auch über mehrere Server
+• Filtern und sortieren nach Fortschritt, Genre, Tag, Erscheinungsjahr oder Länge
+• PDFs lesen, die einem Buch beiliegen
+
+EIN PLAYER FÜR LANGE HÖRSTUNDEN
+• Kapitel mit Fortschritt pro Kapitel, in der App und auf dem Sperrbildschirm
+• Lesezeichen mit Notizen, synchron mit deinem Server
+• Wiedergabetempo von 0,25× bis 4× mit Voreinstellungen, gespeichert pro Buch oder Reihe
+• Intelligentes Zurückspulen nach einer Pause, damit du den Faden nicht verlierst
+• Einstellbare Sprungintervalle und Kapitelsprünge
+• Warteschlange und „Als Nächstes“: Der nächste Band einer Reihe oder die nächste Folge startet von selbst
+
+EINSCHLAFEN, OHNE DIE STELLE ZU VERLIEREN
+• Schlaftimer nach Minuten oder am Ende des Kapitels
+• Sanftes Ausblenden, Schütteln zum Weiterhören
+• Countdown auf dem Sperrbildschirm und in der Dynamic Island
+
+ÜBERALL HÖREN, AUCH OFFLINE
+• Bücher und Folgen im Hintergrund laden
+• Automatische Downloads für Reihen und Podcasts
+• Offline gehörte Zeit und Fortschritt landen wieder auf dem Server, sobald du online bist
+• Fortschritt von deinen anderen Geräten kommt live an
+
+APPLE WATCH, CARPLAY, WIDGETS UND SIRI
+• App für die Apple Watch: am Handgelenk mit Bluetooth-Kopfhörern hören, auf die Watch laden oder das iPhone steuern
+• CarPlay mit „Jetzt hören“, deinen Bibliotheken und der Kapitelliste
+• Widgets für Home-Bildschirm, Sperrbildschirm und StandBy
+• Steuerelemente für das Kontrollzentrum
+• Siri und Kurzbefehle: fortsetzen, pausieren, springen, Schlaftimer stellen, ein Buch oder einen Podcast abspielen
+• Spotlight-Suche und Handoff zwischen deinen Geräten
+
+GEMACHT FÜRS IPAD
+• Seitenleiste mit jedem Server und jeder Bibliothek
+• Player in zwei Spalten mit Kapiteln und Warteschlange nebeneinander
+• Mehrere Fenster und Tastaturkurzbefehle
+
+HÖRSTATISTIK
+• Tägliches Hörziel und Serie
+• Diagramme für die letzte Woche und den letzten Monat sowie deine meistgehörten Titel
+
+DEIN SERVER, DEINE DATEN
+• Anmeldung mit Benutzername und Passwort oder Single Sign-on (OpenID)
+• Mehrere Server und Konten gleichzeitig
+• Eigene HTTP-Header, selbst signierte Zertifikate und Client-Zertifikate
+• Keine Analyse, kein Tracking, kein Konto bei uns
+• Open Source auf GitHub
+
+Hearth ist ein unabhängiges Projekt und steht in keiner Verbindung zu audiobookshelf. Empfohlen wird audiobookshelf 2.26 oder neuer.

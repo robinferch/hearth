@@ -1,0 +1,55 @@
+Hearth is a native player for audiobookshelf, the self-hosted server for audiobooks and podcasts. Connect your server and your whole library is on your iPhone, iPad, Apple Watch and in your car, with your progress in sync everywhere.
+
+Hearth doesn't include any audiobooks or podcasts. You need access to an audiobookshelf server, either your own or one someone shares with you.
+
+YOUR LIBRARY, THE WAY YOU ORGANIZE IT
+• Browse audiobooks, podcasts, series, authors, narrators, collections and playlists
+• Continue Listening and personalized shelves from your server
+• Search all your libraries at once, across several servers
+• Filter and sort by progress, genre, tag, release date or length
+• Read PDFs attached to a book
+
+A PLAYER MADE FOR LONG LISTENING
+• Chapters with progress per chapter, on screen and on the Lock Screen
+• Bookmarks with notes, synced with your server
+• Playback speed from 0.25× to 4× with presets, saved per book or series
+• Smart rewind after a pause, so you never lose the thread
+• Configurable skip intervals and chapter jumps
+• A queue plus Up Next: the next book in a series or the next episode starts by itself
+
+FALL ASLEEP WITHOUT LOSING YOUR PLACE
+• Sleep timer by minutes or at the end of the chapter
+• Gentle fade-out, shake to keep listening
+• Countdown on the Lock Screen and in the Dynamic Island
+
+LISTEN ANYWHERE, EVEN OFFLINE
+• Download books and episodes in the background
+• Automatic downloads for series and podcasts
+• Offline progress and listening time sync back when you're online again
+• Live progress updates from your other devices
+
+APPLE WATCH, CARPLAY, WIDGETS AND SIRI
+• Apple Watch app: listen on your wrist with Bluetooth headphones, download to the watch, or control your iPhone
+• CarPlay with Listen Now, your libraries and the chapter list
+• Widgets for the Home Screen, Lock Screen and StandBy
+• Controls for Control Center
+• Siri and Shortcuts: resume, pause, skip, set a sleep timer, play a book or podcast
+• Spotlight search and Handoff between your devices
+
+DESIGNED FOR IPAD
+• Sidebar with every server and library
+• Two-column player with chapters and queue side by side
+• Multiple windows and keyboard shortcuts
+
+LISTENING STATS
+• Daily listening goal and streak
+• Charts for the last week and month, and your most-listened titles
+
+YOUR SERVER, YOUR DATA
+• Sign in with username and password or single sign-on (OpenID)
+• Several servers and accounts at the same time
+• Custom HTTP headers, self-signed certificates and client certificates
+• No analytics, no tracking, no account with us
+• Open source on GitHub
+
+Hearth is an independent project and is not affiliated with audiobookshelf. audiobookshelf 2.26 or later is recommended.

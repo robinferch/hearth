@@ -6,6 +6,8 @@ on:
     paths-ignore:
       - "**.md"
       - "Docs/**"
+      - "Marketing/**"
+      - "fastlane/metadata/**"
       - ".github/ISSUE_TEMPLATE/**"
   workflow_dispatch:
     inputs:
