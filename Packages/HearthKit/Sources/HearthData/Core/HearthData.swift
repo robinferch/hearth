@@ -81,7 +81,7 @@ public final class HearthData {
 
     /// Called once at launch by the app: loads connections, opens the database, starts sync, uploads pending sessions.
     ///
-    /// Order: connections → libraries → close stale sessions → upload local sessions → progress & bookmark sync →
+    /// Order: connections → libraries → upload local sessions → progress & bookmark sync → close stale sessions →
     /// listened today → Listen Now snapshot → resume downloads → automatic downloads.
     public func bootstrap() async {
         if let bootstrapTask {
@@ -99,9 +99,9 @@ public final class HearthData {
         }
         connections.startMonitoring()
         await connections.reloadLibraries()
-        await listening.closeStaleSessions()
         await listening.uploadPendingSessions()
         await progress.sync()
+        await listening.closeStaleSessions()
         await listening.refresh()
         await updateListenNowSnapshot()
         await downloads.resumePendingDownloads()
@@ -121,9 +121,9 @@ public final class HearthData {
             await updateListenNowSnapshot()
             return
         }
-        await listening.closeStaleSessions()
         await listening.uploadPendingSessions()
         await progress.sync()
+        await listening.closeStaleSessions()
         await listening.refresh()
         await updateListenNowSnapshot()
         await downloads.resumePendingDownloads()

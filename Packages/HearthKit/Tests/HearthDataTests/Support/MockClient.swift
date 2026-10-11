@@ -32,6 +32,9 @@ final class MockClient: AudiobookshelfClient {
         var deletedBookmarks: [Bookmark] = []
         var uploadedSessions: [LocalSessionUpload] = []
         var closedSessions: [String] = []
+        var closedSessionsWithoutProgress: [String] = []
+        /// Order of `authorize` / `close` calls.
+        var calls: [String] = []
         var searchedLibraries: [LibraryIdentifier] = []
     }
 
@@ -75,6 +78,7 @@ final class MockClient: AudiobookshelfClient {
         // The server state is captured when the request is handled, before the (delayed) response arrives.
         let response = state.withLock {
             $0.authorizeCount += 1
+            $0.calls.append("authorize")
             return AuthorizeResponse(userID: "user", username: connection.username, progress: $0.authorizeProgress, bookmarks: $0.authorizeBookmarks, unresolvedItemIDs: $0.authorizeUnresolved)
         }
         if let delay = state.withLock({ $0.authorizeDelay }) {
@@ -181,6 +185,14 @@ final class MockClient: AudiobookshelfClient {
     func closeSession(_ sessionID: String, currentTime: TimeInterval, duration: TimeInterval, timeListened: TimeInterval) async throws {
         try check()
         state.withLock { $0.closedSessions.append(sessionID) }
+    }
+
+    func closeSession(_ sessionID: String) async throws {
+        try check()
+        state.withLock {
+            $0.closedSessionsWithoutProgress.append(sessionID)
+            $0.calls.append("close \(sessionID)")
+        }
     }
 
     func uploadLocalSession(_ session: LocalSessionUpload, device: DeviceInfo) async throws {

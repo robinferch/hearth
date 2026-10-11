@@ -297,6 +297,8 @@ public protocol AudiobookshelfClient: Sendable {
     func startSession(_ id: ItemIdentifier, device: DeviceInfo) async throws -> PlaybackSessionInfo
     func syncSession(_ sessionID: String, currentTime: TimeInterval, duration: TimeInterval, timeListened: TimeInterval) async throws
     func closeSession(_ sessionID: String, currentTime: TimeInterval, duration: TimeInterval, timeListened: TimeInterval) async throws
+    /// Closes a session without reporting a position (the server keeps the progress it has).
+    func closeSession(_ sessionID: String) async throws
     func uploadLocalSession(_ session: LocalSessionUpload, device: DeviceInfo) async throws
     func listeningSessions(page: Int, perPage: Int) async throws -> Page<ListeningSession>
     func listeningSessions(for id: ItemIdentifier, page: Int, perPage: Int) async throws -> Page<ListeningSession>

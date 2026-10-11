@@ -267,6 +267,6 @@ struct ConnectionAndListeningTests {
         let next = ListeningTracker(environment: first.environment)
         next.hearth = first
         await next.closeStaleSessions()
-        #expect(client.read { $0.closedSessions } == ["old"])
+        #expect(client.read { $0.closedSessionsWithoutProgress } == ["old"])
     }
 }

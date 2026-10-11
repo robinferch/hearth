@@ -28,6 +28,11 @@ extension APIClient {
         try await perform(APIRequest.post("api", "session", sessionID, "close").json(body))
     }
 
+    func closeSession(_ sessionID: String) async throws {
+        // An empty body closes the session without a progress update.
+        try await perform(APIRequest.post("api", "session", sessionID, "close").json(EmptyBody()).idempotent())
+    }
+
     func uploadLocalSession(_ session: LocalSessionUpload, device: DeviceInfo) async throws {
         var userID = connection.userID
         if userID == nil {
