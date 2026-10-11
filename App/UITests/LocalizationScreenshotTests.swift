@@ -32,7 +32,7 @@ final class LocalizationScreenshotTests: HearthUITestCase {
         capture("home")
 
         tab(1).tap()
-        waitFor(button(containing: "Frankenstein"), timeout: 30)
+        waitFor(itemCell("Frankenstein"), timeout: 30)
         capture("library")
 
         tab(2).tap()
@@ -41,7 +41,7 @@ final class LocalizationScreenshotTests: HearthUITestCase {
         capture("authors")
 
         tab(1).tap()
-        button(containing: "Frankenstein").tap()
+        itemCell("Frankenstein").tap()
         waitFor(app.buttons["playButton"], timeout: 20)
         capture("detail")
         app.swipeUp()
@@ -61,7 +61,7 @@ final class LocalizationScreenshotTests: HearthUITestCase {
         capture("mini-player")
 
         // Context menu of a library item.
-        button(containing: "Frankenstein").press(forDuration: 1.2)
+        itemCell("Frankenstein").press(forDuration: 1.2)
         capture("context-menu")
         app.tap()
 

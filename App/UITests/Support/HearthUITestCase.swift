@@ -19,11 +19,6 @@ class HearthUITestCase: XCTestCase {
         server = try await ServerAPI.login(host: Self.server, username: Self.username, password: Self.password)
     }
 
-    override func tearDown() async throws {
-        app?.terminate()
-        app = nil
-    }
-
     /// Launches the app signed in with the test account (all other connections removed).
     @discardableResult
     func launchSignedIn(_ extraArguments: [String] = [], reset: Bool = true, language: String = "en", locale: String = "en_US") -> XCUIApplication {
@@ -40,11 +35,72 @@ class HearthUITestCase: XCTestCase {
         return app
     }
 
+    // MARK: Player helpers
+
+    /// Opens an audiobook from the Library tab.
+    func openAudiobook(_ title: String) {
+        waitForMainUI()
+        selectLibrary("Audiobooks")
+        selectTab("Library")
+        waitFor(itemCell(title), timeout: 30, "\(title) not in library").tap()
+        waitFor(app.buttons["playButton"], timeout: 20, "Detail of \(title) did not load")
+    }
+
+    /// Starts playback from the detail screen and makes sure the full player is open.
+    func startPlaybackAndOpenPlayer() {
+        app.buttons["playButton"].firstMatch.tap()
+        openPlayer()
+    }
+
+    /// Opens the full player (closing it first when it opened automatically, to check the mini player).
+    func openPlayer() {
+        let miniPlayer = app.descendants(matching: .any)["miniPlayer"]
+        let close = app.buttons["player.close"]
+        // A new item opens the full player automatically; otherwise open it from the mini player.
+        let deadline = Date.now.addingTimeInterval(20)
+        while Date.now < deadline, !close.exists, !miniPlayer.exists {
+            RunLoop.current.run(until: .now.addingTimeInterval(0.5))
+        }
+        if close.exists {
+            close.tap()
+        }
+        waitFor(miniPlayer, timeout: 15, "Mini player did not appear")
+        app.descendants(matching: .any)["miniPlayer.title"].tap()
+        waitFor(close, timeout: 10, "Full player did not open")
+    }
+
+    func elapsed() -> TimeInterval {
+        let label = app.staticTexts["player.elapsed"]
+        guard label.waitForExistence(timeout: 10) else { return -1 }
+        return Self.seconds(fromClock: label.label) ?? -1
+    }
+
+    func waitForElapsed(atLeast seconds: TimeInterval, timeout: TimeInterval = 20) -> Bool {
+        let deadline = Date.now.addingTimeInterval(timeout)
+        while Date.now < deadline {
+            if elapsed() >= seconds {
+                return true
+            }
+            RunLoop.current.run(until: .now.addingTimeInterval(0.5))
+        }
+        return false
+    }
+
+    /// Lets the app run for `seconds` (usable from async tests, unlike `RunLoop.run`).
+    func idle(_ seconds: TimeInterval) {
+        RunLoop.current.run(until: .now.addingTimeInterval(seconds))
+    }
+
     // MARK: Element helpers
 
     func element(containing text: String, in query: XCUIElementQuery? = nil) -> XCUIElement {
         let query = query ?? app.descendants(matching: .any)
         return query.matching(NSPredicate(format: "label CONTAINS[c] %@", text)).firstMatch
+    }
+
+    /// Grid / list cell of an item ("Audiobook: Title", localized prefix) — not the mini player or other mentions.
+    func itemCell(_ title: String) -> XCUIElement {
+        app.buttons.matching(NSPredicate(format: "label ENDSWITH %@ OR label BEGINSWITH %@", ": \(title)", "\(title),")).firstMatch
     }
 
     func button(containing text: String) -> XCUIElement {

@@ -45,6 +45,13 @@ struct ServerAPI: Sendable {
         struct Media: Decodable, Sendable {
             let metadata: Metadata
             let episodes: [Episode]?
+            let chapters: [Chapter]?
+        }
+
+        struct Chapter: Decodable, Sendable {
+            let start: Double
+            let end: Double
+            let title: String
         }
 
         struct Metadata: Decodable, Sendable {

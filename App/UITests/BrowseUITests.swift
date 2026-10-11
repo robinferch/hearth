@@ -8,7 +8,7 @@ final class BrowseUITests: HearthUITestCase {
         selectLibrary("Audiobooks")
         selectTab("Library")
 
-        let frankenstein = waitFor(button(containing: "Frankenstein"), timeout: 30, "Frankenstein not in library grid")
+        let frankenstein = waitFor(itemCell("Frankenstein"), timeout: 30, "Frankenstein not in library grid")
         frankenstein.tap()
 
         waitFor(app.buttons["playButton"], timeout: 20, "Detail did not load")

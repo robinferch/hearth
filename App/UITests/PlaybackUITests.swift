@@ -2,50 +2,6 @@ import XCTest
 
 /// Playback, bookmarks and progress — verified against the server.
 final class PlaybackUITests: HearthUITestCase {
-    /// Opens an audiobook from the Library tab.
-    private func openAudiobook(_ title: String) {
-        waitForMainUI()
-        selectLibrary("Audiobooks")
-        selectTab("Library")
-        waitFor(button(containing: title), timeout: 30, "\(title) not in library").tap()
-        waitFor(app.buttons["playButton"], timeout: 20, "Detail of \(title) did not load")
-    }
-
-    /// Starts playback from the detail screen and makes sure the full player is open.
-    private func startPlaybackAndOpenPlayer() {
-        app.buttons["playButton"].tap()
-        let miniPlayer = app.descendants(matching: .any)["miniPlayer"]
-        let close = app.buttons["player.close"]
-        // A new item opens the full player automatically; otherwise open it from the mini player.
-        let deadline = Date.now.addingTimeInterval(20)
-        while Date.now < deadline, !close.exists, !miniPlayer.exists {
-            RunLoop.current.run(until: .now.addingTimeInterval(0.5))
-        }
-        if close.exists {
-            close.tap()
-        }
-        waitFor(miniPlayer, timeout: 15, "Mini player did not appear")
-        app.descendants(matching: .any)["miniPlayer.title"].tap()
-        waitFor(close, timeout: 10, "Full player did not open")
-    }
-
-    private func elapsed() -> TimeInterval {
-        let label = app.staticTexts["player.elapsed"]
-        guard label.waitForExistence(timeout: 10) else { return -1 }
-        return Self.seconds(fromClock: label.label) ?? -1
-    }
-
-    private func waitForElapsed(atLeast seconds: TimeInterval, timeout: TimeInterval = 20) -> Bool {
-        let deadline = Date.now.addingTimeInterval(timeout)
-        while Date.now < deadline {
-            if elapsed() >= seconds {
-                return true
-            }
-            RunLoop.current.run(until: .now.addingTimeInterval(0.5))
-        }
-        return false
-    }
-
     func testPlayFrankensteinSyncsProgress() async throws {
         let itemID = try await server.itemID(title: "Frankenstein")
         try await server.resetItem(itemID)
@@ -112,7 +68,7 @@ final class PlaybackUITests: HearthUITestCase {
         waitForMainUI()
         selectLibrary("Audiobooks")
         selectTab("Library")
-        let cell = waitFor(button(containing: "Pride and Prejudice"), timeout: 30, "Item missing")
+        let cell = waitFor(itemCell("Pride and Prejudice"), timeout: 30, "Item missing")
 
         cell.press(forDuration: 1.2)
         waitFor(button(containing: "Mark as finished"), timeout: 10, "Context menu lacks Mark as finished").tap()

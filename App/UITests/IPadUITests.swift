@@ -30,7 +30,7 @@ final class IPadUITests: HearthUITestCase {
         // The first "Library" entry belongs to the audiobook library (libraries are sorted by display order).
         let library = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Library")).firstMatch
         waitFor(library).tap()
-        waitFor(button(containing: "Frankenstein"), timeout: 30, "Library grid did not load").tap()
+        waitFor(itemCell("Frankenstein"), timeout: 30, "Library grid did not load").tap()
         waitFor(app.buttons["playButton"], timeout: 20, "Detail did not load")
         attachScreenshot("Detail")
 
