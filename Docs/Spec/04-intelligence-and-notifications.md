@@ -30,7 +30,7 @@ transcribing (progress) → detecting ads (progress) → finished / failed / can
 remaining-time estimate.
 
 **Time estimate** (`TimeEstimator`, pure + tested) – before start: duration ÷ measured transcription speed (audio
-seconds per second; default 20×, then an exponential moving average of real runs persisted per device) + ad windows
+seconds per second; default 40×, then an exponential moving average of real runs persisted per device) + ad windows
 × measured seconds per window (default 4 s) + "plus download (size)" when not downloaded + "plus one-time language
 download" when the model isn't installed. While running: remaining audio ÷ the speed measured in this run (after
 10 s), smoothed.

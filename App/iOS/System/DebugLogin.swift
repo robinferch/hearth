@@ -3,13 +3,18 @@ import BackgroundTasks
 import Foundation
 import HearthAPI
 import HearthData
+import HearthIntelligence
 import HearthModel
+import HearthPlayback
 import OSLog
 
 /// DEBUG-only: `-HearthDebugLogin <url> <user> <password>` signs in without UI (simulator checks, screenshots).
 /// Skipped when the connection already exists. `-HearthDebugReset` first removes all connections (UI tests start from
 /// a clean state; combined with `-HearthDebugLogin` only the debug connection remains).
 /// `-HearthDebugReindexSpotlight` forces a full Spotlight index.
+/// `-HearthDebugTranscribe` transcribes the shortest downloaded episode (else the last played item) with ad detection
+/// and logs the progress.
+/// `-HearthDebugSimulateTranscriptionTask` submits a transcription background task (see `TranscriptionBackgroundTask`).
 /// `-HearthDebugSimulateSpotlightTask [expire]` launches the Spotlight `BGProcessingTask` the way the system does
 /// (handler on a background queue), optionally expiring it right after the launch.
 @MainActor
@@ -27,6 +32,15 @@ enum DebugLogin {
         }
         if let index = arguments.firstIndex(of: "-HearthDebugSimulateSpotlightTask") {
             simulateSpotlightTask(expire: arguments.count > index + 1 && arguments[index + 1] == "expire")
+        }
+        if arguments.contains("-HearthDebugTranscribe") {
+            Task { await debugTranscribe() }
+        }
+        if arguments.contains("-HearthDebugSimulateTranscriptionTask") {
+            Task {
+                try? await Task.sleep(for: .seconds(3))
+                TranscriptionBackgroundTask.debugSubmit()
+            }
         }
         let resets = arguments.contains("-HearthDebugReset")
         let login = arguments.firstIndex(of: "-HearthDebugLogin").flatMap { index -> (host: URL, username: String, password: String)? in
@@ -55,6 +69,43 @@ enum DebugLogin {
                 await SpotlightIndexer.shared.launchUpdate()
             } catch {
                 logger.error("Debug login failed: \(String(describing: error), privacy: .public)")
+            }
+        }
+    }
+
+    private static func debugTranscribe() async {
+        let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Hearth", category: "DebugTranscribe")
+        let data = HearthData.shared
+        await data.bootstrap()
+        let episodes = data.downloads.downloadedEpisodes().filter { $0.duration > 60 }.sorted { $0.duration < $1.duration }
+        var item: AnyPlayableItem? = episodes.first.map { .episode($0) }
+        if item == nil, let id = AudioPlayer.shared.lastPlayedItemID {
+            item = try? await data.items.playable(id)
+        }
+        guard let item else {
+            logger.error("Debug transcription: no item")
+            return
+        }
+        let service = TranscriptionService.shared
+        guard let locale = await service.suggestedLocale(for: item) else {
+            logger.error("Debug transcription: no supported locale")
+            return
+        }
+        let estimate = await service.estimate(for: item, locale: locale, detectAds: true)
+        logger.notice("Debug transcription of \(item.name, privacy: .public) (\(Int(item.duration)) s, \(locale.identifier, privacy: .public)): estimate \(Int(estimate.transcription)) s + ads \(Int(estimate.adDetection)) s, download \(estimate.downloadBytes ?? -1) bytes, model download \(estimate.needsLanguageDownload), Apple Intelligence \(String(describing: LanguageModelStatus.current), privacy: .public)")
+        let started = Date.now
+        service.start(item, locale: locale, detectAds: true)
+        while let job = service.job(for: item.id), job.phase.isRunning {
+            logger.notice("Debug transcription: \(String(describing: job.phase), privacy: .public), overall \(Int(job.overallProgress * 100)) %, remaining \(Int(job.remaining ?? -1)) s, elapsed \(Int(Date.now.timeIntervalSince(started))) s")
+            try? await Task.sleep(for: .seconds(5))
+        }
+        let job = service.job(for: item.id)
+        let entry = data.transcripts.entry(for: item.id)
+        let ads = data.transcripts.adAnalysis(for: item.id)
+        logger.notice("Debug transcription done: \(String(describing: job?.phase), privacy: .public) after \(Int(Date.now.timeIntervalSince(started))) s, \(entry?.wordCount ?? 0) words, ads \(String(describing: ads?.method), privacy: .public): \(ads?.segments.map { "\(Int($0.start))–\(Int($0.end)) \($0.advertiser ?? "?")" }.joined(separator: ", ") ?? "none", privacy: .public)")
+        if let transcript = await data.transcripts.transcript(for: item.id) {
+            for segment in transcript.segments.prefix(6) {
+                logger.notice("Debug transcript [\(Int(segment.start)) s, \(segment.words.count) words] \(segment.text, privacy: .public)")
             }
         }
     }

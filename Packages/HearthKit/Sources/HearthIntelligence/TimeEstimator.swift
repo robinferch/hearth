@@ -28,7 +28,7 @@ public struct TimeEstimator: Hashable, Sendable {
     /// Seconds the language model needs per ad detection window.
     public var secondsPerAdWindow: Double
 
-    public static let defaultTranscriptionSpeed = 20.0
+    public static let defaultTranscriptionSpeed = 40.0
     public static let defaultSecondsPerAdWindow = 4.0
     /// Audio covered by one ad detection window (~150 spoken words per minute, ~4 500 characters per window).
     public static let audioPerAdWindow: TimeInterval = 5 * 60
