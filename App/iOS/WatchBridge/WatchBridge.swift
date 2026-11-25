@@ -1,4 +1,5 @@
 import Foundation
+import HearthAPI
 import HearthData
 import HearthModel
 import HearthPlayback
@@ -41,6 +42,15 @@ final class WatchBridge {
             self?.sessionStateChanged()
         }
         session.activate()
+        let connections = HearthData.shared.connections
+        connections.pairedDeviceCredentials = { [weak self] reason in
+            await self?.credentialsFromWatch(for: reason)
+        }
+        connections.tokensRefreshed = { [weak self] _ in
+            // Right away (the refresh still holds a background assertion), not with the next poll: the watch's copy
+            // of the refresh token is invalid from now on.
+            self?.checkTokens()
+        }
         observePlayer()
         observeSnapshot()
         observeConnections()
@@ -53,7 +63,9 @@ final class WatchBridge {
     private func handle(_ message: WatchSyncMessage) async -> WatchSyncMessage? {
         switch message {
         case .credentialsRequest:
-            // Connections are loaded when the store is created; no need to wait for the bootstrap.
+            // Connections are loaded when the store is created; no need to wait for the bootstrap. Tokens about to
+            // expire are refreshed first, so the watch doesn't rotate the shared refresh token itself.
+            await HearthData.shared.connections.refreshTokensForPairedDevice()
             let credentials = HearthData.shared.connections.watchCredentials()
             logger.info("Sending \(credentials.entries.count) connection(s) to the watch")
             return .credentials(credentials)
@@ -378,6 +390,26 @@ final class WatchBridge {
         guard !credentials.entries.isEmpty else { return }
         logger.info("Forwarding credentials of \(credentials.entries.count) connection(s) to the watch")
         session.transfer(.credentials(credentials))
+    }
+
+    /// `ConnectionStore.pairedDeviceCredentials`: the watch's credentials once the server rejected the phone's
+    /// refresh token (the watch may have rotated it). Before its own refreshes the phone doesn't ask – the watch app is
+    /// rarely reachable, and the watch hands over tokens it rotated itself.
+    private func credentialsFromWatch(for reason: ExternalTokenReason) async -> WatchCredentials? {
+        guard reason == .refreshRejected, session.isSupported else { return nil }
+        await session.waitUntilActivated()
+        guard session.isPaired, session.isWatchAppInstalled else { return nil }
+        // Tokens the watch transferred while this app wasn't running are delivered right after activation.
+        try? await Task.sleep(for: .seconds(1))
+        guard session.isReachable else { return nil }
+        do {
+            if case .credentials(let credentials) = try await session.send(.credentialsRequest) {
+                return credentials
+            }
+        } catch {
+            logger.debug("Requesting credentials from the watch failed: \(String(describing: error), privacy: .public)")
+        }
+        return nil
     }
 
     /// The phone's refresh token was rejected – the watch may hold a newer one.

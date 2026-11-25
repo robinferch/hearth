@@ -107,15 +107,7 @@ public final class WatchSyncSession {
         guard session.activationState == .activated, session.isReachable else { throw WatchSyncError.notReachable }
         let payload = try message.dictionary()
         return try await withCheckedThrowingContinuation { continuation in
-            session.sendMessage(payload, replyHandler: { reply in
-                if let message = WatchSyncMessage(dictionary: reply) {
-                    continuation.resume(returning: message)
-                } else {
-                    continuation.resume(throwing: WatchSyncError.invalidReply)
-                }
-            }, errorHandler: { error in
-                continuation.resume(throwing: WatchSyncError.transport(error.localizedDescription))
-            })
+            Self.sendMessage(payload, via: session, continuation: continuation)
         }
         #else
         throw WatchSyncError.unsupported
@@ -128,12 +120,34 @@ public final class WatchSyncSession {
         guard isSupported else { return }
         let session = WCSession.default
         guard session.activationState == .activated, session.isReachable, let payload = try? message.dictionary() else { return }
-        let logger = logger
+        Self.sendMessage(payload, via: session, logger: logger)
+        #endif
+    }
+
+    #if canImport(WatchConnectivity)
+    // WatchConnectivity calls reply and error handlers on a private background queue. Closures written inside this
+    // main-actor class would be main-actor isolated, and Swift 6 traps on their isolation check when they run there
+    // (TestFlight crash in `sendIfReachable`, build 6). Creating them in nonisolated functions keeps them free of
+    // actor isolation; they only touch Sendable values.
+
+    private nonisolated static func sendMessage(_ payload: [String: Any], via session: WCSession, continuation: CheckedContinuation<WatchSyncMessage, any Error>) {
+        session.sendMessage(payload, replyHandler: { reply in
+            if let message = WatchSyncMessage(dictionary: reply) {
+                continuation.resume(returning: message)
+            } else {
+                continuation.resume(throwing: WatchSyncError.invalidReply)
+            }
+        }, errorHandler: { error in
+            continuation.resume(throwing: WatchSyncError.transport(error.localizedDescription))
+        })
+    }
+
+    private nonisolated static func sendMessage(_ payload: [String: Any], via session: WCSession, logger: Logger) {
         session.sendMessage(payload, replyHandler: nil) { error in
             logger.debug("Sending a message failed: \(error.localizedDescription, privacy: .public)")
         }
-        #endif
     }
+    #endif
 
     /// Queues a message for guaranteed, in-order delivery (also while the counterpart isn't running).
     public func transfer(_ message: WatchSyncMessage) {

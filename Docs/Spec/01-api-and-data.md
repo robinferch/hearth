@@ -18,7 +18,9 @@ Client name sent to the server: `Hearth`. OAuth callback: `hearth://oauth`.
 - Concurrency limit ~6 requests per connection. Login/status/refresh/authorize bypass the limiter and the "unreachable" gate.
 - Offline mode: requests fail with `.offline` unless explicitly allowed.
 - 401 → refresh token once (single-flight per connection; skip if token already changed since request was sent) → retry. Tokens are refreshed proactively when the JWT `exp` is close (1 min for API calls, 15 min for download/stream/cover requests). Only idempotent requests (GET and explicitly marked calls) are retried on network errors / 5xx / 408 / 429, up to 3 attempts. Valid status range 200–299.
-- Refresh failure → mark connection unavailable for this run, post "connection unauthorized" notification (UI offers re-login).
+- The server rotates the refresh token on every refresh (the old one stays valid for a ~10 min grace period on recent servers). A refresh therefore runs under a background assertion (`ProcessInfo.performExpiringActivity`) until the new pair is stored, so a suspended app can't lose it.
+- iPhone and watch share one session (one token pair). Before rotating, a client asks the paired device for its tokens (`TokenStore.externalTokens`): the watch asks the reachable phone, which refreshes expiring tokens before answering, so normally only the phone rotates. Rotated tokens are pushed to the other device immediately. Pairs are ordered by the refresh token's `iat` (server time); an older pair never replaces a newer one.
+- Refresh rejected (401 only; 403/5xx/network errors are transient and keep the session) → ask the paired device for other tokens and retry with them → otherwise mark connection unavailable for this run, post "connection unauthorized" notification (UI offers re-login).
 
 ### 1.2 Authentication & server
 | Method | Path | Request | Response fields | Purpose |

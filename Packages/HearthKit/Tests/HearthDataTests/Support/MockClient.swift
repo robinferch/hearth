@@ -294,6 +294,7 @@ final class MockClient: AudiobookshelfClient {
         try check()
         state.withLock { $0.authorizationRefreshes += 1 }
     }
+    func refreshAccessTokenIfNeeded() async {}
     func webURL(for id: ItemIdentifier) -> URL { connection.host }
 
     // MARK: Live updates

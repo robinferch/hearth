@@ -113,13 +113,26 @@ final class InMemoryCredentialStore: CredentialStoring {
 
 /// `TokenStore` handed to HearthAPI clients. Caches tokens in memory to avoid Keychain round trips per request.
 final class CredentialTokenStore: TokenStore {
+    typealias ExternalSource = @Sendable (ConnectionID, AuthTokens, ExternalTokenReason) async -> AuthTokens?
+    typealias ChangeHandler = @Sendable (ConnectionID) async -> Void
+
     private let credentials: any CredentialStoring
     private let cache = Mutex<[ConnectionID: AuthTokens]>([:])
-    private let onChange: @Sendable (ConnectionID, AuthTokens) -> Void
+    private let externalSource = Mutex<ExternalSource?>(nil)
+    private let changeHandler = Mutex<ChangeHandler?>(nil)
 
-    init(credentials: any CredentialStoring, onChange: @escaping @Sendable (ConnectionID, AuthTokens) -> Void = { _, _ in }) {
+    init(credentials: any CredentialStoring) {
         self.credentials = credentials
-        self.onChange = onChange
+    }
+
+    /// Supplies tokens of another holder of the same session (see `TokenStore.externalTokens`).
+    func setExternalSource(_ source: ExternalSource?) {
+        externalSource.withLock { $0 = source }
+    }
+
+    /// Called (and awaited) after a client stored refreshed tokens.
+    func setChangeHandler(_ handler: ChangeHandler?) {
+        changeHandler.withLock { $0 = handler }
     }
 
     func tokens(for connectionID: ConnectionID) async -> AuthTokens? {
@@ -135,7 +148,14 @@ final class CredentialTokenStore: TokenStore {
 
     func store(_ tokens: AuthTokens, for connectionID: ConnectionID) async {
         set(tokens, for: connectionID)
-        onChange(connectionID, tokens)
+        // Awaited: the client still holds its background assertion, so the paired device gets the rotated tokens
+        // even if the app is suspended right afterwards.
+        await changeHandler.withLock { $0 }?(connectionID)
+    }
+
+    func externalTokens(for connectionID: ConnectionID, current: AuthTokens, reason: ExternalTokenReason) async -> AuthTokens? {
+        guard let source = externalSource.withLock({ $0 }) else { return nil }
+        return await source(connectionID, current, reason)
     }
 
     /// Synchronous variant used by `ConnectionStore`.

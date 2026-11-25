@@ -159,17 +159,17 @@ struct NowPlayingView: View {
                 Button {
                     presentation.collapse()
                 } label: {
+                    // Plain chevron, no glass circle (it looked detached over the artwork); 44 pt tap target.
                     Image(systemName: "chevron.down")
-                        .font(.headline)
-                        .frame(width: 36, height: 36)
+                        .font(.headline.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .frame(width: 44, height: 44)
+                        .contentShape(.rect)
                 }
-                .buttonStyle(.glass)
-                .buttonBorderShape(.circle)
-                .environment(\.colorScheme, .dark)
+                .buttonStyle(.plain)
                 .accessibilityLabel(String(localized: "Close Player", table: "Player"))
                 .accessibilityIdentifier("player.close")
-                .padding(.trailing, 16)
-                .padding(.top, 4)
+                .padding(.trailing, 12)
             }
         }
     }

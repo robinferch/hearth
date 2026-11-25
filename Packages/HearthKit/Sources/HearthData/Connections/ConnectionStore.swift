@@ -54,6 +54,14 @@ public final class ConnectionStore {
     /// The connection that needs re-authentication (UI presents a sheet), if any.
     public var connectionNeedingReauthorization: ConnectionID?
 
+    /// Asks the paired device (iPhone ↔ watch) for its credentials. Both share one server session whose refresh token
+    /// rotates, so clients consult it before rotating and before giving up after a rejection. Set by the app.
+    @ObservationIgnored public var pairedDeviceCredentials: (@MainActor (ExternalTokenReason) async -> WatchCredentials?)?
+
+    /// Called after a client refreshed (rotated) the tokens of a connection, e.g. to forward them to the paired device.
+    /// Runs while the refresh still keeps the app from being suspended. Set by the app.
+    @ObservationIgnored public var tokensRefreshed: (@MainActor (ConnectionID) -> Void)?
+
     @ObservationIgnored let environment: DataEnvironment
     @ObservationIgnored weak var hearth: HearthData?
     @ObservationIgnored private var clients: [ConnectionID: any AudiobookshelfClient] = [:]
@@ -67,6 +75,12 @@ public final class ConnectionStore {
         self.environment = environment
         relay = UnauthorizedRelay { [weak self] id in
             await self?.markUnauthorized(id)
+        }
+        environment.tokenStore.setExternalSource { [weak self] id, current, reason in
+            await self?.pairedDeviceTokens(for: id, current: current, reason: reason)
+        }
+        environment.tokenStore.setChangeHandler { [weak self] id in
+            await self?.tokensRefreshed?(id)
         }
         load()
     }

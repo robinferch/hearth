@@ -1,5 +1,6 @@
 import Foundation
 import HearthModel
+import Synchronization
 import Testing
 @testable import HearthAPI
 
@@ -183,12 +184,13 @@ extension NetworkTests {
         #expect(!harness.requests.contains { $0.path == "/auth/refresh" })
     }
 
-    static func jwt(expiresIn seconds: TimeInterval) -> String {
+    static func jwt(expiresIn seconds: TimeInterval, issuedAgo age: TimeInterval = 60) -> String {
         func encode(_ json: String) -> String {
             Data(json.utf8).base64EncodedString().replacingOccurrences(of: "+", with: "-").replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: "=", with: "")
         }
         let exp = Int(Date.now.timeIntervalSince1970 + seconds)
-        return "\(encode(#"{"alg":"HS256","typ":"JWT"}"#)).\(encode(#"{"userId":"usr_1","type":"access","exp":\#(exp)}"#)).signature"
+        let iat = Int(Date.now.timeIntervalSince1970 - age)
+        return "\(encode(#"{"alg":"HS256","typ":"JWT"}"#)).\(encode(#"{"userId":"usr_1","type":"access","iat":\#(iat),"exp":\#(exp)}"#)).signature"
     }
 
     static func refreshingServer(refreshes: Counter) -> MockURLProtocol.Handler {
@@ -252,6 +254,86 @@ extension NetworkTests {
         try await harness.client.refreshAuthorization(rejectedRequest: rejected)
         #expect(refreshes.current == 1)
         #expect(try await harness.client.audioFileRequest(for: book, ino: "1").value(forHTTPHeaderField: "Authorization") == "Bearer access-2")
+    }
+
+    @Test func refreshTokenIssueTimeOrdersTokenPairs() {
+        let older = AuthTokens(accessToken: "a", refreshToken: Self.jwt(expiresIn: 3600, issuedAgo: 600))
+        let newer = AuthTokens(accessToken: "b", refreshToken: Self.jwt(expiresIn: 3600, issuedAgo: 10))
+        #expect(newer.isNewer(than: older) == true)
+        #expect(older.isNewer(than: newer) == false)
+        #expect(AuthTokens(accessToken: "legacy", refreshToken: nil).isNewer(than: older) == nil)
+    }
+
+    @Test func rejectedRefreshRecoversTokensFromThePairedDevice() async throws {
+        let refreshes = Counter()
+        let recovered = AuthTokens(accessToken: Self.jwt(expiresIn: 3600), refreshToken: "refresh-watch")
+        let harness = ClientHarness { request in
+            if request.path == "/auth/refresh" {
+                refreshes.increment()
+                return .json(#"{"error":"Invalid refresh token"}"#, status: 401)
+            }
+            return request.header("Authorization") == "Bearer \(recovered.accessToken)" ? .fixture("libraries") : .status(401)
+        }
+        await harness.tokenStore.setExternal { _, reason in reason == .refreshRejected ? recovered : nil }
+
+        let libraries = try await harness.client.libraries()
+        #expect(libraries.count == 2)
+        #expect(refreshes.current == 1)
+        #expect(harness.delegate.unauthorizedConnections.isEmpty)
+        #expect(await harness.tokenStore.externalRequests == [.aboutToRefresh, .refreshRejected])
+    }
+
+    @Test func rejectedRefreshRetriesWithThePairedDevicesRefreshToken() async throws {
+        let harness = ClientHarness { request in
+            if request.path == "/auth/refresh" {
+                guard request.header("x-refresh-token") == "refresh-watch" else {
+                    return .json(#"{"error":"Invalid refresh token"}"#, status: 401)
+                }
+                return .json(#"{"user":{"id":"usr_1","username":"robin","accessToken":"access-3","refreshToken":"refresh-3"}}"#)
+            }
+            return request.header("Authorization") == "Bearer access-3" ? .fixture("libraries") : .status(401)
+        }
+        // The watch rotated the session; its access token expired as well.
+        let watchTokens = AuthTokens(accessToken: Self.jwt(expiresIn: -60), refreshToken: "refresh-watch")
+        await harness.tokenStore.setExternal { _, reason in reason == .refreshRejected ? watchTokens : nil }
+
+        _ = try await harness.client.libraries()
+        #expect(await harness.tokenStore.tokens(for: harness.connection.id) == AuthTokens(accessToken: "access-3", refreshToken: "refresh-3"))
+        #expect(harness.delegate.unauthorizedConnections.isEmpty)
+    }
+
+    @Test func validTokensFromThePairedDeviceSkipTheRefresh() async throws {
+        let refreshes = Counter()
+        let phoneTokens = AuthTokens(accessToken: Self.jwt(expiresIn: 3600), refreshToken: "refresh-phone")
+        let harness = ClientHarness(tokens: AuthTokens(accessToken: Self.jwt(expiresIn: -10), refreshToken: "refresh-1"), handler: Self.refreshingServer(refreshes: refreshes))
+        await harness.tokenStore.setExternal { _, reason in reason == .aboutToRefresh ? phoneTokens : nil }
+
+        let book = ItemIdentifier(kind: .audiobook, connectionID: harness.connection.id, libraryID: "lib", primaryID: "li")
+        try await harness.client.setFinished(book, finished: true)
+        #expect(refreshes.current == 0)
+        #expect(harness.requests.last?.header("Authorization") == "Bearer \(phoneTokens.accessToken)")
+    }
+
+    @Test func transientRefreshFailuresKeepTheSession() async throws {
+        let failRefresh = Mutex(true)
+        let harness = ClientHarness { request in
+            if request.path == "/auth/refresh" {
+                // A proxy in front of the server, or the server restarting.
+                if failRefresh.withLock({ $0 }) {
+                    return .status(403)
+                }
+                return .json(#"{"user":{"id":"usr_1","username":"robin","accessToken":"access-2","refreshToken":"refresh-2"}}"#)
+            }
+            return request.header("Authorization") == "Bearer access-2" ? .fixture("libraries") : .status(401)
+        }
+
+        await #expect(throws: APIError.invalidResponse(statusCode: 403)) {
+            try await harness.client.libraries()
+        }
+        #expect(harness.delegate.unauthorizedConnections.isEmpty)
+
+        failRefresh.withLock { $0 = false }
+        #expect(try await harness.client.libraries().count == 2)
     }
 
     @Test func deduplicatesIdenticalInFlightGets() async throws {

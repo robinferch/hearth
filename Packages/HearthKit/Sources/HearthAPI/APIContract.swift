@@ -25,6 +25,28 @@ public enum APIError: Error, Sendable, Equatable {
 public protocol TokenStore: Sendable {
     func tokens(for connectionID: ConnectionID) async -> AuthTokens?
     func store(_ tokens: AuthTokens, for connectionID: ConnectionID) async
+
+    /// Tokens for the connection from another holder of the same server session, or `nil`.
+    ///
+    /// audiobookshelf rotates the refresh token on every refresh, so when two devices share one session (iPhone and
+    /// watch) only the one that refreshed last holds a valid refresh token. The client asks before it rotates the
+    /// shared token and again before it gives up after a rejection. Returned tokens are already persisted by the
+    /// store; the client uses them when they differ from `current`.
+    func externalTokens(for connectionID: ConnectionID, current: AuthTokens, reason: ExternalTokenReason) async -> AuthTokens?
+}
+
+public extension TokenStore {
+    func externalTokens(for connectionID: ConnectionID, current: AuthTokens, reason: ExternalTokenReason) async -> AuthTokens? {
+        nil
+    }
+}
+
+/// Why a client asks `TokenStore.externalTokens(for:current:reason:)`.
+public enum ExternalTokenReason: Sendable {
+    /// The access token is about to expire; the client is going to rotate the refresh token.
+    case aboutToRefresh
+    /// The server rejected the refresh token; without other tokens the user has to sign in again.
+    case refreshRejected
 }
 
 /// Notified when a connection's refresh token was rejected (user must re-authenticate).
@@ -325,6 +347,9 @@ public protocol AudiobookshelfClient: Sendable {
     /// `streamingHeaders`) was answered with 401: refreshes the access token unless it changed since. Afterwards
     /// build a new request. Throws `.unauthorized` when the user has to sign in again.
     func refreshAuthorization(rejectedRequest: URLRequest) async throws
+    /// Refreshes the access token when it expires within 15 minutes, e.g. before the tokens are handed to the paired
+    /// watch, which then doesn't have to rotate the shared refresh token itself.
+    func refreshAccessTokenIfNeeded() async
     func webURL(for id: ItemIdentifier) -> URL
 
     // MARK: Live updates

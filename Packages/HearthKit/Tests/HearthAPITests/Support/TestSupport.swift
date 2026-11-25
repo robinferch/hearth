@@ -164,6 +164,21 @@ actor MockTokenStore: TokenStore {
     func set(_ tokens: AuthTokens, for connectionID: ConnectionID) {
         storage[connectionID] = tokens
     }
+
+    /// Simulates the paired device: returns (and stores) its tokens.
+    private var external: (@Sendable (AuthTokens, ExternalTokenReason) -> AuthTokens?)?
+    private(set) var externalRequests: [ExternalTokenReason] = []
+
+    func setExternal(_ handler: @escaping @Sendable (AuthTokens, ExternalTokenReason) -> AuthTokens?) {
+        external = handler
+    }
+
+    func externalTokens(for connectionID: ConnectionID, current: AuthTokens, reason: ExternalTokenReason) async -> AuthTokens? {
+        externalRequests.append(reason)
+        guard let tokens = external?(current, reason) else { return nil }
+        storage[connectionID] = tokens
+        return tokens
+    }
 }
 
 final class MockDelegate: APIClientDelegate {

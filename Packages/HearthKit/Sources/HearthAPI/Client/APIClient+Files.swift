@@ -42,6 +42,10 @@ extension APIClient {
         try await executor.refreshAfterRejection(of: JWT.bearerToken(in: rejectedRequest.value(forHTTPHeaderField: "Authorization")))
     }
 
+    func refreshAccessTokenIfNeeded() async {
+        _ = await executor.authorizationHeaders()
+    }
+
     func webURL(for id: ItemIdentifier) -> URL {
         let path: [String]
         switch id.kind {

@@ -250,7 +250,7 @@ actor RequestExecutor {
             return try await Self.value(of: refreshTask)
         }
 
-        guard let refreshToken = tokens?.refreshToken else {
+        guard let current = tokens, current.refreshToken != nil else {
             await markUnauthorized(staleAccessToken)
             throw .unauthorized
         }
@@ -258,24 +258,63 @@ actor RequestExecutor {
         // The task applies the result itself so every waiter observes the new tokens on resumption.
         let task = Task<AuthTokens, any Error> {
             defer { self.refreshTask = nil }
-            do throws(APIError) {
-                let newTokens = try await self.requestTokenRefresh(refreshToken: refreshToken)
-                self.tokens = newTokens
-                await self.tokenStore.store(newTokens, for: self.connection.id)
-                self.logger.info("Refreshed access token for \(self.connection.displayName, privacy: .private)")
-                return newTokens
-            } catch {
-                switch error {
-                case .unauthorized, .invalidResponse(statusCode: 400), .invalidResponse(statusCode: 403):
-                    await self.markUnauthorized(staleAccessToken)
-                    throw APIError.unauthorized
-                default:
-                    throw error
-                }
-            }
+            return try await self.performRefresh(from: current, staleAccessToken: staleAccessToken)
         }
         refreshTask = task
         return try await Self.value(of: task)
+    }
+
+    /// Rotates `current`'s refresh token. Runs as the single in-flight refresh task.
+    ///
+    /// The server invalidates the old refresh token as soon as it handles the request (after a grace period of a few
+    /// minutes on recent servers), so the response must not get lost: the process is kept running until the new tokens
+    /// are stored. Another holder of the same session (the paired iPhone or watch) is consulted before rotating and
+    /// before giving up, because it may have rotated the token already.
+    private func performRefresh(from current: AuthTokens, staleAccessToken: String?) async throws(APIError) -> AuthTokens {
+        let activity = ExpiringActivity(reason: "Refreshing the audiobookshelf session")
+        defer { activity.end() }
+
+        var current = current
+        if let external = await externalTokens(current: current, reason: .aboutToRefresh) {
+            if let expiry = JWT.expiry(of: external.accessToken), expiry.timeIntervalSinceNow < configuration.requestTokenValidity {
+                // Still has to be refreshed, but with the refresh token that is valid now.
+                current = external
+            } else {
+                return external
+            }
+        }
+
+        var triedRefreshTokens = Set<String>()
+        while let refreshToken = current.refreshToken, triedRefreshTokens.insert(refreshToken).inserted {
+            do throws(APIError) {
+                let newTokens = try await requestTokenRefresh(refreshToken: refreshToken)
+                tokens = newTokens
+                await tokenStore.store(newTokens, for: connection.id)
+                logger.info("Refreshed access token for \(self.connection.displayName, privacy: .private)")
+                return newTokens
+            } catch .unauthorized {
+                // audiobookshelf answers every rejected refresh with 401. Other statuses (403 from a proxy, 5xx while
+                // the server restarts) and network errors are transient: the session may still be valid.
+                logger.error("The server rejected the refresh token of \(self.connection.displayName, privacy: .private)")
+                guard let external = await externalTokens(current: current, reason: .refreshRejected) else { break }
+                if let expiry = JWT.expiry(of: external.accessToken), expiry.timeIntervalSinceNow >= configuration.requestTokenValidity {
+                    logger.info("Recovered the session of \(self.connection.displayName, privacy: .private) from the paired device")
+                    return external
+                }
+                current = external
+            }
+        }
+        await markUnauthorized(staleAccessToken)
+        throw .unauthorized
+    }
+
+    /// Tokens from another holder of the session that differ from `current`, adopted as the executor's tokens.
+    private func externalTokens(current: AuthTokens, reason: ExternalTokenReason) async -> AuthTokens? {
+        guard let external = await tokenStore.externalTokens(for: connection.id, current: current, reason: reason), external != current else {
+            return nil
+        }
+        tokens = external
+        return external
     }
 
     private static func value(of task: Task<AuthTokens, any Error>) async throws(APIError) -> AuthTokens {

@@ -1,4 +1,5 @@
 import Foundation
+import HearthAPI
 import HearthData
 import HearthModel
 import HearthPlayback
@@ -48,6 +49,15 @@ final class PhoneLink {
             self?.sessionStateChanged()
         }
         session.activate()
+        let connections = HearthData.shared.connections
+        connections.pairedDeviceCredentials = { [weak self] _ in
+            await self?.credentialsFromPhone()
+        }
+        connections.tokensRefreshed = { [weak self] _ in
+            // Right away (the refresh still holds a background assertion), not with the next poll: the phone's copy
+            // of the refresh token is invalid from now on.
+            self?.checkTokens()
+        }
         startTokenMonitoring()
         observeReauthorization()
     }
@@ -125,6 +135,22 @@ final class PhoneLink {
         let applied = await HearthData.shared.connections.applyWatchCredentials(credentials)
         logger.info("Received \(credentials.entries.count) connection(s) from the phone, applied \(applied.count)")
         return applied.count
+    }
+
+    /// `ConnectionStore.pairedDeviceCredentials`: the phone's credentials, asked for before this watch rotates the
+    /// shared refresh token and after the server rejected it. While the phone is reachable it does the refreshing
+    /// (`WatchBridge` refreshes expiring tokens before answering), so the two copies of the session don't diverge.
+    private func credentialsFromPhone() async -> WatchCredentials? {
+        await session.waitUntilActivated()
+        guard session.isReachable else { return nil }
+        do {
+            if case .credentials(let credentials) = try await session.send(.credentialsRequest) {
+                return credentials
+            }
+        } catch {
+            logger.debug("Requesting credentials from the phone failed: \(String(describing: error), privacy: .public)")
+        }
+        return nil
     }
 
     /// Sends a remote command; updates the state from the reply. Returns `false` on failure.
