@@ -60,7 +60,7 @@ private struct TranscriptionSetupView: View {
 
     private var service: TranscriptionService { .shared }
     private var isDownloaded: Bool { HearthData.shared.downloads.localPlayback(for: item.id) != nil }
-    private var adMethod: AdAnalysis.Method { AdDetector.method(for: locale ?? .current) }
+    private var adPlan: AdDetectionPlan { AdDetectionPlan.current(for: locale ?? .current) }
 
     var body: some View {
         ScrollView {
@@ -72,7 +72,10 @@ private struct TranscriptionSetupView: View {
                     EstimateCard(estimate: estimate)
                 }
                 startButton
-                Label(String(localized: "Audio and transcript never leave this device.", table: "Intelligence"), systemImage: "lock.fill")
+                Label(detectAds && adPlan.usesCloud
+                      ? String(localized: "The audio stays on this device. The transcript is sent to Anthropic to find ads.", table: "Intelligence")
+                      : String(localized: "Audio and transcript never leave this device.", table: "Intelligence"),
+                      systemImage: detectAds && adPlan.usesCloud ? "icloud.and.arrow.up" : "lock.fill")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -145,9 +148,7 @@ private struct TranscriptionSetupView: View {
                 systemImage: "sparkles",
                 color: .orange,
                 title: String(localized: "Find Ads", table: "Intelligence"),
-                detail: adMethod == .languageModel
-                    ? String(localized: "Apple Intelligence finds sponsor reads and commercials, so Hearth can skip them automatically.", table: "Intelligence")
-                    : String(localized: "Ads are found by typical phrases like promo codes and sponsor mentions (Apple Intelligence isn't available).", table: "Intelligence"),
+                detail: AdDetectionText.stepDetail(for: adPlan),
                 isLast: true,
                 isDimmed: !detectAds
             )
@@ -510,5 +511,58 @@ enum TranscriptionAvailability {
         if DebugSupport.usesSampleTranscript { return true }
         #endif
         return TranscriptionService.isSupported
+    }
+}
+
+/// User-facing descriptions of the ad detection in use.
+enum AdDetectionText {
+    /// "Find ads" step of the transcription sheet.
+    @MainActor
+    static func stepDetail(for plan: AdDetectionPlan) -> String {
+        let name = plan.modelName ?? "Claude"
+        var text: String
+        switch plan.method {
+        case .languageModel:
+            text = String(localized: "Apple Intelligence finds sponsor reads and commercials, so Hearth can skip them automatically.", table: "Intelligence")
+        case .localModel:
+            text = String(localized: "\(name) finds sponsor reads and commercials on this device, so Hearth can skip them automatically.", table: "Intelligence")
+        case .anthropic:
+            text = String(localized: "\(name) finds sponsor reads and commercials, so Hearth can skip them automatically. Uses your Anthropic API key.", table: "Intelligence")
+        case .heuristic:
+            text = String(localized: "Ads are found by typical phrases like promo codes and sponsor mentions.", table: "Intelligence")
+        }
+        if let reason = plan.unavailability {
+            text += " " + unavailability(reason)
+        }
+        return text
+    }
+
+    @MainActor
+    static func unavailability(_ reason: AdDetectionPlan.Unavailability) -> String {
+        switch reason {
+        case .appleIntelligence:
+            String(localized: "Apple Intelligence isn't available, so keywords are used.", table: "Intelligence")
+        case .language:
+            String(localized: "Apple Intelligence doesn't support this language, so keywords are used.", table: "Intelligence")
+        case .localModelsUnsupported:
+            String(localized: "Models on the device need iOS 27, so keywords are used.", table: "Intelligence")
+        case .localModelNotDownloaded(let name):
+            String(localized: "\(name) isn't downloaded yet (Settings › Transcripts & Ads), so keywords are used.", table: "Intelligence")
+        case .localModelTooLarge(let name):
+            String(localized: "\(name) needs more memory than iOS allows Hearth, so keywords are used.", table: "Intelligence")
+        case .missingAPIKey:
+            String(localized: "No Anthropic API key is set (Settings › Transcripts & Ads), so keywords are used.", table: "Intelligence")
+        }
+    }
+
+    /// "Found with …" line of an analysis.
+    static func method(of analysis: AdAnalysis) -> String {
+        let name = analysis.modelName ?? "Claude"
+        return switch analysis.method {
+        case .languageModel: String(localized: "Found with Apple Intelligence", table: "Intelligence")
+        case .localModel: String(localized: "Found with \(name) on this device", table: "Intelligence")
+        case .anthropic: String(localized: "Found with \(name)", table: "Intelligence")
+        case .heuristic: String(localized: "Found with keywords", table: "Intelligence")
+        }
     }
 }

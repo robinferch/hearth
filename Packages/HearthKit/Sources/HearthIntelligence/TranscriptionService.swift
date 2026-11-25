@@ -108,12 +108,19 @@ public final class TranscriptionService {
         jobs.values.filter(\.phase.isRunning).sorted { $0.createdAt < $1.createdAt }
     }
 
-    /// Speeds measured on this device.
-    public var estimator: TimeEstimator {
+    /// Speeds measured on this device, for the ad detection `method`.
+    public func estimator(for method: AdAnalysis.Method = .languageModel) -> TimeEstimator {
         TimeEstimator(
             transcriptionSpeed: defaults.object(forKey: Key.speed) as? Double ?? TimeEstimator.defaultTranscriptionSpeed,
-            secondsPerAdWindow: defaults.object(forKey: Key.windowSeconds) as? Double ?? TimeEstimator.defaultSecondsPerAdWindow
+            secondsPerAdWindow: defaults.object(forKey: Key.windowSeconds(method)) as? Double ?? TimeEstimator.defaultSecondsPerAdWindow(for: method)
         )
+    }
+
+    /// Transcript characters per ad detection request with `plan` (keywords: the whole transcript at once).
+    nonisolated static func windowCharacters(of plan: AdDetectionPlan) -> Int {
+        guard let runner = plan.runner else { return 10_000_000 }
+        // Candidate passages are ~12 % of an episode.
+        return runner.readsCandidatesOnly ? runner.windowCharacters * 8 : runner.windowCharacters
     }
 
     /// Supported languages, sorted by localized name.
@@ -166,9 +173,11 @@ public final class TranscriptionService {
         case .episode(let episode): episode.size
         }
         let installed = await SpeechTranscriptionEngine.isInstalled(locale)
-        return estimator.estimate(
+        let plan = AdDetectionPlan.current(for: locale)
+        return estimator(for: plan.method).estimate(
             duration: item.duration,
             detectAds: detectAds,
+            adWindowCharacters: Self.windowCharacters(of: plan),
             downloadBytes: needsDownload ? (size ?? 0) : nil,
             needsLanguageDownload: !installed
         )
@@ -194,7 +203,10 @@ public final class TranscriptionService {
             detectAds: detectAds,
             phase: .queued,
             createdAt: .now,
-            remaining: estimator.estimate(duration: item.duration, detectAds: detectAds).processing,
+            remaining: { () -> TimeInterval in
+                let plan = AdDetectionPlan.current(for: locale)
+                return estimator(for: plan.method).estimate(duration: item.duration, detectAds: detectAds, adWindowCharacters: Self.windowCharacters(of: plan)).processing
+            }(),
             steps: steps
         )
         queue.append(item.id)
@@ -222,7 +234,8 @@ public final class TranscriptionService {
         guard let transcript = await HearthData.shared.transcripts.transcript(for: id) else {
             throw TranscriptionError.noSpeech
         }
-        let analysis = try await AdDetector().detect(in: transcript, progress: progress)
+        let plan = AdDetectionPlan.current(for: Locale(identifier: transcript.localeIdentifier))
+        let analysis = try await AdDetector().detect(in: transcript, runner: plan.runner, progress: progress)
         HearthData.shared.transcripts.saveAds(analysis)
         return analysis
     }
@@ -305,7 +318,12 @@ public final class TranscriptionService {
 
     private func transcribe(_ id: ItemIdentifier, tracks: [AudioTrack], locale: Locale) async throws -> Transcript {
         let total = max(tracks.map(\.end).max() ?? 0, jobs[id]?.duration ?? 0, 1)
-        let fallbackSpeed = estimator.transcriptionSpeed
+        let plan = AdDetectionPlan.current(for: locale)
+        let adEstimator = estimator(for: plan.method)
+        let adTime = jobs[id]?.detectAds == true
+            ? Double(TimeEstimator.adWindowCount(forDuration: total, windowCharacters: Self.windowCharacters(of: plan))) * adEstimator.secondsPerAdWindow
+            : 0
+        let fallbackSpeed = adEstimator.transcriptionSpeed
         let started = Date.now
         update(id) { $0.phase = .transcribing(0); $0.remaining = total / fallbackSpeed }
 
@@ -315,7 +333,6 @@ public final class TranscriptionService {
                 self?.update(id) { job in
                     guard case .transcribing = job.phase else { return }
                     job.phase = .transcribing(min(1, processed / total))
-                    let adTime = job.detectAds ? Double(TimeEstimator.adWindowCount(forDuration: total)) * (self?.estimator.secondsPerAdWindow ?? 4) : 0
                     job.remaining = TimeEstimator.remaining(done: processed, total: total, elapsed: elapsed, fallbackRate: fallbackSpeed) + adTime
                 }
             }
@@ -330,11 +347,14 @@ public final class TranscriptionService {
     }
 
     private func detectAds(_ id: ItemIdentifier, transcript: Transcript) async throws {
-        let windows = Double(TimeEstimator.adWindowCount(forDuration: transcript.duration))
-        let perWindow = estimator.secondsPerAdWindow
+        let plan = AdDetectionPlan.current(for: Locale(identifier: transcript.localeIdentifier))
+        let detector = AdDetector()
+        let windowCount = plan.runner.map { AdDetector.requestWindows(for: transcript.segments, runner: $0, overlap: detector.overlapLines).count } ?? 1
+        let windows = Double(windowCount)
+        let perWindow = estimator(for: plan.method).secondsPerAdWindow
         let started = Date.now
         update(id) { $0.phase = .detectingAds(0); $0.remaining = windows * perWindow }
-        let analysis = try await AdDetector().detect(in: transcript) { [weak self] value in
+        let analysis = try await detector.detect(in: transcript, runner: plan.runner) { [weak self] value in
             Task { @MainActor [weak self] in
                 let elapsed = Date.now.timeIntervalSince(started)
                 self?.update(id) { job in
@@ -347,9 +367,8 @@ public final class TranscriptionService {
         HearthData.shared.transcripts.saveAds(analysis)
         update(id) { $0.adCount = analysis.segments.count }
         let elapsed = Date.now.timeIntervalSince(started)
-        if analysis.method == .languageModel, elapsed > 2 {
-            let actualWindows = Double(AdDetector.windows(for: transcript.segments, characters: AdDetector().windowCharacters, overlap: AdDetector().overlapLines).count)
-            record(Key.windowSeconds, sample: elapsed / max(actualWindows, 1), current: perWindow)
+        if analysis.method != .heuristic, elapsed > 2 {
+            record(Key.windowSeconds(analysis.method), sample: elapsed / max(windows, 1), current: perWindow)
         }
     }
 
@@ -366,6 +385,9 @@ public final class TranscriptionService {
 
     private enum Key {
         static let speed = "intelligence.transcriptionSpeed"
-        static let windowSeconds = "intelligence.secondsPerAdWindow"
+        static func windowSeconds(_ method: AdAnalysis.Method) -> String {
+            // Apple Intelligence keeps the original key (measurements from earlier versions).
+            method == .languageModel ? "intelligence.secondsPerAdWindow" : "intelligence.secondsPerAdWindow.\(method.rawValue)"
+        }
     }
 }

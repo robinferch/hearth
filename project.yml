@@ -28,6 +28,17 @@ settings:
 packages:
   HearthKit:
     path: Packages/HearthKit
+  # On-device open models (Gemma, Qwen, …) for ad detection, iOS app only. The MLXHuggingFace macros aren't used
+  # (no macro trust needed on CI); the small Hugging Face adapters live in App/iOS/Intelligence/LocalModels.
+  MLXSwiftLM:
+    url: https://github.com/ml-explore/mlx-swift-lm
+    minorVersion: 3.33.0
+  SwiftHuggingFace:
+    url: https://github.com/huggingface/swift-huggingface
+    from: 1.0.1
+  SwiftTransformers:
+    url: https://github.com/huggingface/swift-transformers
+    from: 1.3.0
 
 targets:
   Hearth:
@@ -56,6 +67,16 @@ targets:
         product: HearthIntents
       - package: HearthKit
         product: HearthIntelligence
+      - package: MLXSwiftLM
+        product: MLXLLM
+      - package: MLXSwiftLM
+        product: MLXLMCommon
+      - package: MLXSwiftLM
+        product: MLXFoundationModels
+      - package: SwiftHuggingFace
+        product: HuggingFace
+      - package: SwiftTransformers
+        product: Tokenizers
       - target: HearthWidgets
       - target: HearthWatch
     settings:

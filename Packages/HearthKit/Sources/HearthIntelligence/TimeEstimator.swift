@@ -1,4 +1,5 @@
 import Foundation
+import HearthModel
 
 /// Duration estimate shown before a transcription starts.
 public struct TranscriptionEstimate: Hashable, Sendable {
@@ -38,17 +39,30 @@ public struct TimeEstimator: Hashable, Sendable {
         self.secondsPerAdWindow = secondsPerAdWindow
     }
 
-    public func estimate(duration: TimeInterval, detectAds: Bool, downloadBytes: Int64? = nil, needsLanguageDownload: Bool = false) -> TranscriptionEstimate {
+    /// - Parameter adWindowCharacters: transcript characters per ad detection request of the model in use.
+    public func estimate(duration: TimeInterval, detectAds: Bool, adWindowCharacters: Int = 4_500, downloadBytes: Int64? = nil, needsLanguageDownload: Bool = false) -> TranscriptionEstimate {
         TranscriptionEstimate(
             transcription: max(5, duration / max(transcriptionSpeed, 0.1)),
-            adDetection: detectAds ? Double(Self.adWindowCount(forDuration: duration)) * secondsPerAdWindow : 0,
+            adDetection: detectAds ? Double(Self.adWindowCount(forDuration: duration, windowCharacters: adWindowCharacters)) * secondsPerAdWindow : 0,
             downloadBytes: downloadBytes,
             needsLanguageDownload: needsLanguageDownload
         )
     }
 
-    public static func adWindowCount(forDuration duration: TimeInterval) -> Int {
-        max(1, Int((duration / audioPerAdWindow).rounded(.up)))
+    /// Requests needed for an episode of `duration` (4 500 characters ≈ five minutes of speech).
+    public static func adWindowCount(forDuration duration: TimeInterval, windowCharacters: Int = 4_500) -> Int {
+        let audioPerWindow = audioPerAdWindow * Double(max(windowCharacters, 500)) / 4_500
+        return max(1, Int((duration / audioPerWindow).rounded(.up)))
+    }
+
+    /// Initial seconds per request until a run was measured.
+    public static func defaultSecondsPerAdWindow(for method: AdAnalysis.Method) -> Double {
+        switch method {
+        case .languageModel: defaultSecondsPerAdWindow
+        case .localModel: 1.5
+        case .anthropic: 45
+        case .heuristic: 0.5
+        }
     }
 
     /// Exponential moving average; the first measurement replaces the default completely.

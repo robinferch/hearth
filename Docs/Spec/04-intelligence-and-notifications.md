@@ -53,15 +53,51 @@ progress; expiry cancels the job cleanly.
 
 ## 2. Ad detection and skipping
 
-**Detection** (`AdDetector`) on the transcript:
-- *Apple Intelligence* (`FoundationModels`, `SystemLanguageModel.default` available): the transcript is split into
-  numbered lines (one per segment) and windows that fit the context (~1 800 tokens, 2 lines overlap). Each window is
-  a fresh `LanguageModelSession` with guided generation (`@Generable AdWindowResult { ads: [AdBlock{firstLine,
-  lastLine, advertiser?}] }`). Lines map back to times; blocks are merged across windows and validated (8 s – 6 min).
-- *Fallback / no Apple Intelligence*: `HeuristicAdDetector` (pure, tested) – scores segments with German and English
-  sponsor cues (promo codes, "sponsored by", "Werbung", "Rabattcode", URLs, "präsentiert von", …), clusters nearby
-  hits and extends them to sentence bounds. Windows where the model fails (guardrails, context) also use it.
-- The result records the method; UI shows which one ran.
+**Detection** (`AdDetector`) on the transcript. The transcript is rendered as numbered lines (one sentence each) and
+split into windows that fit the model; each window goes to an `AdModelRunner`, which answers with line ranges
+(`AdBlockCandidate{firstLine, lastLine, advertiser?}`). Lines map back to times; blocks are merged across windows and
+validated (8 s – 6 min). Windows the model can't handle (guardrails, errors) use the keyword heuristics; a wrong API
+key or missing credit stops the run with a clear error. The analysis records method and model name ("Found with …").
+
+Providers (setting "Find ads with", resolved by `AdDetectionPlan`; unavailable providers fall back to keywords with
+the reason shown):
+- *Automatic* (default): Apple Intelligence where available, otherwise keywords.
+- *Apple Intelligence* (`SystemLanguageModel`, 4 500-character windows, guided generation with `@Generable`).
+- *Model on this iPhone* (hidden for now, `AdDetectionProvider.offersLocalModels = false`: without the
+  increased-memory-limit entitlement it would always fall back to keywords; a stored choice counts as *Automatic*): an
+  open model run with MLX through FoundationModels (`MLXLanguageModel` from
+  mlx-swift-lm's `MLXFoundationModels`, iOS 27), no content restrictions. Models (`LocalAdModel.all`): Gemma 4 E2B
+  (recommended, 3.6 GB) and Gemma 4 E4B (5.2 GB, 12 GB devices) – instruction-tuned 4-bit MLX builds.
+  An episode's analysis may take at most 60 s (`timeBudget`; the running request is cancelled, the rest uses
+  keywords), so the model only reads the candidate passages (`CandidateSelector`, ~10 % of the text, all ten
+  labelled ads), one passage of ~1 500 characters per request, and answers in plain text ("120-131 Brand",
+  `AdDetector.textInstructions` / `parseTextAnswer`) – guided generation made these models return nothing.
+  Benchmark (three hand-labelled German episodes, 10 ad blocks, Mac timings): Gemma 4 E2B 8/10 blocks at 85 %
+  precision in 10 s; E4B 9/10 at 94 % in 24 s; LFM3 1.7B 8/10 at 40 %; Llama 3.2 3B 4/10; Qwen 3.5 2B and
+  Gemma 3 1B far too slow or unusable. Apple Intelligence (whole transcript): 10/10 at 78 %.
+  Memory: iOS terminates an app above its per-process limit (~3.6 GB on a 12 GB iPhone 17 Pro Max without the
+  `com.apple.developer.kernel.increased-memory-limit` entitlement); Gemma 4 E2B peaks at ~3.1 GB. A model is only
+  offered and run when `os_proc_available_memory()` covers `LocalAdModel.memoryNeeded` (E2B 3.6 GB, E4B 5.6 GB), so
+  without that entitlement local models fall back to keywords instead of crashing. MLX's buffer cache is capped
+  (64 MB) and cleared after each episode. iOS also terminates apps using the GPU in the background, so requests only
+  run while the app is active and are cancelled when it resigns active (the rest uses keywords).
+  Small on-device models (and Apple Intelligence) mark only an ad's core; each block is widened to the cue lines of
+  its candidate passage (`extendsToCuePassages`, max 6 min), which raised the ad time found from ~45 % to ~58 %.
+  Downloaded from Hugging Face into `Application Support/Models` (not purged, no backup) from the settings; the model
+  is loaded only while ads are found and evicted afterwards. Models too large for the device's memory are disabled.
+  The app target links MLXLLM, MLXLMCommon, MLXFoundationModels, HuggingFace and Tokenizers; the two adapters the
+  `MLXHuggingFace` macros would generate are written out (`App/iOS/Intelligence/LocalModels`) so CI needs no macro
+  trust. Building needs the Metal toolchain (`xcodebuild -downloadComponent MetalToolchain`, also in CI).
+- *Claude (own API key)*: Messages API over HTTPS (no official Swift SDK), the whole transcript in one request
+  (no chunking below ~25 hours of speech: 1 500 000-character windows in the 1M context), structured outputs (`output_config.format` JSON schema), server-side refusal
+  fallback (`fallbacks: "default"`, Opus 5.5 / Sonnet 5.5). Models: Claude Opus 5.5 (default), Sonnet 5.5, Haiku 5.5,
+  with a cost estimate per hour of speech. The key is checked with a free `GET /v1/models` and stored in the Keychain
+  on the device. Only the transcript text is sent to Anthropic; the sheet says so.
+- *Keywords only*: `HeuristicAdDetector` (pure, tested) – German and English sponsor cues (promo codes, "sponsored
+  by", "Werbung", "Rabattcode", URLs, "präsentiert von", …) at sentence precision; it never extends into sentences
+  without cues.
+
+Time estimates use the provider's window size and a per-provider measured time per request.
 
 **Skipping** (`HearthPlayback`, `AdSkipLogic` pure + tested): with "Skip ads automatically" on, entering an ad
 segment while playing seeks to its end – once per segment per item (seeking back into it plays it). A toast

@@ -1,12 +1,68 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ finds sponsor reads and commercials on this device, so Hearth can skip them automatically." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ findet Sponsorenblöcke und Werbespots direkt auf diesem Gerät, damit Hearth sie automatisch überspringen kann."
+          }
+        }
+      }
+    },
+    "%@ finds sponsor reads and commercials, so Hearth can skip them automatically. Uses your Anthropic API key." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ findet Sponsorenblöcke und Werbespots, damit Hearth sie automatisch überspringen kann. Nutzt deinen Anthropic-API-Schlüssel."
+          }
+        }
+      }
+    },
+    "%@ is %@." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ ist %2$@ groß."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ is %2$@."
+          }
+        }
+      }
+    },
+    "%@ isn't downloaded yet (Settings › Transcripts & Ads), so keywords are used." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ist noch nicht geladen (Einstellungen › Transkripte & Werbung), daher werden Stichwörter verwendet."
+          }
+        }
+      }
+    },
     "%@ left" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "noch %@"
+          }
+        }
+      }
+    },
+    "%@ needs more memory than iOS allows Hearth, so keywords are used." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ braucht mehr Arbeitsspeicher, als iOS Hearth erlaubt, daher werden Stichwörter verwendet."
           }
         }
       }
@@ -163,6 +219,26 @@
         }
       }
     },
+    "API Key" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-Schlüssel"
+          }
+        }
+      }
+    },
+    "API Key (sk-ant-…)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-Schlüssel (sk-ant-…)"
+          }
+        }
+      }
+    },
     "Ad" : {
       "localizations" : {
         "de" : {
@@ -193,12 +269,12 @@
         }
       }
     },
-    "Ads are found by typical phrases like promo codes and sponsor mentions (Apple Intelligence isn't available)." : {
+    "Ads are found by typical phrases like promo codes and sponsor mentions." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Werbung wird an typischen Formulierungen wie Rabattcodes und Sponsorenhinweisen erkannt (Apple Intelligence ist nicht verfügbar)."
+            "value" : "Werbung wird an typischen Formulierungen wie Rabattcodes und Sponsorenhinweisen erkannt."
           }
         }
       }
@@ -213,12 +289,32 @@
         }
       }
     },
+    "An open model like Gemma runs entirely on this iPhone, without content restrictions. Needs a one-time download and iOS 27." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein offenes Modell wie Gemma läuft vollständig auf diesem iPhone, ohne Inhaltsbeschränkungen. Benötigt einen einmaligen Download und iOS 27."
+          }
+        }
+      }
+    },
     "Apple Intelligence" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Apple Intelligence"
+          }
+        }
+      }
+    },
+    "Apple Intelligence doesn't support this language, so keywords are used." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Intelligence unterstützt diese Sprache nicht, daher werden Stichwörter verwendet."
           }
         }
       }
@@ -233,22 +329,32 @@
         }
       }
     },
-    "Apple Intelligence is still being set up. Until then, ads are found by typical phrases." : {
+    "Apple Intelligence isn't available, so keywords are used." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Intelligence wird noch eingerichtet. Bis dahin wird Werbung an typischen Formulierungen erkannt."
+            "value" : "Apple Intelligence ist nicht verfügbar, daher werden Stichwörter verwendet."
           }
         }
       }
     },
-    "Apple Intelligence reads the transcript and finds sponsor reads, commercials and promo codes." : {
+    "Apple Intelligence where available, otherwise typical phrases like promo codes and sponsor mentions." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Intelligence liest das Transkript und findet Sponsorenblöcke, Werbespots und Rabattcodes."
+            "value" : "Apple Intelligence, wo verfügbar, sonst typische Formulierungen wie Rabattcodes und Sponsorenhinweise."
+          }
+        }
+      }
+    },
+    "Apple's on-device model reads the transcript. Very long or sensitive passages (e.g. true crime) may be declined; keywords are used there." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apples Modell auf dem Gerät liest das Transkript. Heikle Passagen (z. B. True Crime) lehnt es mitunter ab; dort werden Stichwörter verwendet."
           }
         }
       }
@@ -273,12 +379,72 @@
         }
       }
     },
+    "Automatic" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatisch"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Abbrechen"
+          }
+        }
+      }
+    },
+    "Cancel Download" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download abbrechen"
+          }
+        }
+      }
+    },
+    "Check and Save" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüfen und sichern"
+          }
+        }
+      }
+    },
+    "Claude" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude"
+          }
+        }
+      }
+    },
+    "Claude (Own API Key)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude (eigener API-Schlüssel)"
+          }
+        }
+      }
+    },
+    "Claude reads the whole transcript at once and is the most accurate. The transcript (not the audio) is sent to Anthropic and billed to your account." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude liest das ganze Transkript auf einmal und ist am genauesten. Das Transkript (nicht das Audio) wird an Anthropic gesendet und über dein Konto abgerechnet."
           }
         }
       }
@@ -299,6 +465,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Transkript erstellen"
+          }
+        }
+      }
+    },
+    "Create a Key in the Anthropic Console" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schlüssel in der Anthropic Console erstellen"
           }
         }
       }
@@ -329,6 +505,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Transkript wird erstellt …"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
+          }
+        }
+      }
+    },
+    "Delete %@?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ löschen?"
           }
         }
       }
@@ -403,12 +599,42 @@
         }
       }
     },
+    "Download over cellular?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über Mobilfunk laden?"
+          }
+        }
+      }
+    },
+    "Downloaded" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geladen"
+          }
+        }
+      }
+    },
     "Downloading" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wird geladen"
+          }
+        }
+      }
+    },
+    "Downloading… %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird geladen … %@"
           }
         }
       }
@@ -453,6 +679,16 @@
         }
       }
     },
+    "Find Ads With" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Werbung finden mit"
+          }
+        }
+      }
+    },
     "Find and Skip Ads" : {
       "localizations" : {
         "de" : {
@@ -493,12 +729,62 @@
         }
       }
     },
+    "Found with %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erkannt mit %@"
+          }
+        }
+      }
+    },
+    "Found with %@ on this device" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erkannt mit %@ auf diesem Gerät"
+          }
+        }
+      }
+    },
+    "Found with Apple Intelligence" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erkannt mit Apple Intelligence"
+          }
+        }
+      }
+    },
+    "Found with keywords" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erkannt anhand von Stichwörtern"
+          }
+        }
+      }
+    },
     "Full Transcript" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ganzes Transkript"
+          }
+        }
+      }
+    },
+    "Gemma 4 E2B is fast and finds most ads. Gemma 4 E4B is more precise but takes about twice as long and needs an iPhone with 12 GB of memory. Keep Hearth open while a model downloads. The model is only loaded while ads are being found." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemma 4 E2B ist schnell und findet die meiste Werbung. Gemma 4 E4B ist präziser, braucht aber etwa doppelt so lange und ein iPhone mit 12 GB Arbeitsspeicher. Lass Hearth geöffnet, während ein Modell geladen wird. Das Modell belegt nur Arbeitsspeicher, während Werbung gesucht wird."
           }
         }
       }
@@ -513,12 +799,12 @@
         }
       }
     },
-    "Keywords" : {
+    "Keywords Only" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stichwörter"
+            "value" : "Nur Stichwörter"
           }
         }
       }
@@ -533,6 +819,46 @@
         }
       }
     },
+    "Model" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modell"
+          }
+        }
+      }
+    },
+    "Model on This iPhone" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modell auf diesem iPhone"
+          }
+        }
+      }
+    },
+    "Models on the device need iOS 27, so keywords are used." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modelle auf dem Gerät benötigen iOS 27, daher werden Stichwörter verwendet."
+          }
+        }
+      }
+    },
+    "Models on the iPhone need iOS 27." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modelle auf dem iPhone benötigen iOS 27."
+          }
+        }
+      }
+    },
     "More" : {
       "localizations" : {
         "de" : {
@@ -543,12 +869,32 @@
         }
       }
     },
+    "Needs more memory than iOS allows Hearth" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Braucht mehr Arbeitsspeicher, als iOS Hearth erlaubt"
+          }
+        }
+      }
+    },
     "Next Match" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nächster Treffer"
+          }
+        }
+      }
+    },
+    "No Anthropic API key is set (Settings › Transcripts & Ads), so keywords are used." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es ist kein Anthropic-API-Schlüssel hinterlegt (Einstellungen › Transkripte & Werbung), daher werden Stichwörter verwendet."
           }
         }
       }
@@ -683,6 +1029,46 @@
         }
       }
     },
+    "Prices are Anthropic's list prices and may change. Opus is the most accurate, Haiku the cheapest." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preise sind Anthropics Listenpreise und können sich ändern. Opus ist am genauesten, Haiku am günstigsten."
+          }
+        }
+      }
+    },
+    "Recommended" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empfohlen"
+          }
+        }
+      }
+    },
+    "Remove API Key" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-Schlüssel entfernen"
+          }
+        }
+      }
+    },
+    "Saved" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesichert"
+          }
+        }
+      }
+    },
     "Search Transcript" : {
       "localizations" : {
         "de" : {
@@ -803,12 +1189,32 @@
         }
       }
     },
-    "This device doesn't support Apple Intelligence, so ads are found by typical phrases like promo codes and sponsor mentions." : {
+    "The audio stays on this device. The transcript is sent to Anthropic to find ads." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dieses Gerät unterstützt Apple Intelligence nicht. Werbung wird daher an typischen Formulierungen wie Rabattcodes und Sponsorenhinweisen erkannt."
+            "value" : "Das Audio bleibt auf diesem Gerät. Zur Werbeerkennung wird das Transkript an Anthropic gesendet."
+          }
+        }
+      }
+    },
+    "The key is stored in the Keychain on this device only." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Schlüssel wird nur auf diesem Gerät im Schlüsselbund gespeichert."
+          }
+        }
+      }
+    },
+    "The key works." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Schlüssel funktioniert."
           }
         }
       }
@@ -853,12 +1259,12 @@
         }
       }
     },
-    "Transcription and ad detection run entirely on this device. Nothing is uploaded." : {
+    "Transcription always runs on this device. Only with Claude is the transcript sent to Anthropic to find ads." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Transkription und Werbeerkennung laufen vollständig auf diesem Gerät. Nichts wird hochgeladen."
+            "value" : "Die Transkription läuft immer auf diesem Gerät. Nur mit Claude wird das Transkript zur Werbeerkennung an Anthropic gesendet."
           }
         }
       }
@@ -893,12 +1299,12 @@
         }
       }
     },
-    "Turn on Apple Intelligence in the Settings app for more accurate ad detection. Until then, ads are found by typical phrases." : {
+    "Typical phrases like promo codes, sponsor mentions and web addresses. Fast, but misses ads without them." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktiviere Apple Intelligence in der Einstellungen-App für eine genauere Werbeerkennung. Bis dahin wird Werbung an typischen Formulierungen erkannt."
+            "value" : "Typische Formulierungen wie Rabattcodes, Sponsorenhinweise und Webadressen. Schnell, übersieht aber Werbung ohne solche Hinweise."
           }
         }
       }
@@ -919,6 +1325,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ca. %@"
+          }
+        }
+      }
+    },
+    "about %@ per hour of podcast" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ca. %@ pro Stunde Podcast"
           }
         }
       }

@@ -63,6 +63,10 @@ public final class AppSettings {
         detectAdsAfterTranscription = defaults.value(forKey: Key.detectAdsAfterTranscription) as? Bool ?? true
         newEpisodeNotifications = defaults.value(forKey: Key.newEpisodeNotifications) as? Bool ?? false
         mutedNotificationPodcasts = defaults.stringArray(forKey: Key.mutedNotificationPodcasts) ?? []
+
+        adDetectionProvider = defaults.string(forKey: Key.adDetectionProvider) ?? "automatic"
+        localAdModelID = defaults.string(forKey: Key.localAdModelID) ?? "gemma-4-e2b"
+        anthropicModel = defaults.string(forKey: Key.anthropicModel) ?? "claude-opus-5-5"
     }
 
     // MARK: Playback
@@ -136,6 +140,13 @@ public final class AppSettings {
     public var skipAdsAutomatically: Bool { didSet { defaults.set(skipAdsAutomatically, forKey: Key.skipAdsAutomatically) } }
     /// Preselects "detect ads" when starting a transcription.
     public var detectAdsAfterTranscription: Bool { didSet { defaults.set(detectAdsAfterTranscription, forKey: Key.detectAdsAfterTranscription) } }
+
+    /// How ads are found (`AdDetectionProvider` raw value in HearthIntelligence).
+    public var adDetectionProvider: String { didSet { defaults.set(adDetectionProvider, forKey: Key.adDetectionProvider) } }
+    /// The on-device model used with the `localModel` provider (`LocalAdModel.id`).
+    public var localAdModelID: String { didSet { defaults.set(localAdModelID, forKey: Key.localAdModelID) } }
+    /// Claude model used with the `anthropic` provider.
+    public var anthropicModel: String { didSet { defaults.set(anthropicModel, forKey: Key.anthropicModel) } }
 
     // MARK: Notifications
 
@@ -215,6 +226,9 @@ public final class AppSettings {
         static let detectAdsAfterTranscription = "detectAdsAfterTranscription"
         static let newEpisodeNotifications = "newEpisodeNotifications"
         static let mutedNotificationPodcasts = "mutedNotificationPodcasts"
+        static let adDetectionProvider = "adDetectionProvider"
+        static let localAdModelID = "localAdModelID"
+        static let anthropicModel = "anthropicModel"
     }
 }
 

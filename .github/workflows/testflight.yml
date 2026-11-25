@@ -54,6 +54,10 @@ jobs:
           ls -d /Applications/Xcode*.app
           xcodebuild -version
 
+      # MLX (on-device models for ad detection) compiles Metal shaders; the toolchain is a separate component.
+      - name: Install Metal toolchain
+        run: xcodebuild -showComponent MetalToolchain | grep -q "Status: installed" || xcodebuild -downloadComponent MetalToolchain
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4"

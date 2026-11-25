@@ -13,6 +13,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         SystemIntegration.shared.start()
         EpisodeNotifier.shared.start()
         TranscriptionBackgroundTask.start()
+        LocalModelManager.shared.start()
         return true
     }
 

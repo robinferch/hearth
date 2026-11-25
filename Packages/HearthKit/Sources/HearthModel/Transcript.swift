@@ -168,19 +168,26 @@ public struct AdAnalysis: Hashable, Codable, Sendable {
     public enum Method: String, Codable, Sendable {
         /// Apple Intelligence (on-device language model).
         case languageModel
-        /// Keyword heuristics (no Apple Intelligence).
+        /// Keyword heuristics.
         case heuristic
+        /// An open model (Gemma, Qwen, …) running on this device.
+        case localModel
+        /// Claude via the user's own Anthropic API key (the transcript is sent to Anthropic).
+        case anthropic
     }
 
     public var itemID: ItemIdentifier
     public var createdAt: Date
     public var method: Method
+    /// Display name of the model that found the ads (local and cloud models).
+    public var modelName: String?
     public var segments: [AdSegment]
 
-    public init(itemID: ItemIdentifier, createdAt: Date = .now, method: Method, segments: [AdSegment]) {
+    public init(itemID: ItemIdentifier, createdAt: Date = .now, method: Method, modelName: String? = nil, segments: [AdSegment]) {
         self.itemID = itemID
         self.createdAt = createdAt
         self.method = method
+        self.modelName = modelName
         self.segments = segments
     }
 

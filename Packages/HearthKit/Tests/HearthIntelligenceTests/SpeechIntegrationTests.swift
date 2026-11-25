@@ -44,7 +44,7 @@ struct SpeechIntegrationTests {
         #expect(processed.withLock { $0 } >= 40)
 
         let transcript = Transcript(itemID: ItemIdentifier(kind: .episode, connectionID: "c", libraryID: "l", primaryID: "e", groupingID: "p"), localeIdentifier: locale.identifier(.bcp47), duration: 50, segments: segments)
-        let analysis = try await AdDetector().detect(in: transcript)
+        let analysis = try await AdDetector().detect(in: transcript, runner: nil)
         print("Ads (\(analysis.method)): \(analysis.segments)")
         let sponsorWord = try #require(words.first { $0.text.localizedCaseInsensitiveContains("Acme") })
         #expect(analysis.segments.contains { $0.start <= sponsorWord.start + 1 && sponsorWord.start <= $0.end })

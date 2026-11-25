@@ -1,12 +1,72 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Anthropic is temporarily unavailable." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anthropic ist vorübergehend nicht erreichbar."
+          }
+        }
+      }
+    },
+    "Anthropic rejected the request: %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anthropic hat die Anfrage abgelehnt: %@"
+          }
+        }
+      }
+    },
+    "Anthropic sent an unexpected response." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anthropic hat eine unerwartete Antwort gesendet."
+          }
+        }
+      }
+    },
+    "Claude declined to analyze this transcript." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude hat die Analyse dieses Transkripts abgelehnt."
+          }
+        }
+      }
+    },
     "No speech was recognized." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Es wurde keine Sprache erkannt."
+          }
+        }
+      }
+    },
+    "The Anthropic API key is invalid." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Anthropic-API-Schlüssel ist ungültig."
+          }
+        }
+      }
+    },
+    "The Anthropic API key isn't allowed to use this model." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Anthropic-API-Schlüssel darf dieses Modell nicht verwenden."
           }
         }
       }
@@ -37,6 +97,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dieses Gerät unterstützt keine Transkription auf dem Gerät."
+          }
+        }
+      }
+    },
+    "Too many requests to Anthropic. Try again later." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu viele Anfragen an Anthropic. Versuch es später noch einmal."
           }
         }
       }

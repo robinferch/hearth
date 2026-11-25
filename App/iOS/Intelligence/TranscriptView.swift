@@ -255,6 +255,11 @@ private struct TranscriptHeader: View {
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.orange)
             }
+            if adDetectionProgress == nil, let analysis = HearthData.shared.transcripts.adAnalysis(for: transcript.itemID) {
+                Text(AdDetectionText.method(of: analysis))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
             Text("Tap a paragraph to listen from there.", tableName: "Intelligence")
                 .font(.caption)
                 .foregroundStyle(.tertiary)
