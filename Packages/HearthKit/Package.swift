@@ -20,6 +20,7 @@ let package = Package(
         .library(name: "HearthPlayback", targets: ["HearthPlayback"]),
         .library(name: "HearthUI", targets: ["HearthUI"]),
         .library(name: "HearthIntents", targets: ["HearthIntents"]),
+        .library(name: "HearthIntelligence", targets: ["HearthIntelligence"]),
     ],
     targets: [
         .target(name: "HearthModel", swiftSettings: swiftSettings),
@@ -28,10 +29,13 @@ let package = Package(
         .target(name: "HearthPlayback", dependencies: ["HearthModel", "HearthAPI", "HearthData"], resources: [.process("Resources")], swiftSettings: swiftSettings),
         .target(name: "HearthUI", dependencies: ["HearthModel", "HearthData"], resources: [.process("Resources")], swiftSettings: swiftSettings),
         .target(name: "HearthIntents", dependencies: ["HearthModel", "HearthData", "HearthPlayback"], swiftSettings: swiftSettings),
+        // On-device transcription (Speech) and ad detection (FoundationModels). iOS app only.
+        .target(name: "HearthIntelligence", dependencies: ["HearthModel", "HearthData"], resources: [.process("Resources")], swiftSettings: swiftSettings),
 
         .testTarget(name: "HearthModelTests", dependencies: ["HearthModel"]),
         .testTarget(name: "HearthAPITests", dependencies: ["HearthAPI"], resources: [.copy("Fixtures")]),
         .testTarget(name: "HearthDataTests", dependencies: ["HearthData"]),
         .testTarget(name: "HearthPlaybackTests", dependencies: ["HearthPlayback", "HearthModel"]),
+        .testTarget(name: "HearthIntelligenceTests", dependencies: ["HearthIntelligence", "HearthModel"]),
     ]
 )

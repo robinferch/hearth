@@ -25,6 +25,9 @@ public final class HearthData {
     public let itemSettings: ItemSettingsStore
     public let images: ImageStore
     public let snapshot: SharedSnapshotStore
+    public let transcripts: TranscriptStore
+    /// Called when the server reports a new item in a library (live updates), e.g. to look for new episodes.
+    @ObservationIgnored public var itemAddedHandler: (@MainActor (LibraryIdentifier) -> Void)?
 
     /// `true` once `bootstrap()` finished.
     public internal(set) var isBootstrapped = false
@@ -51,6 +54,7 @@ public final class HearthData {
         itemSettings = ItemSettingsStore(environment: environment)
         images = ImageStore(environment: environment)
         snapshot = SharedSnapshotStore(environment: environment)
+        transcripts = TranscriptStore(environment: environment)
 
         connections.hearth = self
         progress.hearth = self
@@ -60,6 +64,7 @@ public final class HearthData {
         listening.hearth = self
         itemSettings.hearth = self
         snapshot.hearth = self
+        transcripts.hearth = self
         images.configure(ImageStore.Dependencies(
             client: { [weak self] id in await self?.availableClient(id) },
             localCover: { [weak self] id, size in await self?.downloads.localCoverURL(for: id, size: size) }
@@ -197,7 +202,9 @@ public final class HearthData {
             items.invalidate(id)
         case .userUpdated:
             await progress.sync(connection: connection)
-        case .itemAdded, .connected, .disconnected:
+        case .itemAdded(let library):
+            itemAddedHandler?(library)
+        case .connected, .disconnected:
             break
         }
     }
@@ -234,6 +241,7 @@ public final class HearthData {
         itemSettings.forget(connection: id)
         listening.forget(connection: id)
         await images.purge(connection: id)
+        transcripts.forget(connection: id)
         snapshot.update { snapshot in
             snapshot.listenNow.removeAll { $0.id.connectionID == id }
             if snapshot.nowPlaying?.id.connectionID == id {

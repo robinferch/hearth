@@ -20,6 +20,7 @@ Packages/HearthKit/         Swift package with all shared code
   HearthPlayback            AVFoundation player, queue, sessions, sleep timer, Now Playing, remote commands
   HearthUI                  Shared SwiftUI components used by the app, widgets and watch (covers, progress, formatting)
   HearthIntents             App Intents, entities and App Shortcuts (shared by app + widgets)
+  HearthIntelligence        On-device transcription (Speech) and ad detection (FoundationModels); iOS app only
 Docs/Spec/                  Functional specs
 ```
 
@@ -29,7 +30,7 @@ String tables: the app uses several String Catalogs (`Localizable`, `Detail`, `P
 
 ## Dependency direction
 
-`HearthModel` ← `HearthAPI` ← `HearthData` ← `HearthPlayback` ← `HearthIntents`; `HearthUI` depends on Model + Data (+ Playback where needed). Apps depend on everything.
+`HearthModel` ← `HearthAPI` ← `HearthData` ← `HearthPlayback` ← `HearthIntents`; `HearthUI` depends on Model + Data (+ Playback where needed); `HearthIntelligence` on Model + Data. Apps depend on everything (the watch app not on `HearthIntelligence`).
 
 The files named `*Contract.swift` define the public surface each module guarantees. Signatures there are stable; implementations may live elsewhere.
 
@@ -50,6 +51,11 @@ xcodegen generate   # only after changing project.yml
 xcodebuild -project Hearth.xcodeproj -scheme Hearth -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 xcodebuild -project Hearth.xcodeproj -scheme HearthWatch -destination 'generic/platform=watchOS Simulator' CODE_SIGNING_ALLOWED=NO build
 cd Packages/HearthKit && swift build && swift test
+# Real on-device transcription of synthesized speech (may download a speech model):
+cd Packages/HearthKit && HEARTH_SPEECH_TESTS=1 swift test --filter SpeechIntegrationTests
 ```
+
+Simulator checks of the transcript UI (the simulator has no speech recognition): `-HearthDebugPlay <episode id>
+-HearthDebugPlayerPanel transcript -HearthDebugSampleTranscript YES [-HearthDebugTranscriptionSheet YES]`.
 
 `CODE_SIGNING_ALLOWED=NO` is fine for compile checks, but apps built that way have no keychain access in the simulator (connections are not persisted). For running in the simulator, build normally (ad-hoc signing works without a team).

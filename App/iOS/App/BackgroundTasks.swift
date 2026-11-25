@@ -7,14 +7,16 @@ enum BackgroundTaskScheduler {
     private static let bundleID = Bundle.main.bundleIdentifier ?? "me.robinferch.hearth"
     /// App refresh every ≥ 3 h: evaluates automatic download rules.
     static let autoDownloadIdentifier = bundleID + ".autodownload"
-    /// App refresh: progress / bookmark sync and pending session upload.
+    /// App refresh: progress / bookmark sync, pending session upload and new-episode notifications.
     static let syncIdentifier = bundleID + ".sync"
 
     private static let logger = Logger(subsystem: bundleID, category: "BackgroundTasks")
 
+    @MainActor
     static func scheduleAll() {
         schedule(autoDownloadIdentifier, after: 3 * 3600)
-        schedule(syncIdentifier, after: 3600)
+        // New-episode notifications need more frequent checks (iOS still decides when the task runs).
+        schedule(syncIdentifier, after: AppSettings.shared.newEpisodeNotifications ? 30 * 60 : 3600)
     }
 
     private static func schedule(_ identifier: String, after interval: TimeInterval) {
@@ -42,7 +44,7 @@ enum BackgroundTaskScheduler {
 
     @MainActor
     static func runSync() async {
-        schedule(syncIdentifier, after: 3600)
+        schedule(syncIdentifier, after: AppSettings.shared.newEpisodeNotifications ? 30 * 60 : 3600)
         let data = HearthData.shared
         if !AppEvents.shared.bootstrapFinished {
             await data.bootstrap()
@@ -51,6 +53,7 @@ enum BackgroundTaskScheduler {
         await data.listening.uploadPendingSessions()
         await data.progress.sync()
         await data.bookmarks.sync()
+        await EpisodeNotifier.shared.check()
         logger.info("Background sync finished")
     }
 }

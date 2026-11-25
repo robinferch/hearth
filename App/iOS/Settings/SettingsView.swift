@@ -58,6 +58,16 @@ struct SettingsView: View {
                         SettingsLabel(title: String(localized: "Downloads"), systemImage: "arrow.down.circle", color: .green)
                     }
                     NavigationLink {
+                        IntelligenceSettingsView()
+                    } label: {
+                        SettingsLabel(title: String(localized: "Transcripts & Ads", table: "Intelligence"), systemImage: "captions.bubble", color: .purple)
+                    }
+                    NavigationLink {
+                        NotificationSettingsView()
+                    } label: {
+                        SettingsLabel(title: String(localized: "Notifications", table: "Notifications"), systemImage: "bell.badge", color: .red)
+                    }
+                    NavigationLink {
                         CarPlaySettingsView()
                     } label: {
                         SettingsLabel(title: String(localized: "CarPlay"), systemImage: "car", color: .teal)

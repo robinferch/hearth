@@ -87,6 +87,8 @@ public final class AudioPlayer {
     public internal(set) var pendingSkipTotal: TimeInterval?
     /// Whether the current item is played from local files.
     public internal(set) var isPlayingLocalFiles = false
+    /// The ad that was just skipped automatically (player shows "Ad skipped · Undo"); cleared after a few seconds.
+    public internal(set) var lastSkippedAd: SkippedAd?
 
     /// Whether an item is loaded (playing or paused).
     public var isActive: Bool { currentItem != nil }
@@ -152,6 +154,11 @@ public final class AudioPlayer {
     @ObservationIgnored var sleepTimerPausedAt: Date?
     @ObservationIgnored var lastExpiredSleepTimer: SleepTimerState?
     @ObservationIgnored var isFading = false
+
+    /// Start times of the current item's ads that were skipped or deliberately sought into (never skipped again).
+    @ObservationIgnored var handledAds: Set<TimeInterval> = []
+    @ObservationIgnored var handledAdsItemID: ItemIdentifier?
+    @ObservationIgnored var skippedAdClearTask: Task<Void, Never>?
 
     @ObservationIgnored var skipCombiner = SkipTapCombiner()
     @ObservationIgnored var skipCombinerTask: Task<Void, Never>?
@@ -227,11 +234,16 @@ public final class AudioPlayer {
     }
     public func stop() async { await performStop() }
 
-    /// Absolute seek.
-    public func seek(to time: TimeInterval) async { await seekInternal(to: time) }
+    /// Absolute seek. Seeking into a detected ad plays it (it isn't skipped automatically).
+    public func seek(to time: TimeInterval) async {
+        markAdHandled(at: time)
+        await seekInternal(to: time)
+    }
     /// Seek relative to the active chapter start (scrubber).
     public func seek(toDisplayedTime time: TimeInterval) async {
-        await seekInternal(to: absoluteTime(forDisplayedTime: time))
+        let absolute = absoluteTime(forDisplayedTime: time)
+        markAdHandled(at: absolute)
+        await seekInternal(to: absolute)
     }
     public func skipForward(_ seconds: TimeInterval? = nil) async {
         await seekInternal(to: currentTime + (seconds ?? TimeInterval(AppSettings.shared.skipForwardInterval)))

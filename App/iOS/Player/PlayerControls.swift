@@ -28,6 +28,8 @@ struct PlayerScrubberSection: View {
                 }
             )
             .opacity(settings.lockSeekBar ? 0.6 : 1)
+            AdMarkersBar()
+                .padding(.top, -10)
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(HearthFormat.clock(time))
                     .frame(minWidth: 64, alignment: .leading)

@@ -263,6 +263,7 @@ extension AudioPlayer {
         updateChapterAndDisplay(fromPlayback: isPlaying)
         updateBuffering()
         reporter?.tick(currentTime: currentTime)
+        checkAdSkip()
         checkChapterSleepTimer()
         updateSnapshot(force: false)
     }

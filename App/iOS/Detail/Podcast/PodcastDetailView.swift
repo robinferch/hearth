@@ -140,6 +140,7 @@ private struct PodcastDetailContent: View {
                     Label(String(localized: "Configure", table: "Detail"), systemImage: "slider.horizontal.3")
                 }
                 EpisodeListOptionsButton(settings: settingsBinding)
+                PodcastNotificationButton(podcastID: podcast.id)
             }
         }
         .sheet(isPresented: $isConfiguring) {
@@ -255,5 +256,27 @@ private struct PodcastInfoSection: View {
             }
         }
         .listRowBackground(Color.clear)
+    }
+}
+
+/// Bell in the podcast toolbar: new-episode notifications for this podcast (shown while notifications are on).
+private struct PodcastNotificationButton: View {
+    let podcastID: ItemIdentifier
+
+    var body: some View {
+        let settings = AppSettings.shared
+        if settings.newEpisodeNotifications {
+            let enabled = settings.notificationsEnabled(for: podcastID)
+            Button {
+                settings.setNotificationsEnabled(!enabled, for: podcastID)
+            } label: {
+                Label(enabled
+                      ? String(localized: "Turn Off Notifications", table: "Notifications")
+                      : String(localized: "Turn On Notifications", table: "Notifications"),
+                      systemImage: enabled ? "bell.fill" : "bell.slash")
+            }
+            .contentTransition(.symbolEffect(.replace))
+            .sensoryFeedback(.selection, trigger: enabled)
+        }
     }
 }

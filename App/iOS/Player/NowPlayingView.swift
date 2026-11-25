@@ -46,6 +46,10 @@ struct NowPlayingView: View {
         .overlay(alignment: .top) {
             grabber
         }
+        .overlay(alignment: .top) {
+            AdSkipToast()
+                .padding(.top, 52)
+        }
         .environment(\.colorScheme, .dark)
         .tint(.white)
         // Re-runs when playback stops: `itemID` stays the same, but the idle state needs `lastPlayed`.
@@ -88,7 +92,11 @@ struct NowPlayingView: View {
         .onAppear {
             if let panel = DebugSupport.initialPlayerPanel {
                 showsPanel = true
-                panelPage = panel == "queue" ? .queue : .chapters
+                panelPage = switch panel {
+                case "queue": .queue
+                case "transcript": .transcript
+                default: .chapters
+                }
             }
             if UserDefaults.standard.bool(forKey: "HearthDebugCollapsePlayer") {
                 Task {
@@ -286,6 +294,7 @@ struct NowPlayingView: View {
     private var controls: some View {
         if player.currentItem != nil {
             VStack(spacing: 14) {
+                SkipAdButton()
                 PlayerScrubberSection()
                 TransportControls(compact: showsPanel)
                 if AppSettings.shared.replaceVolumeWithTotalProgress {

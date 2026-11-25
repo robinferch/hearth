@@ -167,7 +167,8 @@ public final class ConnectionStore {
             .compactMap { try? client(for: $0.id) }
     }
 
-    func isAvailable(_ id: ConnectionID) -> Bool {
+    /// Whether requests to the connection can be made (online, signed in).
+    public func isAvailable(_ id: ConnectionID) -> Bool {
         !isOffline && connection(id) != nil && status[id] != .unauthorized && status[id] != .offline
     }
 

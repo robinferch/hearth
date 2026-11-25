@@ -57,6 +57,8 @@ private struct EpisodeDetailContent: View {
                     .detailPlainRow(insets: EdgeInsets(top: 4, leading: 20, bottom: 16, trailing: 20))
             }
 
+            TranscriptSection(item: .episode(episode))
+
             Section {
                 Group {
                     DetailSectionTitle(title: String(localized: "Information", table: "Detail"))

@@ -54,6 +54,8 @@ targets:
         product: HearthUI
       - package: HearthKit
         product: HearthIntents
+      - package: HearthKit
+        product: HearthIntelligence
       - target: HearthWidgets
       - target: HearthWatch
     settings:
@@ -86,6 +88,8 @@ targets:
           - $(PRODUCT_BUNDLE_IDENTIFIER).autodownload
           - $(PRODUCT_BUNDLE_IDENTIFIER).sync
           - $(PRODUCT_BUNDLE_IDENTIFIER).spotlight
+          # Transcriptions continuing in the background (BGContinuedProcessingTask, one id per job).
+          - $(PRODUCT_BUNDLE_IDENTIFIER).transcription.*
         NSSupportsLiveActivities: true
         CoreSpotlightContinuation: true
         NSUserActivityTypes:

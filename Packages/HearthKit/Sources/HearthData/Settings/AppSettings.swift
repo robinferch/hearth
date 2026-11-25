@@ -58,6 +58,11 @@ public final class AppSettings {
         carPlayShowListenNow = defaults.value(forKey: Key.carPlayShowListenNow) as? Bool ?? true
         carPlayLibraries = defaults.stringArray(forKey: Key.carPlayLibraries) ?? []
         carPlayShowOtherLibraries = defaults.value(forKey: Key.carPlayShowOtherLibraries) as? Bool ?? true
+
+        skipAdsAutomatically = defaults.value(forKey: Key.skipAdsAutomatically) as? Bool ?? true
+        detectAdsAfterTranscription = defaults.value(forKey: Key.detectAdsAfterTranscription) as? Bool ?? true
+        newEpisodeNotifications = defaults.value(forKey: Key.newEpisodeNotifications) as? Bool ?? false
+        mutedNotificationPodcasts = defaults.stringArray(forKey: Key.mutedNotificationPodcasts) ?? []
     }
 
     // MARK: Playback
@@ -125,6 +130,33 @@ public final class AppSettings {
     public var carPlayLibraries: [String] { didSet { defaults.set(carPlayLibraries, forKey: Key.carPlayLibraries) } }
     public var carPlayShowOtherLibraries: Bool { didSet { defaults.set(carPlayShowOtherLibraries, forKey: Key.carPlayShowOtherLibraries) } }
 
+    // MARK: Transcripts & ads
+
+    /// Seek past detected ad segments while playing.
+    public var skipAdsAutomatically: Bool { didSet { defaults.set(skipAdsAutomatically, forKey: Key.skipAdsAutomatically) } }
+    /// Preselects "detect ads" when starting a transcription.
+    public var detectAdsAfterTranscription: Bool { didSet { defaults.set(detectAdsAfterTranscription, forKey: Key.detectAdsAfterTranscription) } }
+
+    // MARK: Notifications
+
+    public var newEpisodeNotifications: Bool { didSet { defaults.set(newEpisodeNotifications, forKey: Key.newEpisodeNotifications) } }
+    /// `ItemIdentifier.description` of podcasts without new-episode notifications.
+    public var mutedNotificationPodcasts: [String] { didSet { defaults.set(mutedNotificationPodcasts, forKey: Key.mutedNotificationPodcasts) } }
+
+    public func notificationsEnabled(for podcast: ItemIdentifier) -> Bool {
+        !mutedNotificationPodcasts.contains(podcast.description)
+    }
+
+    public func setNotificationsEnabled(_ enabled: Bool, for podcast: ItemIdentifier) {
+        var muted = Set(mutedNotificationPodcasts)
+        if enabled {
+            muted.remove(podcast.description)
+        } else {
+            muted.insert(podcast.description)
+        }
+        mutedNotificationPodcasts = muted.sorted()
+    }
+
     public func resetPlaybackRates() {
         defaultPlaybackRate = 1.0
         playbackRatePresets = [0.9, 1.0, 1.3, 1.6, 2.0]
@@ -179,6 +211,10 @@ public final class AppSettings {
         static let carPlayShowListenNow = "carPlayShowListenNow"
         static let carPlayLibraries = "carPlayLibraries"
         static let carPlayShowOtherLibraries = "carPlayShowOtherLibraries"
+        static let skipAdsAutomatically = "skipAdsAutomatically"
+        static let detectAdsAfterTranscription = "detectAdsAfterTranscription"
+        static let newEpisodeNotifications = "newEpisodeNotifications"
+        static let mutedNotificationPodcasts = "mutedNotificationPodcasts"
     }
 }
 

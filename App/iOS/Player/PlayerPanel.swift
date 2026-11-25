@@ -5,10 +5,12 @@ import HearthUI
 import SwiftUI
 import TipKit
 
-/// Panel shown instead of the large cover: bookmarks + chapters (or the episode description) and the queue.
+/// Panel shown instead of the large cover: bookmarks + chapters (or the episode description), the live transcript
+/// and the queue.
 struct PlayerPanel: View {
     enum Page: Hashable {
         case chapters
+        case transcript
         case queue
     }
 
@@ -31,6 +33,7 @@ struct PlayerPanel: View {
         VStack(spacing: 10) {
             Picker(selection: $page) {
                 Text(firstPageTitle).tag(Page.chapters)
+                Text("Transcript", tableName: "Intelligence").tag(Page.transcript)
                 Text("Queue", tableName: "Player").tag(Page.queue)
             } label: {
                 Text("Panel", tableName: "Player")
@@ -41,6 +44,8 @@ struct PlayerPanel: View {
             switch page {
             case .chapters:
                 ChaptersPage(onError: onError)
+            case .transcript:
+                TranscriptPanelPage()
             case .queue:
                 QueuePage()
             }

@@ -1,0 +1,56 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "No speech was recognized." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es wurde keine Sprache erkannt."
+          }
+        }
+      }
+    },
+    "The audio file couldn't be read: %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Audiodatei konnte nicht gelesen werden: %@"
+          }
+        }
+      }
+    },
+    "The episode couldn't be downloaded." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Episode konnte nicht geladen werden."
+          }
+        }
+      }
+    },
+    "This device doesn't support on-device transcription." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Gerät unterstützt keine Transkription auf dem Gerät."
+          }
+        }
+      }
+    },
+    "Transcription isn't available for %@." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für %@ ist keine Transkription verfügbar."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
